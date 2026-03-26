@@ -407,6 +407,10 @@ async function koerMigrationer() {
   await pool.query(`ALTER TABLE triggers ADD COLUMN IF NOT EXISTS genaktiver_tekst TEXT`);
   await pool.query(`ALTER TABLE triggers ADD COLUMN IF NOT EXISTS review_emne TEXT`);
   await pool.query(`ALTER TABLE triggers ADD COLUMN IF NOT EXISTS review_tekst TEXT`);
+  await pool.query(`ALTER TABLE triggers ADD COLUMN IF NOT EXISTS genaktiver_rabat_procent INT`);
+  await pool.query(`ALTER TABLE triggers ADD COLUMN IF NOT EXISTS genaktiver_rabat_dage INT NOT NULL DEFAULT 14`);
+  await pool.query(`ALTER TABLE triggers ADD COLUMN IF NOT EXISTS review_rabat_procent INT`);
+  await pool.query(`ALTER TABLE triggers ADD COLUMN IF NOT EXISTS review_rabat_dage INT NOT NULL DEFAULT 14`);
 }
 
 const PORT = process.env.PORT || 3001;

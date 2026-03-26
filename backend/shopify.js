@@ -82,6 +82,30 @@ export async function getShopBeskrivelse(shopUrl) {
   }
 }
 
+export async function createDiscountCode(client, { code, procent, udloebDage, antalBrugere }) {
+  const udloeb = new Date();
+  udloeb.setDate(udloeb.getDate() + udloebDage);
+  const ruleRes = await client.post('/price_rules.json', {
+    price_rule: {
+      title: code,
+      target_type: 'line_item',
+      target_selection: 'all',
+      allocation_method: 'across',
+      value_type: 'percentage',
+      value: `-${procent}`,
+      customer_selection: 'all',
+      starts_at: new Date().toISOString(),
+      ends_at: udloeb.toISOString(),
+      usage_limit: antalBrugere
+    }
+  });
+  const ruleId = ruleRes.data.price_rule.id;
+  await client.post(`/price_rules/${ruleId}/discount_codes.json`, {
+    discount_code: { code }
+  });
+  return code;
+}
+
 export async function getForladteKurve(client) {
   try {
     const res = await client.get('/checkouts.json', { params: { status: 'open', limit: 50 } });

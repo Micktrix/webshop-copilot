@@ -699,6 +699,13 @@
                     <button class="preview-knap" onclick="togglePreview('genaktiver')">👁 Preview</button>
                   </div>
                   <div class="mail-preview" id="genaktiver-preview"></div>
+                  <div style="margin-top:12px;padding-top:12px;border-top:1px solid #e5e7eb;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                    <span style="font-size:0.82rem;font-weight:600;color:#555">Rabatkode i mailen:</span>
+                    <input type="number" id="genaktiver-rabat-procent" placeholder="%" min="1" max="100" style="width:60px;padding:4px 8px;border:1px solid #d1d5db;border-radius:6px;font-size:0.82rem" oninput="gemTrigger()">
+                    <span style="font-size:0.82rem;color:#777">% rabat, gyldig</span>
+                    <input type="number" id="genaktiver-rabat-dage" value="14" min="1" max="365" style="width:55px;padding:4px 8px;border:1px solid #d1d5db;border-radius:6px;font-size:0.82rem" oninput="gemTrigger()">
+                    <span style="font-size:0.82rem;color:#777">dage (lad % stå tomt for ingen kode)</span>
+                  </div>
                 </div>
               </div>
               <div style="margin-top:14px;padding-top:14px;border-top:1px solid #e0e0e0">
@@ -732,6 +739,13 @@
                       <button class="preview-knap" onclick="togglePreview('review')">👁 Preview</button>
                     </div>
                     <div class="mail-preview" id="review-preview"></div>
+                    <div style="margin-top:12px;padding-top:12px;border-top:1px solid #e5e7eb;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                      <span style="font-size:0.82rem;font-weight:600;color:#555">Rabatkode i mailen:</span>
+                      <input type="number" id="review-rabat-procent" placeholder="%" min="1" max="100" style="width:60px;padding:4px 8px;border:1px solid #d1d5db;border-radius:6px;font-size:0.82rem" oninput="gemTrigger()">
+                      <span style="font-size:0.82rem;color:#777">% rabat, gyldig</span>
+                      <input type="number" id="review-rabat-dage" value="14" min="1" max="365" style="width:55px;padding:4px 8px;border:1px solid #d1d5db;border-radius:6px;font-size:0.82rem" oninput="gemTrigger()">
+                      <span style="font-size:0.82rem;color:#777">dage (lad % stå tomt for ingen kode)</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1334,7 +1348,11 @@
         genaktiverEmne: document.getElementById('genaktiver-emne').value,
         genaktiverTekst: document.getElementById('genaktiver-tekst').value,
         reviewEmne: document.getElementById('review-emne').value,
-        reviewTekst: document.getElementById('review-tekst').value
+        reviewTekst: document.getElementById('review-tekst').value,
+        genaktiverRabatProcent: parseInt(document.getElementById('genaktiver-rabat-procent').value) || null,
+        genaktiverRabatDage: parseInt(document.getElementById('genaktiver-rabat-dage').value) || 14,
+        reviewRabatProcent: parseInt(document.getElementById('review-rabat-procent').value) || null,
+        reviewRabatDage: parseInt(document.getElementById('review-rabat-dage').value) || 14
       })
     });
   }
@@ -1344,6 +1362,10 @@
     if (trigger.genaktiverTekst) document.getElementById('genaktiver-tekst').value = trigger.genaktiverTekst;
     if (trigger.reviewEmne) document.getElementById('review-emne').value = trigger.reviewEmne;
     if (trigger.reviewTekst) document.getElementById('review-tekst').value = trigger.reviewTekst;
+    if (trigger.genaktiverRabatProcent) document.getElementById('genaktiver-rabat-procent').value = trigger.genaktiverRabatProcent;
+    if (trigger.genaktiverRabatDage) document.getElementById('genaktiver-rabat-dage').value = trigger.genaktiverRabatDage;
+    if (trigger.reviewRabatProcent) document.getElementById('review-rabat-procent').value = trigger.reviewRabatProcent;
+    if (trigger.reviewRabatDage) document.getElementById('review-rabat-dage').value = trigger.reviewRabatDage;
   }
 
   async function sendTestRapport() {

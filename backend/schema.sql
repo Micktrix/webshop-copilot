@@ -46,7 +46,15 @@ CREATE TABLE IF NOT EXISTS triggers (
   aktiv        BOOLEAN NOT NULL DEFAULT false,
   dage         INT NOT NULL DEFAULT 60,
   sidst_koert  DATE,
-  review       BOOLEAN NOT NULL DEFAULT false,
-  review_dage  INT NOT NULL DEFAULT 7,
-  ugerapport   BOOLEAN NOT NULL DEFAULT false
+  review                   BOOLEAN NOT NULL DEFAULT false,
+  review_dage              INT NOT NULL DEFAULT 7,
+  ugerapport               BOOLEAN NOT NULL DEFAULT false,
+  genaktiver_emne          TEXT,
+  genaktiver_tekst         TEXT,
+  review_emne              TEXT,
+  review_tekst             TEXT,
+  genaktiver_rabat_procent INT,
+  genaktiver_rabat_dage    INT NOT NULL DEFAULT 14,
+  review_rabat_procent     INT,
+  review_rabat_dage        INT NOT NULL DEFAULT 14
 );
