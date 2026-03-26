@@ -390,5 +390,12 @@ setInterval(koerUgerapporter, 1000 * 60 * 60); // tjekker hver time om det er ma
 const FRONTEND = path.join(__dirname, '../frontend');
 app.use(express.static(FRONTEND));
 
+async function koerMigrationer() {
+  await pool.query(`ALTER TABLE shops ADD COLUMN IF NOT EXISTS platform TEXT NOT NULL DEFAULT 'woocommerce'`);
+}
+
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`Backend kører på http://localhost:${PORT}`));
+app.listen(PORT, async () => {
+  console.log(`Backend kører på http://localhost:${PORT}`);
+  try { await koerMigrationer(); console.log('Migrationer OK'); } catch (e) { console.warn('Migration fejl:', e.message); }
+});
