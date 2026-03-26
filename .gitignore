@@ -1,0 +1,10 @@
+node_modules/
+.env
+*.local
+
+# Data filer med følsomme oplysninger
+backend/shops.json
+backend/kampagner.json
+backend/triggers.json
+backend/marginer.json
+backend/events.json

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>Webshop Co-pilot — Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+    #loginWrap { display: flex; align-items: center; justify-content: center; height: 100vh; }
+    #loginBox { background: #1e293b; padding: 2rem; border-radius: 12px; width: 320px; }
+    #loginBox h2 { margin-bottom: 1.5rem; color: #f8fafc; font-size: 1.2rem; }
+    #loginBox input {
+      width: 100%; padding: .65rem .9rem; margin-bottom: .75rem;
+      background: #0f172a; border: 1px solid #334155; border-radius: 8px;
+      color: #f1f5f9; font-size: .95rem;
+    }
+    #loginBox button {
+      width: 100%; padding: .7rem; background: #6366f1; border: none;
+      border-radius: 8px; color: #fff; font-size: 1rem; cursor: pointer;
+    }
+    #loginBox button:hover { background: #4f46e5; }
+    #loginErr { color: #f87171; margin-top: .5rem; font-size: .85rem; }
+
+    #app { display: none; padding: 2rem; max-width: 1200px; margin: 0 auto; }
+
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+    header h1 { font-size: 1.4rem; color: #f8fafc; }
+    .header-right { display: flex; align-items: center; gap: 1rem; }
+    #refreshTimer { font-size: .75rem; color: #475569; }
+    #logoutBtn {
+      background: #334155; border: none; color: #94a3b8;
+      padding: .4rem .9rem; border-radius: 6px; cursor: pointer; font-size: .85rem;
+    }
+    #logoutBtn:hover { background: #475569; }
+
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem; margin-bottom: 2rem;
+    }
+    .stat-card { background: #1e293b; border-radius: 10px; padding: 1.2rem; }
+    .stat-card .label { font-size: .7rem; color: #94a3b8; margin-bottom: .4rem; text-transform: uppercase; letter-spacing: .05em; }
+    .stat-card .value { font-size: 1.7rem; font-weight: 700; color: #f8fafc; }
+    .stat-card.highlight { border: 1px solid #6366f1; }
+    .stat-card.warn { border: 1px solid #f59e0b; }
+    .stat-card.danger { border: 1px solid #ef4444; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+
+    .card { background: #1e293b; border-radius: 10px; padding: 1.5rem; }
+    .card h2 { font-size: .75rem; color: #64748b; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 1rem; }
+
+    /* Plan-fordeling */
+    .plan-bars { display: flex; flex-direction: column; gap: .6rem; }
+    .plan-row { display: flex; align-items: center; gap: .75rem; font-size: .85rem; }
+    .plan-row .navn { width: 70px; color: #94a3b8; }
+    .plan-row .bar-wrap { flex: 1; background: #0f172a; border-radius: 4px; height: 10px; }
+    .plan-row .bar { height: 10px; border-radius: 4px; transition: width .4s; }
+    .bar-gratis { background: #475569; }
+    .bar-pro { background: #6366f1; }
+    .bar-business { background: #a855f7; }
+    .plan-row .tal { width: 24px; text-align: right; color: #64748b; font-size: .8rem; }
+
+    /* Event-tidslinje */
+    .tidslinje { display: flex; align-items: flex-end; gap: 3px; height: 80px; }
+    .tidslinje-bar { flex: 1; background: #6366f1; border-radius: 3px 3px 0 0; min-height: 2px; transition: height .3s; cursor: default; position: relative; }
+    .tidslinje-bar:hover::after {
+      content: attr(data-tip);
+      position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%);
+      background: #1e293b; border: 1px solid #334155; color: #f1f5f9;
+      padding: .2rem .4rem; border-radius: 4px; font-size: .7rem; white-space: nowrap;
+    }
+
+    /* Shops tabel */
+    section { margin-bottom: 2rem; }
+    .tabel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .tabel-header h2 { font-size: .75rem; color: #64748b; text-transform: uppercase; letter-spacing: .05em; }
+    #shopSøg {
+      background: #1e293b; border: 1px solid #334155; color: #f1f5f9;
+      padding: .4rem .8rem; border-radius: 8px; font-size: .85rem; width: 220px;
+    }
+    #shopFilter {
+      background: #1e293b; border: 1px solid #334155; color: #94a3b8;
+      padding: .4rem .7rem; border-radius: 8px; font-size: .8rem; cursor: pointer;
+    }
+
+    table { width: 100%; border-collapse: collapse; background: #1e293b; border-radius: 10px; overflow: hidden; }
+    th { text-align: left; padding: .75rem 1rem; font-size: .7rem; color: #64748b; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid #334155; }
+    td { padding: .7rem 1rem; font-size: .85rem; border-bottom: 1px solid #0f172a; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #263148; }
+
+    .badge { display: inline-block; padding: .2rem .5rem; border-radius: 4px; font-size: .72rem; font-weight: 600; }
+    .badge-gratis { background: #1e293b; color: #64748b; border: 1px solid #334155; }
+    .badge-pro { background: #1d4ed8; color: #bfdbfe; }
+    .badge-business { background: #7c3aed; color: #ddd6fe; }
+    .badge-aktiv { background: #065f46; color: #6ee7b7; }
+    .badge-inaktiv { background: #7f1d1d; color: #fca5a5; }
+    .badge-churned { background: #78350f; color: #fcd34d; }
+
+    select {
+      background: #0f172a; border: 1px solid #334155; color: #f1f5f9;
+      padding: .3rem .5rem; border-radius: 6px; font-size: .8rem; cursor: pointer;
+    }
+    .btn-sm {
+      background: none; border: 1px solid #334155; color: #94a3b8;
+      padding: .25rem .6rem; border-radius: 6px; cursor: pointer; font-size: .75rem;
+    }
+    .btn-sm:hover { border-color: #6366f1; color: #a5b4fc; }
+
+    .branche-input {
+      background: transparent; border: none; border-bottom: 1px solid #334155;
+      color: #94a3b8; font-size: .8rem; width: 100px; padding: .1rem .2rem;
+      outline: none;
+    }
+    .branche-input:focus { border-color: #6366f1; color: #f1f5f9; }
+
+    /* Events */
+    .events-list { background: #1e293b; border-radius: 10px; padding: 1rem; }
+    .event-row {
+      display: flex; gap: 1rem; padding: .45rem 0;
+      border-bottom: 1px solid #1e293b; font-size: .78rem; color: #94a3b8;
+    }
+    .event-row:last-child { border-bottom: none; }
+    .event-row .ts { color: #475569; min-width: 130px; }
+    .event-row .type { color: #6366f1; min-width: 120px; }
+    .event-row .shopId { color: #22d3ee; min-width: 100px; font-family: monospace; }
+
+    .tom { color: #475569; padding: .75rem; text-align: center; font-size: .85rem; }
+  </style>
+</head>
+<body>
+
+<div id="loginWrap">
+  <div id="loginBox">
+    <h2>Admin Login</h2>
+    <input type="text" id="adminUser" placeholder="Brugernavn" />
+    <input type="password" id="adminPass" placeholder="Adgangskode" />
+    <button onclick="login()">Log ind</button>
+    <div id="loginErr"></div>
+  </div>
+</div>
+
+<div id="app">
+  <header>
+    <h1>Webshop Co-pilot — Admin</h1>
+    <div class="header-right">
+      <span id="refreshTimer"></span>
+      <button id="logoutBtn" onclick="logout()">Log ud</button>
+    </div>
+  </header>
+
+  <div class="stats-grid" id="statsGrid"></div>
+
+  <div class="two-col">
+    <div class="card">
+      <h2>Plan-fordeling</h2>
+      <div class="plan-bars" id="planFordeling"></div>
+    </div>
+    <div class="card">
+      <h2>Aktivitet — seneste 14 dage</h2>
+      <div class="tidslinje" id="tidslinje"></div>
+    </div>
+  </div>
+
+  <section>
+    <div class="tabel-header">
+      <h2>Shops</h2>
+      <div style="display:flex;gap:.5rem">
+        <select id="shopFilter" onchange="renderShops()">
+          <option value="">Alle</option>
+          <option value="gratis">Gratis</option>
+          <option value="pro">Pro</option>
+          <option value="business">Business</option>
+          <option value="churned">Churned</option>
+          <option value="inaktiv">Inaktive</option>
+        </select>
+        <input type="text" id="shopSøg" placeholder="Søg email eller URL..." oninput="renderShops()" />
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>URL</th>
+          <th>Branche</th>
+          <th>Plan</th>
+          <th>Status</th>
+          <th>Oprettet</th>
+          <th>Sidst aktiv</th>
+          <th>Handlinger</th>
+        </tr>
+      </thead>
+      <tbody id="shopsBody"></tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2 style="font-size:.75rem;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem">Seneste events (anonymiserede)</h2>
+    <div class="events-list" id="eventsList"></div>
+  </section>
+</div>
+
+<script>
+  const API = 'http://localhost:3001';
+  let adminToken = localStorage.getItem('adminToken');
+  let alleShopsData = [];
+  let refreshInterval, countdownInterval, sekunderTilRefresh = 30;
+
+  if (adminToken) visApp();
+
+  async function login() {
+    const user = document.getElementById('adminUser').value;
+    const pass = document.getElementById('adminPass').value;
+    const res = await fetch(`${API}/admin/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user, pass })
+    });
+    if (!res.ok) { document.getElementById('loginErr').textContent = 'Forkert login'; return; }
+    const { token } = await res.json();
+    adminToken = token;
+    localStorage.setItem('adminToken', token);
+    visApp();
+  }
+
+  function logout() {
+    localStorage.removeItem('adminToken');
+    clearInterval(refreshInterval);
+    clearInterval(countdownInterval);
+    location.reload();
+  }
+
+  function adminHeaders() {
+    return { 'x-admin-token': adminToken };
+  }
+
+  async function visApp() {
+    document.getElementById('loginWrap').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    await opdater();
+    startAutoRefresh();
+  }
+
+  async function opdater() {
+    await Promise.all([hentStats(), hentShops()]);
+  }
+
+  function startAutoRefresh() {
+    sekunderTilRefresh = 30;
+    clearInterval(refreshInterval);
+    clearInterval(countdownInterval);
+
+    refreshInterval = setInterval(async () => {
+      await opdater();
+      sekunderTilRefresh = 30;
+    }, 30000);
+
+    countdownInterval = setInterval(() => {
+      sekunderTilRefresh--;
+      document.getElementById('refreshTimer').textContent = `Opdaterer om ${sekunderTilRefresh}s`;
+    }, 1000);
+  }
+
+  async function hentStats() {
+    const res = await fetch(`${API}/admin/stats`, { headers: adminHeaders() });
+    if (!res.ok) { logout(); return; }
+    const s = await res.json();
+
+    // Stats-kort
+    const kort = [
+      { label: 'Unikke shops', value: s.unikeShops, cls: 'highlight' },
+      { label: 'MRR', value: s.mrr.toLocaleString('da-DK') + ' kr', cls: 'highlight' },
+      { label: 'Churned shops', value: s.churnedAntal, cls: s.churnedAntal > 0 ? 'danger' : '' },
+      { label: 'Dashboard-kald', value: s.dashboardKald },
+      { label: 'Mails sendt', value: s.mailsSendt },
+      { label: 'Triggers kørt', value: s.triggersKoert },
+      { label: 'Gns. churn-rate', value: s.gennemsnit.churnRate != null ? (s.gennemsnit.churnRate * 100).toFixed(1) + '%' : '—', cls: 'warn' },
+      { label: 'Gns. omsætning', value: s.gennemsnit.omsaetning != null ? Math.round(s.gennemsnit.omsaetning).toLocaleString('da-DK') + ' kr' : '—' },
+    ];
+    document.getElementById('statsGrid').innerHTML = kort.map(k => `
+      <div class="stat-card ${k.cls || ''}">
+        <div class="label">${k.label}</div>
+        <div class="value">${k.value}</div>
+      </div>
+    `).join('');
+
+    // Plan-fordeling
+    const total = Object.values(s.planFordeling).reduce((a, b) => a + b, 0) || 1;
+    document.getElementById('planFordeling').innerHTML = ['gratis', 'pro', 'business'].map(p => `
+      <div class="plan-row">
+        <span class="navn">${p.charAt(0).toUpperCase() + p.slice(1)}</span>
+        <div class="bar-wrap">
+          <div class="bar bar-${p}" style="width:${Math.round(s.planFordeling[p] / total * 100)}%"></div>
+        </div>
+        <span class="tal">${s.planFordeling[p]}</span>
+      </div>
+    `).join('');
+
+    // Tidslinje
+    const dage = Object.entries(s.tidslinje);
+    const max = Math.max(...dage.map(([,v]) => v), 1);
+    document.getElementById('tidslinje').innerHTML = dage.map(([dato, antal]) => `
+      <div class="tidslinje-bar"
+        style="height:${Math.max(4, Math.round(antal / max * 76))}px"
+        data-tip="${dato}: ${antal} events"></div>
+    `).join('');
+
+    // Events
+    document.getElementById('eventsList').innerHTML = s.seneste.length
+      ? s.seneste.map(e => `
+          <div class="event-row">
+            <span class="ts">${new Date(e.ts).toLocaleString('da-DK')}</span>
+            <span class="type">${e.type}</span>
+            <span class="shopId">${e.shopId}</span>
+            <span>${JSON.stringify(e.data)}</span>
+          </div>
+        `).join('')
+      : '<div class="tom">Ingen events endnu</div>';
+  }
+
+  async function hentShops() {
+    const res = await fetch(`${API}/admin/shops`, { headers: adminHeaders() });
+    alleShopsData = await res.json();
+    renderShops();
+  }
+
+  function renderShops() {
+    const søg = document.getElementById('shopSøg').value.toLowerCase();
+    const filter = document.getElementById('shopFilter').value;
+
+    let shops = alleShopsData.filter(s => {
+      if (søg && !s.email.toLowerCase().includes(søg) && !(s.wooUrl || '').toLowerCase().includes(søg)) return false;
+      if (filter === 'churned') return s.churned;
+      if (filter === 'inaktiv') return !s.aktiv;
+      if (filter && ['gratis','pro','business'].includes(filter)) return s.plan === filter;
+      return true;
+    });
+
+    document.getElementById('shopsBody').innerHTML = shops.length ? shops.map(s => `
+      <tr>
+        <td>${s.email}</td>
+        <td style="color:#475569;font-size:.8rem">${s.wooUrl || '—'}</td>
+        <td>
+          <input class="branche-input" value="${s.branche || ''}" placeholder="branche"
+            onblur="opdaterBranche('${s.email}', this.value)" />
+        </td>
+        <td>
+          <select onchange="opdaterPlan('${s.email}', this.value)">
+            <option ${s.plan==='gratis'?'selected':''}>gratis</option>
+            <option ${s.plan==='pro'?'selected':''}>pro</option>
+            <option ${s.plan==='business'?'selected':''}>business</option>
+          </select>
+        </td>
+        <td>
+          ${s.churned
+            ? '<span class="badge badge-churned">Churned</span>'
+            : s.aktiv
+              ? '<span class="badge badge-aktiv">Aktiv</span>'
+              : '<span class="badge badge-inaktiv">Inaktiv</span>'
+          }
+        </td>
+        <td style="color:#64748b;font-size:.8rem">${s.oprettet ? new Date(s.oprettet).toLocaleDateString('da-DK') : '—'}</td>
+        <td style="color:#64748b;font-size:.8rem">${s.sidstAktiv ? new Date(s.sidstAktiv).toLocaleDateString('da-DK') : '—'}</td>
+        <td>
+          <button class="btn-sm" onclick="toggleAktiv('${s.email}', ${s.aktiv})">
+            ${s.aktiv ? 'Deaktiver' : 'Aktiver'}
+          </button>
+        </td>
+      </tr>
+    `).join('') : `<tr><td colspan="8" class="tom">Ingen shops matcher</td></tr>`;
+  }
+
+  async function opdaterPlan(email, plan) {
+    await fetch(`${API}/admin/shops/${encodeURIComponent(email)}`, {
+      method: 'PATCH',
+      headers: { ...adminHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan })
+    });
+  }
+
+  async function opdaterBranche(email, branche) {
+    await fetch(`${API}/admin/shops/${encodeURIComponent(email)}`, {
+      method: 'PATCH',
+      headers: { ...adminHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ branche })
+    });
+  }
+
+  async function toggleAktiv(email, nuvaerende) {
+    await fetch(`${API}/admin/shops/${encodeURIComponent(email)}`, {
+      method: 'PATCH',
+      headers: { ...adminHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ aktiv: !nuvaerende })
+    });
+    await hentShops();
+  }
+</script>
+</body>
+</html>
