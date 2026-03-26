@@ -45,6 +45,15 @@ registerAdminRoutes(app);
 // Auth endpoints
 app.post('/api/register', loginLimiter, async (req, res) => {
   try {
+    const { wooUrl, wooKey, wooSecret } = req.body;
+    if (wooUrl && wooKey && wooSecret) {
+      try {
+        const client = createWooClient(wooUrl, wooKey, wooSecret);
+        await client.get('/orders', { params: { per_page: 1 } });
+      } catch {
+        return res.status(400).json({ error: 'Kunne ikke forbinde til WooCommerce — tjek URL og API-nøgler.' });
+      }
+    }
     const token = await registerShop(req.body);
     res.json({ token });
   } catch (err) {

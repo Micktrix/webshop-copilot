@@ -162,7 +162,7 @@
       <input type="text" id="opret-secret" placeholder="cs_...">
     </div>
 
-    <button class="knap" onclick="opretKonto()">Opret konto og forbind butik</button>
+    <button class="knap" id="opret-knap" onclick="opretKonto()">Opret konto og forbind butik</button>
     <div class="fejl" id="opret-fejl"></div>
   </div>
 </div>
@@ -204,6 +204,12 @@
   }
 
   async function opretKonto() {
+    const knap = document.getElementById('opret-knap');
+    const fejl = document.getElementById('opret-fejl');
+    fejl.style.display = 'none';
+    knap.disabled = true;
+    knap.textContent = 'Forbinder til WooCommerce...';
+
     const body = {
       email: document.getElementById('opret-email').value,
       password: document.getElementById('opret-password').value,
@@ -220,9 +226,10 @@
 
     const data = await res.json();
     if (!res.ok) {
-      const el = document.getElementById('opret-fejl');
-      el.textContent = data.error;
-      el.style.display = 'block';
+      fejl.textContent = data.error;
+      fejl.style.display = 'block';
+      knap.disabled = false;
+      knap.textContent = 'Opret konto og forbind butik';
       return;
     }
 
