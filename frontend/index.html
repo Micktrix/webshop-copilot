@@ -10,28 +10,118 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #f4f6f9;
+      background: #f8fafc;
       color: #1a1a2e;
+      display: flex;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 230px;
+      min-height: 100vh;
+      background: #0f172a;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 50;
     }
 
     header {
-      background: #1a1a2e;
+      background: transparent;
       color: white;
-      padding: 18px 32px;
+      padding: 22px 20px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
       display: flex;
-      align-items: center;
+      flex-direction: column;
       gap: 12px;
     }
-    header h1 { font-size: 1.3rem; font-weight: 600; }
-    header span { font-size: 0.85rem; opacity: 0.6; }
+    .sidebar-brand { display: flex; align-items: center; gap: 10px; }
+    .sidebar-brand .brand-ikon {
+      width: 32px; height: 32px; background: #6366f1;
+      border-radius: 8px; display: flex; align-items: center;
+      justify-content: center; font-size: 1rem; flex-shrink: 0;
+    }
+    header h1 { font-size: 1rem; font-weight: 700; color: white; line-height: 1.2; }
+    header > span, .sidebar-shopnavn { font-size: 0.75rem; opacity: 0.45; color: white; }
+    header > button {
+      width: 100% !important; margin: 0 !important;
+      background: rgba(255,255,255,0.07) !important;
+      border: 1px solid rgba(255,255,255,0.1) !important;
+      color: rgba(255,255,255,0.7) !important;
+      padding: 7px 12px !important; border-radius: 8px !important;
+      font-size: 0.82rem !important; cursor: pointer; text-align: left !important;
+      transition: background 0.15s;
+    }
+    header > button:hover { background: rgba(255,255,255,0.12) !important; }
 
-    .container { max-width: 1100px; margin: 32px auto; padding: 0 24px; }
+    .sidebar-nav {
+      flex: 1;
+      padding: 12px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow-y: auto;
+    }
+    .nav-section-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.25);
+      padding: 12px 10px 4px;
+      font-weight: 600;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: all 0.15s;
+      cursor: pointer;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.07); color: white; }
+    .nav-item.aktiv { background: rgba(99,102,241,0.2); color: #a5b4fc; }
+    .nav-item .nav-ikon { font-size: 1rem; width: 20px; text-align: center; opacity: 0.8; }
+
+    /* ── MAIN ── */
+    .main {
+      margin-left: 230px;
+      flex: 1;
+      min-height: 100vh;
+      padding: 32px 32px 64px;
+      max-width: calc(100vw - 230px);
+    }
+
+    .container { width: 100%; }
+
+    .sektion { margin-bottom: 40px; scroll-margin-top: 24px; }
+    .sektion-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .sektion-header h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .sektion-divider {
+      flex: 1;
+      height: 1px;
+      background: #e2e8f0;
+    }
 
     .noeglettal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
 
-    .kort { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
-    .kort .label { font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
-    .kort .vaerdi { font-size: 2rem; font-weight: 700; margin-top: 6px; color: #1a1a2e; }
+    .kort { background: white; border-radius: 14px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; }
+    .kort .label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+    .kort .vaerdi { font-size: 2rem; font-weight: 700; margin-top: 8px; color: #0f172a; }
     .kort .vaerdi span { font-size: 1rem; font-weight: 400; color: #888; }
     .graf-tabs { display: flex; gap: 4px; margin-bottom: 16px; }
     .graf-tab { padding: 6px 14px; border: 1px solid #e0e0e0; border-radius: 8px; background: white; cursor: pointer; font-size: 0.82rem; color: #888; font-weight: 500; transition: all 0.15s; }
@@ -45,12 +135,12 @@
 
     .midterrad { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
 
-    .graf-kort { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+    .graf-kort { background: white; border-radius: 14px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; }
     .graf-kort h2 { font-size: 0.95rem; font-weight: 600; margin-bottom: 16px; }
 
     .ai-kort {
-      background: #1a1a2e; color: white; border-radius: 12px; padding: 24px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.07); display: flex; flex-direction: column; gap: 12px;
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; border-radius: 14px; padding: 24px;
+      box-shadow: 0 4px 16px rgba(99,102,241,0.2); display: flex; flex-direction: column; gap: 12px;
     }
     .ai-kort .ai-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; }
     .ai-kort .ai-tekst { font-size: 0.95rem; line-height: 1.6; opacity: 0.9; }
@@ -58,7 +148,7 @@
 
     .bundrad { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
 
-    .kunde-kort { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+    .kunde-kort { background: white; border-radius: 14px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; }
 
     .kunde-liste h2 { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
 
@@ -83,7 +173,7 @@
     .send-knap:disabled { background: #ccc; cursor: not-allowed; }
 
     /* Kundeklub */
-    .klub-kort { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); margin-bottom: 24px; }
+    .klub-kort { background: white; border-radius: 14px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; margin-bottom: 24px; }
     .klub-kort h2 { font-size: 0.95rem; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
     .klub-segmenter { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
     .segment-knap { padding: 8px 16px; border: 2px solid #e0e0e0; border-radius: 8px; background: white; cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; }
@@ -109,6 +199,7 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     .succes-boks { background: #dcfce7; color: #16a34a; border-radius: 8px; padding: 12px 16px; font-size: 0.88rem; margin-top: 12px; }
 
+    html { scroll-behavior: smooth; }
     #loading { text-align: center; padding: 80px; color: #888; font-size: 1rem; }
 
     .kampagne-raekke { display: grid; grid-template-columns: 1fr auto auto auto; gap: 16px; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem; }
@@ -148,7 +239,7 @@
     .prognose-pil.neutral { background: #f4f6f9; color: #888; }
 
     /* Markedsføring */
-    .markeds-kort { background: white; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); margin-bottom: 24px; overflow: hidden; }
+    .markeds-kort { background: white; border-radius: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; margin-bottom: 24px; overflow: hidden; }
     .markeds-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; cursor: pointer; user-select: none; }
     .markeds-header:hover { background: #fafafa; }
     .markeds-header h2 { font-size: 0.95rem; font-weight: 600; margin: 0; }
@@ -238,12 +329,45 @@
 </head>
 <body>
 
-<header>
-  <div>
-    <h1>Webshop Co-pilot</h1>
-    <span>wepshop-test.local</span>
-  </div>
-</header>
+<aside class="sidebar">
+  <header>
+    <div class="sidebar-brand">
+      <div class="brand-ikon">◈</div>
+      <div>
+        <h1>Co-pilot</h1>
+      </div>
+    </div>
+    <span class="sidebar-shopnavn">wepshop-test.local</span>
+  </header>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Oversigt</div>
+    <a class="nav-item aktiv" href="#oversigt" onclick="setAktiv(this)">
+      <span class="nav-ikon">📊</span> Dashboard
+    </a>
+    <a class="nav-item" href="#kunder" onclick="setAktiv(this)">
+      <span class="nav-ikon">👥</span> Kunder
+    </a>
+    <div class="nav-section-label">Analyse</div>
+    <a class="nav-item" href="#segmentering" onclick="setAktiv(this)">
+      <span class="nav-ikon">🎯</span> Segmentering
+    </a>
+    <a class="nav-item" href="#produkter" onclick="setAktiv(this)">
+      <span class="nav-ikon">📦</span> Produkter
+    </a>
+    <a class="nav-item" href="#oekonomi" onclick="setAktiv(this)">
+      <span class="nav-ikon">💰</span> Økonomi
+    </a>
+    <div class="nav-section-label">Vækst</div>
+    <a class="nav-item" href="#marketing" onclick="setAktiv(this)">
+      <span class="nav-ikon">📣</span> Marketing
+    </a>
+    <a class="nav-item" href="#automatisering" onclick="setAktiv(this)">
+      <span class="nav-ikon">⚡</span> Automatisering
+    </a>
+  </nav>
+</aside>
+
+<div class="main">
 
 <!-- Mail modal -->
 <div class="modal-overlay" id="modal" style="display:none">
@@ -363,6 +487,12 @@
   <div id="loading">Henter data...</div>
   <div id="dashboard" style="display:none">
 
+    <section id="oversigt" class="sektion">
+      <div class="sektion-header">
+        <h2>📊 Dashboard</h2>
+        <div class="sektion-divider"></div>
+      </div>
+
     <div class="noeglettal">
       <div class="kort">
         <div class="label">Omsætning — 30 dage</div>
@@ -419,7 +549,13 @@
         <div class="ai-tekst" id="ai-tip">Henter anbefaling...</div>
       </div>
     </div>
+    </section>
 
+    <section id="kunder" class="sektion">
+      <div class="sektion-header">
+        <h2>👥 Kunder</h2>
+        <div class="sektion-divider"></div>
+      </div>
     <div class="bundrad">
       <div class="kunde-kort">
         <div class="kunde-liste">
@@ -436,96 +572,20 @@
         </div>
       </div>
     </div>
+    </section>
 
-    <!-- Kampagner -->
-    <div class="klub-kort" id="kampagne-sektion" style="display:none">
-      <h2>Kampagner</h2>
-      <div id="kampagne-liste"></div>
-    </div>
-
-    <!-- Markedsføring -->
-    <div class="markeds-kort">
-      <div class="markeds-header" onclick="toggleMarkedsforing(this)">
-        <div>
-          <h2>✦ Lav content med AI <span class="badge groen">Pro</span></h2>
-          <div class="markeds-undertekst">Søger nettet for muligheder baseret på din shop — genererer indhold til alle kanaler</div>
-        </div>
-        <span class="markeds-pil">▼</span>
+    <section id="segmentering" class="sektion">
+      <div class="sektion-header">
+        <h2>🎯 Segmentering</h2>
+        <div class="sektion-divider"></div>
       </div>
-      <div class="markeds-body" id="markeds-body">
-        <div id="markeds-indhold">
-          <div class="markeds-loading"><span class="spinner" style="border-color:rgba(0,0,0,0.15);border-top-color:#6366f1"></span> Søger efter muligheder...</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Top produkter + LTV -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
-      <div class="klub-kort">
-        <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:16px">Top produkter</h2>
-        <div id="top-produkter"><div class="tom">Ingen data.</div></div>
-      </div>
-      <div class="klub-kort">
-        <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:16px">Bedste kunder — total omsætning</h2>
-        <div id="ltv-liste"><div class="tom">Ingen data.</div></div>
-      </div>
-    </div>
 
     <!-- RFM Segmentering -->
-    <div class="klub-kort" style="margin-bottom:24px">
+    <div class="klub-kort" style="margin-bottom:16px">
       <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:4px">Kundesegmentering <span class="badge groen">RFM</span></h2>
       <p style="font-size:0.82rem;color:#888;margin-bottom:16px">Baseret på hvornår, hvor tit og hvor meget dine kunder køber</p>
       <div class="rfm-grid" id="rfm-segmenter"></div>
       <div class="rfm-detaljer" id="rfm-detaljer"></div>
-    </div>
-
-    <!-- Cross-sell -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
-      <div class="klub-kort">
-        <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:4px">Cross-sell muligheder</h2>
-        <p style="font-size:0.82rem;color:#888;margin-bottom:16px">Produkter der ofte købes sammen</p>
-        <div id="crosssell-liste"><div class="tom">Ikke nok data endnu.</div></div>
-      </div>
-      <div class="klub-kort">
-        <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:4px">Sæsonsammenligning</h2>
-        <p style="font-size:0.82rem;color:#888;margin-bottom:16px">Denne måned vs. samme måned sidste år</p>
-        <div id="saeson-indhold"></div>
-      </div>
-    </div>
-
-    <!-- Margin kalkulator -->
-    <div class="klub-kort" style="margin-bottom:24px">
-      <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:4px">Marginkalkulator</h2>
-      <p style="font-size:0.82rem;color:#888;margin-bottom:16px">Indtast kostpris per produkt og se din reelle fortjeneste</p>
-      <div style="display:grid;grid-template-columns:1fr 100px 80px 80px 80px;gap:12px;padding-bottom:8px;border-bottom:2px solid #f0f0f0;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#888">
-        <span>Produkt</span><span>Kostpris (kr)</span><span>Salgspris</span><span>Margin %</span><span>Profit</span>
-      </div>
-      <div id="margin-liste"></div>
-      <button class="send-knap" onclick="gemMarginer()" style="width:auto;padding:9px 20px;margin-top:12px">Gem kostpriser</button>
-    </div>
-
-    <!-- Konkurrentovervågning -->
-    <div class="markeds-kort" style="margin-bottom:24px">
-      <div class="markeds-header" onclick="toggleKonkurrenter(this)">
-        <div>
-          <h2>🔍 Konkurrentovervågning <span class="badge groen">Pro</span></h2>
-          <div class="markeds-undertekst">Søger nettet for konkurrenternes priser på dine top-produkter</div>
-        </div>
-        <span class="markeds-pil">▼</span>
-      </div>
-      <div class="markeds-body" id="konkurrent-body">
-        <div id="konkurrent-indhold">
-          <div class="markeds-loading"><span class="spinner" style="border-color:rgba(0,0,0,0.15);border-top-color:#6366f1"></span> Søger efter priser...</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Forladte kurve -->
-    <div class="klub-kort" id="forladte-sektion" style="margin-bottom:24px;display:none">
-      <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:4px">Forladte kurve 🛒</h2>
-      <p style="font-size:0.82rem;color:#888;margin-bottom:16px">Kunder der startede checkout men ikke gennemførte — for over 1 time siden.</p>
-      <div id="forladte-liste"></div>
-      <button class="send-knap" onclick="sendForladte()" style="margin-top:16px;width:auto;padding:10px 24px">✉ Send påmindelses-mail til alle</button>
     </div>
 
     <!-- Kundeklub -->
@@ -587,8 +647,121 @@
         Vælg et segment og lad AI skrive en personlig mail til dine kunder. Du kan tilføje en rabatkode der oprettes automatisk i WooCommerce — og bagefter se præcis hvor mange der brugte den og hvad det gav i omsætning.
       </div>
     </div>
+    </section>
+
+    <section id="produkter" class="sektion">
+      <div class="sektion-header">
+        <h2>📦 Produkter</h2>
+        <div class="sektion-divider"></div>
+      </div>
+
+    <!-- Top produkter + LTV -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+      <div class="klub-kort">
+        <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:16px">Top produkter</h2>
+        <div id="top-produkter"><div class="tom">Ingen data.</div></div>
+      </div>
+      <div class="klub-kort">
+        <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:16px">Bedste kunder — total omsætning</h2>
+        <div id="ltv-liste"><div class="tom">Ingen data.</div></div>
+      </div>
+    </div>
+
+    <!-- Cross-sell + Sæson -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="klub-kort">
+        <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:4px">Cross-sell muligheder</h2>
+        <p style="font-size:0.82rem;color:#888;margin-bottom:16px">Produkter der ofte købes sammen</p>
+        <div id="crosssell-liste"><div class="tom">Ikke nok data endnu.</div></div>
+      </div>
+      <div class="klub-kort">
+        <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:4px">Sæsonsammenligning</h2>
+        <p style="font-size:0.82rem;color:#888;margin-bottom:16px">Denne måned vs. samme måned sidste år</p>
+        <div id="saeson-indhold"></div>
+      </div>
+    </div>
+    </section>
+
+    <section id="oekonomi" class="sektion">
+      <div class="sektion-header">
+        <h2>💰 Økonomi</h2>
+        <div class="sektion-divider"></div>
+      </div>
+
+    <!-- Margin kalkulator -->
+    <div class="klub-kort">
+      <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:4px">Marginkalkulator</h2>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:16px">Indtast kostpris per produkt og se din reelle fortjeneste</p>
+      <div style="display:grid;grid-template-columns:1fr 100px 80px 80px 80px;gap:12px;padding-bottom:8px;border-bottom:2px solid #f0f0f0;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#888">
+        <span>Produkt</span><span>Kostpris (kr)</span><span>Salgspris</span><span>Margin %</span><span>Profit</span>
+      </div>
+      <div id="margin-liste"></div>
+      <button class="send-knap" onclick="gemMarginer()" style="width:auto;padding:9px 20px;margin-top:12px">Gem kostpriser</button>
+    </div>
+    </section>
+
+    <section id="marketing" class="sektion">
+      <div class="sektion-header">
+        <h2>📣 Marketing</h2>
+        <div class="sektion-divider"></div>
+      </div>
+
+    <!-- Markedsføring -->
+    <div class="markeds-kort" style="margin-bottom:16px">
+      <div class="markeds-header" onclick="toggleMarkedsforing(this)">
+        <div>
+          <h2>✦ Lav content med AI <span class="badge groen">Pro</span></h2>
+          <div class="markeds-undertekst">Søger nettet for muligheder baseret på din shop — genererer indhold til alle kanaler</div>
+        </div>
+        <span class="markeds-pil">▼</span>
+      </div>
+      <div class="markeds-body" id="markeds-body">
+        <div id="markeds-indhold">
+          <div class="markeds-loading"><span class="spinner" style="border-color:rgba(0,0,0,0.15);border-top-color:#6366f1"></span> Søger efter muligheder...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Konkurrentovervågning -->
+    <div class="markeds-kort" style="margin-bottom:16px">
+      <div class="markeds-header" onclick="toggleKonkurrenter(this)">
+        <div>
+          <h2>🔍 Konkurrentovervågning <span class="badge groen">Pro</span></h2>
+          <div class="markeds-undertekst">Søger nettet for konkurrenternes priser på dine top-produkter</div>
+        </div>
+        <span class="markeds-pil">▼</span>
+      </div>
+      <div class="markeds-body" id="konkurrent-body">
+        <div id="konkurrent-indhold">
+          <div class="markeds-loading"><span class="spinner" style="border-color:rgba(0,0,0,0.15);border-top-color:#6366f1"></span> Søger efter priser...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Forladte kurve -->
+    <div class="klub-kort" id="forladte-sektion" style="display:none">
+      <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:4px">Forladte kurve 🛒</h2>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:16px">Kunder der startede checkout men ikke gennemførte — for over 1 time siden.</p>
+      <div id="forladte-liste"></div>
+      <button class="send-knap" onclick="sendForladte()" style="margin-top:16px;width:auto;padding:10px 24px">✉ Send påmindelses-mail til alle</button>
+    </div>
+    </section>
+
+    <section id="automatisering" class="sektion">
+      <div class="sektion-header">
+        <h2>⚡ Automatisering</h2>
+        <div class="sektion-divider"></div>
+      </div>
+
+    <!-- Kampagner -->
+    <div class="klub-kort" id="kampagne-sektion" style="display:none;margin-bottom:16px">
+      <h2>📬 Kampagner</h2>
+      <div id="kampagne-liste"></div>
+    </div>
+    </section>
 
   </div>
+</div>
 </div>
 
 <script>
@@ -1270,6 +1443,25 @@
       document.getElementById('markeds-indhold').innerHTML = '<div class="tom">Kunne ikke hente forslag.</div>';
     }
   }
+
+  // Sidebar navigation
+  function setAktiv(el) {
+    document.querySelectorAll('.nav-item').forEach(a => a.classList.remove('aktiv'));
+    el.classList.add('aktiv');
+  }
+
+  // Highlight active section on scroll
+  const sektioner = document.querySelectorAll('section[id]');
+  const navItems = document.querySelectorAll('.nav-item');
+  window.addEventListener('scroll', () => {
+    let aktiv = '';
+    sektioner.forEach(s => {
+      if (s.getBoundingClientRect().top <= 80) aktiv = s.id;
+    });
+    navItems.forEach(a => {
+      a.classList.toggle('aktiv', a.getAttribute('href') === '#' + aktiv);
+    });
+  }, { passive: true });
 
   hentData();
   hentKampagner();
