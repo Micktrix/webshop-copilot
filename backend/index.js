@@ -219,9 +219,14 @@ app.post('/api/marginer', requireAuth, async (req, res) => {
 // Konkurrentovervågning
 app.get('/api/konkurrenter', requireAuth, async (req, res) => {
   try {
-    const { wooUrl, wooKey, wooSecret } = req.shop;
-    const client = createWooClient(wooUrl, wooKey, wooSecret);
-    const orders = await getOrders(client);
+    let orders;
+    if (req.shop.demo) {
+      orders = demoOrders;
+    } else {
+      const { wooUrl, wooKey, wooSecret } = req.shop;
+      const client = createWooClient(wooUrl, wooKey, wooSecret);
+      orders = await getOrders(client);
+    }
     const topProdukter = beregnTopProdukter(orders);
     const data = await overvaagsKonkurrenter(topProdukter);
     res.json(data);
@@ -231,17 +236,24 @@ app.get('/api/konkurrenter', requireAuth, async (req, res) => {
 // Markedsføring — AI + web-søgning
 app.get('/api/markedsforing', requireAuth, async (req, res) => {
   try {
-    const { wooUrl, wooKey, wooSecret } = req.shop;
-    const client = createWooClient(wooUrl, wooKey, wooSecret);
-
-    const [orders, kategorier, shopHtml] = await Promise.all([
-      getOrders(client),
-      getKategorier(client),
-      getShopBeskrivelse(wooUrl)
-    ]);
-
+    let orders, kategorier, shopHtml, shopUrl;
+    if (req.shop.demo) {
+      orders = demoOrders;
+      kategorier = ['Kaffe', 'Kaffemaskiner', 'Tilbehør'];
+      shopHtml = '';
+      shopUrl = 'demo-shop.dk';
+    } else {
+      const { wooUrl, wooKey, wooSecret } = req.shop;
+      shopUrl = wooUrl;
+      const client = createWooClient(wooUrl, wooKey, wooSecret);
+      [orders, kategorier, shopHtml] = await Promise.all([
+        getOrders(client),
+        getKategorier(client),
+        getShopBeskrivelse(wooUrl)
+      ]);
+    }
     const topProdukter = beregnTopProdukter(orders);
-    const data = await genererMarkedsforing({ topProdukter, kategorier, shopUrl: wooUrl, shopHtml });
+    const data = await genererMarkedsforing({ topProdukter, kategorier, shopUrl, shopHtml });
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -252,16 +264,22 @@ app.get('/api/markedsforing', requireAuth, async (req, res) => {
 app.post('/api/content-pakke', requireAuth, async (req, res) => {
   try {
     const { titel, beskrivelse, shopProfil } = req.body;
-    const { wooUrl, wooKey, wooSecret } = req.shop;
-    const client = createWooClient(wooUrl, wooKey, wooSecret);
-
-    const [orders, kategorier] = await Promise.all([
-      getOrders(client),
-      getKategorier(client)
-    ]);
+    let orders, kategorier, shopUrl;
+    if (req.shop.demo) {
+      orders = demoOrders;
+      kategorier = ['Kaffe', 'Kaffemaskiner', 'Tilbehør'];
+      shopUrl = 'demo-shop.dk';
+    } else {
+      const { wooUrl, wooKey, wooSecret } = req.shop;
+      shopUrl = wooUrl;
+      const client = createWooClient(wooUrl, wooKey, wooSecret);
+      [orders, kategorier] = await Promise.all([
+        getOrders(client),
+        getKategorier(client)
+      ]);
+    }
     const topProdukter = beregnTopProdukter(orders);
-
-    const pakke = await genererContentPakke({ titel, beskrivelse, shopProfil, topProdukter, kategorier, shopUrl: wooUrl });
+    const pakke = await genererContentPakke({ titel, beskrivelse, shopProfil, topProdukter, kategorier, shopUrl });
     res.json(pakke);
   } catch (err) {
     res.status(500).json({ error: err.message });
