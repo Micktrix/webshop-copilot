@@ -373,6 +373,14 @@
       <span class="nav-ikon">🔍</span> Konkurrenter
       <span class="nav-pro-badge">Pro</span>
     </a>
+    <a class="nav-item" href="#pro" onclick="setAktiv(this)">
+      <span class="nav-ikon">🛒</span> Forladte kurve
+      <span class="nav-pro-badge">Pro</span>
+    </a>
+    <a class="nav-item" href="#pro" onclick="setAktiv(this)">
+      <span class="nav-ikon">📣</span> Markedsføring
+      <span class="nav-pro-badge">Pro</span>
+    </a>
     <div class="nav-section-label">Analyse</div>
     <a class="nav-item" href="#segmentering" onclick="setAktiv(this)">
       <span class="nav-ikon">🎯</span> Segmentering
@@ -680,7 +688,7 @@
     </div>
 
     <!-- Konkurrentovervågning -->
-    <div class="markeds-kort">
+    <div class="markeds-kort" style="margin-bottom:16px">
       <div class="markeds-header" onclick="toggleKonkurrenter(this)">
         <div>
           <h2>🔍 Konkurrentovervågning <span class="badge groen">Pro</span></h2>
@@ -693,6 +701,14 @@
           <div class="markeds-loading"><span class="spinner" style="border-color:rgba(0,0,0,0.15);border-top-color:#6366f1"></span> Søger efter priser...</div>
         </div>
       </div>
+    </div>
+
+    <!-- Forladte kurve -->
+    <div class="klub-kort" id="forladte-sektion" style="display:none">
+      <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:4px">Forladte kurve 🛒 <span class="badge groen">Pro</span></h2>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:16px">Kunder der startede checkout men ikke gennemførte — for over 1 time siden.</p>
+      <div id="forladte-liste"></div>
+      <button class="send-knap" onclick="sendForladte()" style="margin-top:16px;width:auto;padding:10px 24px">✉ Send påmindelses-mail til alle</button>
     </div>
     </section>
 
@@ -773,13 +789,6 @@
       <div id="kampagne-liste"></div>
     </div>
 
-    <!-- Forladte kurve -->
-    <div class="klub-kort" id="forladte-sektion" style="display:none;margin-top:16px">
-      <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:4px">Forladte kurve 🛒</h2>
-      <p style="font-size:0.82rem;color:#888;margin-bottom:16px">Kunder der startede checkout men ikke gennemførte — for over 1 time siden.</p>
-      <div id="forladte-liste"></div>
-      <button class="send-knap" onclick="sendForladte()" style="margin-top:16px;width:auto;padding:10px 24px">✉ Send påmindelses-mail til alle</button>
-    </div>
     </section>
 
   </div>
