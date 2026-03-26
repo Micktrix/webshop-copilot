@@ -333,6 +333,17 @@ app.post('/api/trigger', requireAuth, (req, res) => {
   res.json({ ok: true });
 });
 
+// Generer AI-udkast til trigger-mail
+app.post('/api/trigger/udkast', requireAuth, async (req, res) => {
+  try {
+    const { type } = req.body;
+    const dummyKunder = [{ navn: 'Eksempel Kunde', email: 'kunde@example.dk' }];
+    const shopUrl = req.shop.demo ? 'din-butik.dk' : req.shop.wooUrl;
+    const mail = await genererMail(type, dummyKunder, shopUrl, null);
+    res.json({ emne: mail.emne, tekst: mail.tekst });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 // Send ugerapport manuelt (test)
 app.post('/api/rapport/send', requireAuth, async (req, res) => {
   try {
@@ -392,6 +403,10 @@ app.use(express.static(FRONTEND));
 
 async function koerMigrationer() {
   await pool.query(`ALTER TABLE shops ADD COLUMN IF NOT EXISTS platform TEXT NOT NULL DEFAULT 'woocommerce'`);
+  await pool.query(`ALTER TABLE triggers ADD COLUMN IF NOT EXISTS genaktiver_emne TEXT`);
+  await pool.query(`ALTER TABLE triggers ADD COLUMN IF NOT EXISTS genaktiver_tekst TEXT`);
+  await pool.query(`ALTER TABLE triggers ADD COLUMN IF NOT EXISTS review_emne TEXT`);
+  await pool.query(`ALTER TABLE triggers ADD COLUMN IF NOT EXISTS review_tekst TEXT`);
 }
 
 const PORT = process.env.PORT || 3001;

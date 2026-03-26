@@ -251,6 +251,44 @@
     .prognose-pil.ned { background: #fee2e2; color: #dc2626; }
     .prognose-pil.neutral { background: #f4f6f9; color: #888; }
 
+    /* Mailskabelon editor */
+    .mail-skabelon-wrap { margin-top: 12px; }
+    .mail-skabelon-toggle {
+      background: none; border: 1px dashed #d1d5db; border-radius: 7px;
+      padding: 7px 14px; font-size: 0.82rem; color: #6366f1; cursor: pointer;
+      width: 100%; text-align: left; transition: background 0.15s;
+    }
+    .mail-skabelon-toggle:hover { background: #f5f3ff; }
+    .mail-skabelon { display: none; margin-top: 10px; padding: 16px; background: #fafafa; border-radius: 10px; border: 1px solid #e5e7eb; }
+    .mail-skabelon.aaben { display: block; }
+    .mail-felt { margin-bottom: 10px; }
+    .mail-felt label { display: block; font-size: 0.78rem; font-weight: 600; color: #555; margin-bottom: 4px; }
+    .mail-felt input, .mail-felt textarea {
+      width: 100%; padding: 8px 12px; border: 1px solid #e0e0e0; border-radius: 7px;
+      font-size: 0.85rem; font-family: inherit; outline: none; resize: vertical;
+      transition: border 0.15s;
+    }
+    .mail-felt input:focus, .mail-felt textarea:focus { border-color: #6366f1; }
+    .ai-udkast-knap {
+      padding: 7px 14px; background: #6366f1; color: white; border: none;
+      border-radius: 7px; font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .ai-udkast-knap:hover { background: #4f46e5; }
+    .ai-udkast-knap:disabled { background: #a5b4fc; cursor: default; }
+    .preview-knap {
+      padding: 7px 14px; background: white; border: 1px solid #e0e0e0;
+      border-radius: 7px; font-size: 0.82rem; cursor: pointer; color: #555;
+    }
+    .mail-preview {
+      margin-top: 14px; display: none; background: white; border: 1px solid #e5e7eb;
+      border-radius: 10px; overflow: hidden;
+    }
+    .mail-preview.synlig { display: block; }
+    .mail-preview-header { background: #f8fafc; padding: 10px 16px; font-size: 0.78rem; color: #888; border-bottom: 1px solid #e5e7eb; }
+    .mail-preview-emne { font-weight: 700; color: #1e293b; font-size: 0.9rem; padding: 12px 16px 4px; }
+    .mail-preview-tekst { padding: 4px 16px 16px; font-size: 0.85rem; color: #374151; line-height: 1.7; white-space: pre-wrap; }
+
     /* Markedsføring */
     .markeds-kort { background: white; border-radius: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; margin-bottom: 24px; overflow: hidden; }
     .markeds-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; cursor: pointer; user-select: none; }
@@ -643,6 +681,26 @@
                 <input type="number" id="trigger-dage" value="60" min="7" max="365" onchange="gemTrigger()">
                 dage
               </div>
+              <div class="mail-skabelon-wrap">
+                <button class="mail-skabelon-toggle" onclick="toggleSkabelon('genaktiver')">
+                  ✏️ Rediger mailskabelon <span id="genaktiver-pil">▼</span>
+                </button>
+                <div class="mail-skabelon" id="genaktiver-skabelon">
+                  <div class="mail-felt">
+                    <label>Emne</label>
+                    <input type="text" id="genaktiver-emne" placeholder="Vi savner dig..." oninput="gemTrigger()">
+                  </div>
+                  <div class="mail-felt">
+                    <label>Besked</label>
+                    <textarea id="genaktiver-tekst" rows="5" placeholder="Skriv din besked til kunden..." oninput="gemTrigger()"></textarea>
+                  </div>
+                  <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+                    <button class="ai-udkast-knap" id="genaktiver-ai-knap" onclick="genererUdkast('genaktiver')">✦ Generer udkast med AI</button>
+                    <button class="preview-knap" onclick="togglePreview('genaktiver')">👁 Preview</button>
+                  </div>
+                  <div class="mail-preview" id="genaktiver-preview"></div>
+                </div>
+              </div>
               <div style="margin-top:14px;padding-top:14px;border-top:1px solid #e0e0e0">
                 <div class="trigger-toggle">
                   <label class="toggle-switch">
@@ -655,6 +713,26 @@
                   Send anmodning om anmeldelse
                   <input type="number" id="trigger-review-dage" value="7" min="1" max="30" onchange="gemTrigger()">
                   dage efter køb
+                </div>
+                <div class="mail-skabelon-wrap">
+                  <button class="mail-skabelon-toggle" onclick="toggleSkabelon('review')">
+                    ✏️ Rediger mailskabelon <span id="review-pil">▼</span>
+                  </button>
+                  <div class="mail-skabelon" id="review-skabelon">
+                    <div class="mail-felt">
+                      <label>Emne</label>
+                      <input type="text" id="review-emne" placeholder="Hvad synes du om dit køb?" oninput="gemTrigger()">
+                    </div>
+                    <div class="mail-felt">
+                      <label>Besked</label>
+                      <textarea id="review-tekst" rows="5" placeholder="Skriv din besked til kunden..." oninput="gemTrigger()"></textarea>
+                    </div>
+                    <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+                      <button class="ai-udkast-knap" id="review-ai-knap" onclick="genererUdkast('review')">✦ Generer udkast med AI</button>
+                      <button class="preview-knap" onclick="togglePreview('review')">👁 Preview</button>
+                    </div>
+                    <div class="mail-preview" id="review-preview"></div>
+                  </div>
                 </div>
               </div>
               <div style="margin-top:14px;padding-top:14px;border-top:1px solid #e0e0e0">
@@ -1239,6 +1317,7 @@
       document.getElementById('trigger-review').checked = t.review || false;
       document.getElementById('trigger-review-dage').value = t.reviewDage || 7;
       document.getElementById('trigger-ugerapport').checked = t.ugerapport || false;
+      indlaesTriggerSkabeloner(t);
     } catch {}
   }
 
@@ -1251,9 +1330,20 @@
         dage: parseInt(document.getElementById('trigger-dage').value),
         review: document.getElementById('trigger-review').checked,
         reviewDage: parseInt(document.getElementById('trigger-review-dage').value),
-        ugerapport: document.getElementById('trigger-ugerapport').checked
+        ugerapport: document.getElementById('trigger-ugerapport').checked,
+        genaktiverEmne: document.getElementById('genaktiver-emne').value,
+        genaktiverTekst: document.getElementById('genaktiver-tekst').value,
+        reviewEmne: document.getElementById('review-emne').value,
+        reviewTekst: document.getElementById('review-tekst').value
       })
     });
+  }
+
+  function indlaesTriggerSkabeloner(trigger) {
+    if (trigger.genaktiverEmne) document.getElementById('genaktiver-emne').value = trigger.genaktiverEmne;
+    if (trigger.genaktiverTekst) document.getElementById('genaktiver-tekst').value = trigger.genaktiverTekst;
+    if (trigger.reviewEmne) document.getElementById('review-emne').value = trigger.reviewEmne;
+    if (trigger.reviewTekst) document.getElementById('review-tekst').value = trigger.reviewTekst;
   }
 
   async function sendTestRapport() {
@@ -1450,6 +1540,48 @@
       document.getElementById('send-knap').dataset.kunder = JSON.stringify(aktivMailKunder);
       document.getElementById('send-knap').dataset.rabatkode = '';
     }, 50);
+  }
+
+  function toggleSkabelon(type) {
+    const el = document.getElementById(`${type}-skabelon`);
+    const pil = document.getElementById(`${type}-pil`);
+    const aaben = el.classList.toggle('aaben');
+    pil.textContent = aaben ? '▲' : '▼';
+  }
+
+  function togglePreview(type) {
+    const emne = document.getElementById(`${type}-emne`).value;
+    const tekst = document.getElementById(`${type}-tekst`).value;
+    const preview = document.getElementById(`${type}-preview`);
+    if (!emne && !tekst) return;
+    preview.innerHTML = `
+      <div class="mail-preview-header">📧 Forhåndsvisning — sådan ser mailen ud for kunden</div>
+      <div class="mail-preview-emne">${emne || '(intet emne)'}</div>
+      <div class="mail-preview-tekst">${tekst || '(ingen tekst)'}</div>
+    `;
+    preview.classList.toggle('synlig');
+  }
+
+  async function genererUdkast(type) {
+    const knap = document.getElementById(`${type}-ai-knap`);
+    knap.disabled = true;
+    knap.textContent = '✦ Genererer...';
+    try {
+      const res = await fetch('https://webshop-copilot.onrender.com/api/trigger/udkast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-token': token },
+        body: JSON.stringify({ type })
+      });
+      const data = await res.json();
+      document.getElementById(`${type}-emne`).value = data.emne || '';
+      document.getElementById(`${type}-tekst`).value = data.tekst || '';
+      gemTrigger();
+    } catch (e) {
+      console.error('Udkast fejl:', e);
+    } finally {
+      knap.disabled = false;
+      knap.textContent = '✦ Generer udkast med AI';
+    }
   }
 
   function toggleKundeklub(header) {
