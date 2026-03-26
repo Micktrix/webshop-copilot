@@ -388,7 +388,8 @@
         <h1>Co-pilot</h1>
       </div>
     </div>
-    <span class="sidebar-shopnavn">wepshop-test.local</span>
+    <span class="sidebar-shopnavn" id="sidebar-shopnavn">—</span>
+    <button onclick="logud()" style="margin-top:auto;background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,0.6);padding:8px 12px;border-radius:8px;cursor:pointer;font-size:0.78rem;width:100%;text-align:left;margin-top:12px">↩ Log ud</button>
   </header>
   <nav class="sidebar-nav">
     <div class="nav-section-label">Oversigt</div>
@@ -994,6 +995,7 @@
 
       document.getElementById('loading').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
+      if (data.shop?.wooUrl) document.getElementById('sidebar-shopnavn').textContent = data.shop.wooUrl;
 
       document.getElementById('omsaetning').innerHTML = data.noeglettal.omsaetning.toLocaleString('da-DK') + ' <span>kr</span>';
       document.getElementById('ordrer').textContent = data.noeglettal.antalOrdrer;
