@@ -612,62 +612,72 @@
       </div>
 
     <!-- Kundeklub -->
-    <div class="klub-kort" style="display:grid;grid-template-columns:1fr 280px;gap:32px;align-items:start;margin-bottom:16px">
-      <div>
-        <h2 style="margin-bottom:16px">✦ Kundeklub <span class="badge groen">Pro</span></h2>
-        <div class="klub-segmenter">
-          <button class="segment-knap aktiv" onclick="vaelgSegment(this, 'alle')">Alle kunder</button>
-          <button class="segment-knap" onclick="vaelgSegment(this, 'genaktiver')">Ikke købt 90+ dage</button>
-          <button class="segment-knap" onclick="vaelgSegment(this, 'loyale')">Loyale kunder</button>
+    <div class="markeds-kort" style="margin-bottom:16px">
+      <div class="markeds-header" onclick="toggleKundeklub(this)">
+        <div>
+          <h2>✦ Kundeklub <span class="badge groen">Pro</span></h2>
+          <div class="markeds-undertekst">Send personlige mails til dine kundesegmenter — med automatiske rabatkoder</div>
         </div>
-        <button class="send-knap" onclick="aabneModal(aktivtSegment)" style="width:auto;padding:10px 24px">✉ Generer og send til segment</button>
-        <div class="trigger-panel">
-          <div class="trigger-toggle">
-            <label class="toggle-switch">
-              <input type="checkbox" id="trigger-aktiv" onchange="gemTrigger()">
-              <span class="toggle-slider"></span>
-            </label>
-            <span style="font-size:0.88rem;font-weight:600">Automatisk genaktiveringsmail</span>
-            <span style="font-size:0.82rem;color:#888">— kører dagligt i baggrunden</span>
-          </div>
-          <div class="trigger-dage">
-            Send automatisk til kunder der ikke har købt i
-            <input type="number" id="trigger-dage" value="60" min="7" max="365" onchange="gemTrigger()">
-            dage
-          </div>
-          <div style="margin-top:14px;padding-top:14px;border-top:1px solid #e0e0e0">
-            <div class="trigger-toggle">
-              <label class="toggle-switch">
-                <input type="checkbox" id="trigger-review" onchange="gemTrigger()">
-                <span class="toggle-slider"></span>
-              </label>
-              <span style="font-size:0.88rem;font-weight:600">Automatisk review-anmodning</span>
-            </div>
-            <div class="trigger-dage" style="margin-top:8px">
-              Send anmodning om anmeldelse
-              <input type="number" id="trigger-review-dage" value="7" min="1" max="30" onchange="gemTrigger()">
-              dage efter køb
-            </div>
-          </div>
-          <div style="margin-top:14px;padding-top:14px;border-top:1px solid #e0e0e0">
-            <div class="trigger-toggle">
-              <label class="toggle-switch">
-                <input type="checkbox" id="trigger-ugerapport" onchange="gemTrigger()">
-                <span class="toggle-slider"></span>
-              </label>
-              <span style="font-size:0.88rem;font-weight:600">Ugentlig rapport</span>
-              <span style="font-size:0.82rem;color:#888">— sendes mandag kl. 8 til din mail</span>
-            </div>
-            <div style="margin-top:10px">
-              <button onclick="sendTestRapport()" style="padding:7px 16px;border:1px solid #e0e0e0;border-radius:7px;background:white;font-size:0.82rem;cursor:pointer;color:#555">Send testrapport nu</button>
-              <span id="rapport-status" style="font-size:0.82rem;color:#16a34a;margin-left:10px;display:none">✓ Sendt!</span>
-            </div>
-          </div>
-        </div>
+        <span class="markeds-pil">▼</span>
       </div>
-      <div style="border:1.5px solid #e0e0e0;border-radius:10px;padding:18px 20px;font-size:0.85rem;color:#555;line-height:1.8;position:relative">
-        <span style="position:absolute;top:-10px;left:14px;background:white;padding:0 8px;font-size:0.75rem;font-weight:600;color:#6366f1;letter-spacing:0.5px;text-transform:uppercase">Sådan virker det</span>
-        Vælg et segment og lad AI skrive en personlig mail til dine kunder. Du kan tilføje en rabatkode der oprettes automatisk i WooCommerce — og bagefter se præcis hvor mange der brugte den og hvad det gav i omsætning.
+      <div class="markeds-body" id="kundeklub-body">
+        <div style="display:grid;grid-template-columns:1fr 280px;gap:32px;align-items:start">
+          <div>
+            <div class="klub-segmenter">
+              <button class="segment-knap aktiv" onclick="vaelgSegment(this, 'alle')">Alle kunder</button>
+              <button class="segment-knap" onclick="vaelgSegment(this, 'genaktiver')">Ikke købt 90+ dage</button>
+              <button class="segment-knap" onclick="vaelgSegment(this, 'loyale')">Loyale kunder</button>
+            </div>
+            <button class="send-knap" onclick="aabneModal(aktivtSegment)" style="width:auto;padding:10px 24px">✉ Generer og send til segment</button>
+            <div class="trigger-panel">
+              <div class="trigger-toggle">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="trigger-aktiv" onchange="gemTrigger()">
+                  <span class="toggle-slider"></span>
+                </label>
+                <span style="font-size:0.88rem;font-weight:600">Automatisk genaktiveringsmail</span>
+                <span style="font-size:0.82rem;color:#888">— kører dagligt i baggrunden</span>
+              </div>
+              <div class="trigger-dage">
+                Send automatisk til kunder der ikke har købt i
+                <input type="number" id="trigger-dage" value="60" min="7" max="365" onchange="gemTrigger()">
+                dage
+              </div>
+              <div style="margin-top:14px;padding-top:14px;border-top:1px solid #e0e0e0">
+                <div class="trigger-toggle">
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="trigger-review" onchange="gemTrigger()">
+                    <span class="toggle-slider"></span>
+                  </label>
+                  <span style="font-size:0.88rem;font-weight:600">Automatisk review-anmodning</span>
+                </div>
+                <div class="trigger-dage" style="margin-top:8px">
+                  Send anmodning om anmeldelse
+                  <input type="number" id="trigger-review-dage" value="7" min="1" max="30" onchange="gemTrigger()">
+                  dage efter køb
+                </div>
+              </div>
+              <div style="margin-top:14px;padding-top:14px;border-top:1px solid #e0e0e0">
+                <div class="trigger-toggle">
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="trigger-ugerapport" onchange="gemTrigger()">
+                    <span class="toggle-slider"></span>
+                  </label>
+                  <span style="font-size:0.88rem;font-weight:600">Ugentlig rapport</span>
+                  <span style="font-size:0.82rem;color:#888">— sendes mandag kl. 8 til din mail</span>
+                </div>
+                <div style="margin-top:10px">
+                  <button onclick="sendTestRapport()" style="padding:7px 16px;border:1px solid #e0e0e0;border-radius:7px;background:white;font-size:0.82rem;cursor:pointer;color:#555">Send testrapport nu</button>
+                  <span id="rapport-status" style="font-size:0.82rem;color:#16a34a;margin-left:10px;display:none">✓ Sendt!</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="border:1.5px solid #e0e0e0;border-radius:10px;padding:18px 20px;font-size:0.85rem;color:#555;line-height:1.8;position:relative">
+            <span style="position:absolute;top:-10px;left:14px;background:white;padding:0 8px;font-size:0.75rem;font-weight:600;color:#6366f1;letter-spacing:0.5px;text-transform:uppercase">Sådan virker det</span>
+            Vælg et segment og lad AI skrive en personlig mail til dine kunder. Du kan tilføje en rabatkode der oprettes automatisk i WooCommerce — og bagefter se præcis hvor mange der brugte den og hvad det gav i omsætning.
+          </div>
+        </div>
       </div>
     </div>
 
@@ -704,11 +714,18 @@
     </div>
 
     <!-- Forladte kurve -->
-    <div class="klub-kort" id="forladte-sektion" style="display:none">
-      <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:4px">Forladte kurve 🛒 <span class="badge groen">Pro</span></h2>
-      <p style="font-size:0.82rem;color:#888;margin-bottom:16px">Kunder der startede checkout men ikke gennemførte — for over 1 time siden.</p>
-      <div id="forladte-liste"></div>
-      <button class="send-knap" onclick="sendForladte()" style="margin-top:16px;width:auto;padding:10px 24px">✉ Send påmindelses-mail til alle</button>
+    <div class="markeds-kort" id="forladte-sektion" style="display:none;margin-bottom:16px">
+      <div class="markeds-header" onclick="toggleForladteKurve(this)">
+        <div>
+          <h2>🛒 Forladte kurve <span class="badge groen">Pro</span></h2>
+          <div class="markeds-undertekst">Kunder der startede checkout men ikke gennemførte — for over 1 time siden.</div>
+        </div>
+        <span class="markeds-pil">▼</span>
+      </div>
+      <div class="markeds-body" id="forladte-body">
+        <div id="forladte-liste"></div>
+        <button class="send-knap" onclick="sendForladte()" style="margin-top:16px;width:auto;padding:10px 24px">✉ Send påmindelses-mail til alle</button>
+      </div>
     </div>
     </section>
 
@@ -1181,6 +1198,7 @@
       forladteKunder = await res.json();
       if (!forladteKunder.length) return;
       document.getElementById('forladte-sektion').style.display = 'block';
+      document.getElementById('forladte-body').classList.add('aaben');
       document.getElementById('forladte-liste').innerHTML = forladteKunder.map(k => `
         <div class="forladt-raekke">
           <div>
@@ -1432,6 +1450,20 @@
       document.getElementById('send-knap').dataset.kunder = JSON.stringify(aktivMailKunder);
       document.getElementById('send-knap').dataset.rabatkode = '';
     }, 50);
+  }
+
+  function toggleKundeklub(header) {
+    const body = document.getElementById('kundeklub-body');
+    const pil = header.querySelector('.markeds-pil');
+    const aaben = body.classList.toggle('aaben');
+    pil.style.transform = aaben ? 'rotate(180deg)' : '';
+  }
+
+  function toggleForladteKurve(header) {
+    const body = document.getElementById('forladte-body');
+    const pil = header.querySelector('.markeds-pil');
+    const aaben = body.classList.toggle('aaben');
+    pil.style.transform = aaben ? 'rotate(180deg)' : '';
   }
 
   let markedsHentet = false;
