@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import 'dotenv/config';
 import { createWooClient, getOrders, getCustomers, getForladteKurve, getKategorier, getShopBeskrivelse } from './woo.js';
 import { beregnNoeglettal, beregnChurn, beregnNyeKunder, beregnTopProdukter, beregnLTV, beregnPrognose, beregnSaesonSammenligning, beregnCrossSell, beregnRFM } from './analytics.js';
@@ -21,13 +23,27 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-app.use(cors());
+app.use(helmet());
+app.use(cors({
+  origin: [
+    'https://webshop-copilot-frontend.onrender.com',
+    'http://localhost:3000',
+    'http://localhost:5500',
+    'http://127.0.0.1:5500'
+  ]
+}));
 app.use(express.json());
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { error: 'For mange forsøg — prøv igen om 15 minutter' }
+});
 
 registerAdminRoutes(app);
 
 // Auth endpoints
-app.post('/api/register', async (req, res) => {
+app.post('/api/register', loginLimiter, async (req, res) => {
   try {
     const token = await registerShop(req.body);
     res.json({ token });
@@ -36,7 +52,7 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-app.post('/api/login', async (req, res) => {
+app.post('/api/login', loginLimiter, async (req, res) => {
   try {
     const token = await loginShop(req.body);
     res.json({ token });
