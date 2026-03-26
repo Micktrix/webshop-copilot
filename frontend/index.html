@@ -675,7 +675,7 @@
 
   async function hentData() {
     try {
-      const res = await fetch('http://localhost:3001/api/dashboard', { headers: { 'x-token': token } });
+      const res = await fetch('https://webshop-copilot.onrender.com/api/dashboard', { headers: { 'x-token': token } });
       if (res.status === 401) { window.location.href = 'login.html'; return; }
       const data = await res.json();
 
@@ -886,7 +886,7 @@
       kodenavn: document.getElementById('kode-navn').value
     } : null;
 
-    const res = await fetch('http://localhost:3001/api/mail/udkast', {
+    const res = await fetch('https://webshop-copilot.onrender.com/api/mail/udkast', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-token': token },
       body: JSON.stringify({ type: aktivMailType, kunder: aktivMailKunder, rabat })
@@ -918,7 +918,7 @@
       kodenavn: document.getElementById('kode-navn').value
     } : null;
 
-    const res = await fetch('http://localhost:3001/api/mail/send', {
+    const res = await fetch('https://webshop-copilot.onrender.com/api/mail/send', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-token': token },
       body: JSON.stringify({ kunder, emne: document.getElementById('mail-emne').value, tekst: document.getElementById('mail-tekst').value, rabatKode: knap.dataset.rabatkode || null })
@@ -939,7 +939,7 @@
 
   async function hentKampagner() {
     try {
-      const res = await fetch('http://localhost:3001/api/kampagner', { headers: { 'x-token': token } });
+      const res = await fetch('https://webshop-copilot.onrender.com/api/kampagner', { headers: { 'x-token': token } });
       const kampagner = await res.json();
       if (!kampagner.length) return;
 
@@ -973,7 +973,7 @@
 
   async function hentForladteKurve() {
     try {
-      const res = await fetch('http://localhost:3001/api/forladte-kurve', { headers: { 'x-token': token } });
+      const res = await fetch('https://webshop-copilot.onrender.com/api/forladte-kurve', { headers: { 'x-token': token } });
       forladteKunder = await res.json();
       if (!forladteKunder.length) return;
       document.getElementById('forladte-sektion').style.display = 'block';
@@ -991,7 +991,7 @@
 
   async function sendForladte() {
     if (!forladteKunder.length) return;
-    const mail = await (await fetch('http://localhost:3001/api/mail/udkast', {
+    const mail = await (await fetch('https://webshop-copilot.onrender.com/api/mail/udkast', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-token': token },
       body: JSON.stringify({ type: 'genaktiver', kunder: forladteKunder, rabat: null })
@@ -1010,7 +1010,7 @@
 
   async function hentTrigger() {
     try {
-      const res = await fetch('http://localhost:3001/api/trigger', { headers: { 'x-token': token } });
+      const res = await fetch('https://webshop-copilot.onrender.com/api/trigger', { headers: { 'x-token': token } });
       const t = await res.json();
       document.getElementById('trigger-aktiv').checked = t.aktiv;
       document.getElementById('trigger-dage').value = t.dage || 60;
@@ -1021,7 +1021,7 @@
   }
 
   async function gemTrigger() {
-    await fetch('http://localhost:3001/api/trigger', {
+    await fetch('https://webshop-copilot.onrender.com/api/trigger', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-token': token },
       body: JSON.stringify({
@@ -1037,7 +1037,7 @@
   async function sendTestRapport() {
     const status = document.getElementById('rapport-status');
     status.style.display = 'none';
-    const res = await fetch('http://localhost:3001/api/rapport/send', {
+    const res = await fetch('https://webshop-copilot.onrender.com/api/rapport/send', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-token': token }
     });
@@ -1068,7 +1068,7 @@
   async function hentOgVisMargin(topProdukter) {
     topProdukterData = topProdukter;
     try {
-      const res = await fetch('http://localhost:3001/api/marginer', { headers: { 'x-token': token } });
+      const res = await fetch('https://webshop-copilot.onrender.com/api/marginer', { headers: { 'x-token': token } });
       gemteKostpriser = await res.json();
     } catch {}
     visMarginTabel(topProdukter, gemteKostpriser);
@@ -1110,7 +1110,7 @@
     const inputs = document.querySelectorAll('#margin-liste input[data-produkt]');
     const data = {};
     inputs.forEach(i => { if (i.value) data[i.dataset.produkt] = parseFloat(i.value); });
-    await fetch('http://localhost:3001/api/marginer', {
+    await fetch('https://webshop-copilot.onrender.com/api/marginer', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-token': token },
       body: JSON.stringify(data)
@@ -1132,7 +1132,7 @@
 
   async function hentKonkurrenter() {
     try {
-      const res = await fetch('http://localhost:3001/api/konkurrenter', { headers: { 'x-token': token } });
+      const res = await fetch('https://webshop-copilot.onrender.com/api/konkurrenter', { headers: { 'x-token': token } });
       const data = await res.json();
       const produkter = data.produkter || [];
       if (!produkter.length) {
@@ -1189,7 +1189,7 @@
     document.querySelectorAll('.cp-tab').forEach((b, i) => b.classList.toggle('aktiv', i === 0));
     document.querySelectorAll('.cp-panel').forEach((p, i) => p.classList.toggle('aktiv', i === 0));
 
-    const res = await fetch('http://localhost:3001/api/content-pakke', {
+    const res = await fetch('https://webshop-copilot.onrender.com/api/content-pakke', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-token': token },
       body: JSON.stringify({ titel: forslag.titel, beskrivelse: forslag.beskrivelse, shopProfil: aktivtShopProfil })
@@ -1245,7 +1245,7 @@
 
   async function hentMarkedsforing() {
     try {
-      const res = await fetch('http://localhost:3001/api/markedsforing', { headers: { 'x-token': token } });
+      const res = await fetch('https://webshop-copilot.onrender.com/api/markedsforing', { headers: { 'x-token': token } });
       const data = await res.json();
       const forslag = data.forslag || [];
 

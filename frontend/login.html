@@ -185,7 +185,7 @@
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
 
-    const res = await fetch('http://localhost:3001/api/login', {
+    const res = await fetch('https://webshop-copilot.onrender.com/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -212,7 +212,7 @@
       wooSecret: document.getElementById('opret-secret').value,
     };
 
-    const res = await fetch('http://localhost:3001/api/register', {
+    const res = await fetch('https://webshop-copilot.onrender.com/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
