@@ -1,16 +1,13 @@
 import Anthropic from '@anthropic-ai/sdk';
-import sgMail from '@sendgrid/mail';
+import { Resend } from 'resend';
 import nodemailer from 'nodemailer';
 import 'dotenv/config';
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-if (process.env.SENDGRID_API_KEY) {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-}
-
-const AFSENDER_MAIL = process.env.SENDGRID_FROM || 'noreply@vixx.dk';
-const BASE_URL = process.env.BASE_URL || 'https://webshop-copilot.onrender.com';
+const AFSENDER_MAIL = process.env.RESEND_FROM || 'noreply@vixx.dk';
+const BASE_URL = process.env.BASE_URL || 'https://vixx.dk';
 
 function htmlSkabelon(tekst, fromName, unsubscribeUrl) {
   const linjer = tekst
@@ -86,19 +83,19 @@ export async function sendMails(kunder, emne, tekst, shopOpts = {}) {
   const { shopEmail = '', fromName = 'Din butik' } = shopOpts;
   const resultater = [];
 
-  if (process.env.SENDGRID_API_KEY) {
+  if (resend) {
     for (const kunde of kunder) {
       const personligTekst = tekst.replace(/\{navn\}/g, kunde.navn.split(' ')[0]);
       const token = Buffer.from(`${kunde.email}:${shopEmail}`).toString('base64url');
       const unsubscribeUrl = `${BASE_URL}/api/afmeld?token=${token}`;
 
-      await sgMail.send({
+      await resend.emails.send({
+        from: `${fromName} <${AFSENDER_MAIL}>`,
         to: kunde.email,
-        from: { email: AFSENDER_MAIL, name: fromName },
         subject: emne,
         text: personligTekst,
         html: htmlSkabelon(personligTekst, fromName, unsubscribeUrl),
-        headers: { 'List-Unsubscribe': `<${unsubscribeUrl}>, <mailto:afmeld@vixx.dk?subject=afmeld>` }
+        headers: { 'List-Unsubscribe': `<${unsubscribeUrl}>` }
       });
 
       resultater.push({ navn: kunde.navn, email: kunde.email });
