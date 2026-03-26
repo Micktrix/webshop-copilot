@@ -97,6 +97,8 @@ export async function koerTriggers(shops) {
 
       const [orders, customers] = await Promise.all([adapter.getOrders(), adapter.getCustomers()]);
 
+      const shopOpts = { shopEmail: shop.email, fromName: shop.wooUrl || 'Din butik' };
+
       // Genaktiveringsmail
       const churn = beregnChurn(orders, customers, trigger.dage);
       if (churn.ifare.length > 0) {
@@ -112,7 +114,7 @@ export async function koerTriggers(shops) {
           const mail = await genererMail('genaktiver', churn.ifare, shop.wooUrl, rabatKode);
           emne = mail.emne; tekst = mail.tekst;
         }
-        await sendMails(churn.ifare, emne, tekst);
+        await sendMails(churn.ifare, emne, tekst, shopOpts);
         console.log(`Auto-trigger genaktiver: ${churn.ifare.length} kunder for ${shop.email}`);
       }
 
@@ -137,7 +139,7 @@ export async function koerTriggers(shops) {
             const reviewMail = await genererMail('review', reviewKunder, shop.wooUrl, rabatKode);
             emne = reviewMail.emne; tekst = reviewMail.tekst;
           }
-          await sendMails(reviewKunder, emne, tekst);
+          await sendMails(reviewKunder, emne, tekst, shopOpts);
           console.log(`Auto-trigger review: ${reviewKunder.length} kunder for ${shop.email}`);
         }
       }

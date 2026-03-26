@@ -1,18 +1,43 @@
-import nodemailer from 'nodemailer';
 import Anthropic from '@anthropic-ai/sdk';
+import sgMail from '@sendgrid/mail';
+import nodemailer from 'nodemailer';
 import 'dotenv/config';
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-// Til test bruger vi Ethereal (gratis fake SMTP — mails sendes ikke rigtig men kan ses online)
-export async function createTransporter() {
-  const testAccount = await nodemailer.createTestAccount();
-  return nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    auth: { user: testAccount.user, pass: testAccount.pass },
-    _previewUrl: testAccount
-  });
+if (process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+}
+
+const AFSENDER_MAIL = process.env.SENDGRID_FROM || 'noreply@vixx.dk';
+const BASE_URL = process.env.BASE_URL || 'https://webshop-copilot.onrender.com';
+
+function htmlSkabelon(tekst, fromName, unsubscribeUrl) {
+  const linjer = tekst
+    .split('\n')
+    .filter(l => l.trim() !== '')
+    .map(l => `<p style="margin:0 0 14px;line-height:1.6">${l}</p>`)
+    .join('');
+  return `<!DOCTYPE html>
+<html lang="da">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="background:#f9f9f9;margin:0;padding:0">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9f9f9;padding:32px 0">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:10px;padding:40px;font-family:Arial,sans-serif;color:#333;font-size:15px">
+        <tr><td>
+          ${linjer}
+          <hr style="border:none;border-top:1px solid #eee;margin:32px 0">
+          <p style="font-size:11px;color:#aaa;text-align:center;margin:0">
+            Du modtager denne mail som kunde hos ${fromName}.<br>
+            <a href="${unsubscribeUrl}" style="color:#aaa;text-decoration:underline">Afmeld fremtidige mails</a>
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
 }
 
 export async function genererMail(type, kunder, butiksNavn = 'din butik', rabatKode = null) {
@@ -46,12 +71,10 @@ Returner KUN dette JSON-format (ingen forklaring):
     }]
   });
 
-  // Udtræk JSON fra svaret — selv hvis der er tekst omkring det
   const raw = response.content[0].text;
   const match = raw.match(/\{[\s\S]*\}/);
   try {
     const json = JSON.parse(match ? match[0] : raw);
-    // Erstat literal \n med rigtige linjeskift
     json.tekst = json.tekst.replace(/\\n/g, '\n');
     return json;
   } catch {
@@ -59,25 +82,47 @@ Returner KUN dette JSON-format (ingen forklaring):
   }
 }
 
-export async function sendMails(kunder, emne, tekst) {
-  const transporter = await createTransporter();
+export async function sendMails(kunder, emne, tekst, shopOpts = {}) {
+  const { shopEmail = '', fromName = 'Din butik' } = shopOpts;
   const resultater = [];
 
-  for (const kunde of kunder) {
-    const personligTekst = tekst.replace('{navn}', kunde.navn.split(' ')[0]);
+  if (process.env.SENDGRID_API_KEY) {
+    for (const kunde of kunder) {
+      const personligTekst = tekst.replace(/\{navn\}/g, kunde.navn.split(' ')[0]);
+      const token = Buffer.from(`${kunde.email}:${shopEmail}`).toString('base64url');
+      const unsubscribeUrl = `${BASE_URL}/api/afmeld?token=${token}`;
 
+      await sgMail.send({
+        to: kunde.email,
+        from: { email: AFSENDER_MAIL, name: fromName },
+        subject: emne,
+        text: personligTekst,
+        html: htmlSkabelon(personligTekst, fromName, unsubscribeUrl),
+        headers: { 'List-Unsubscribe': `<${unsubscribeUrl}>, <mailto:afmeld@vixx.dk?subject=afmeld>` }
+      });
+
+      resultater.push({ navn: kunde.navn, email: kunde.email });
+    }
+    return resultater;
+  }
+
+  // Fallback: Ethereal (test uden rigtig afsendelse)
+  const testAccount = await nodemailer.createTestAccount();
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.ethereal.email',
+    port: 587,
+    auth: { user: testAccount.user, pass: testAccount.pass }
+  });
+
+  for (const kunde of kunder) {
+    const personligTekst = tekst.replace(/\{navn\}/g, kunde.navn.split(' ')[0]);
     const info = await transporter.sendMail({
-      from: '"Webshop Co-pilot" <noreply@webshop.dk>',
+      from: `"${fromName}" <noreply@test.dk>`,
       to: kunde.email,
       subject: emne,
       text: personligTekst
     });
-
-    resultater.push({
-      navn: kunde.navn,
-      email: kunde.email,
-      previewUrl: nodemailer.getTestMessageUrl(info)
-    });
+    resultater.push({ navn: kunde.navn, email: kunde.email, previewUrl: nodemailer.getTestMessageUrl(info) });
   }
 
   return resultater;

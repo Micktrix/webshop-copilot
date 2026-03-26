@@ -192,11 +192,60 @@ app.post('/api/mail/udkast', requireAuth, async (req, res) => {
   }
 });
 
+// Afmeld nyhedsmails (uautentificeret — link i mail)
+app.get('/api/afmeld', async (req, res) => {
+  try {
+    const { token } = req.query;
+    const decoded = Buffer.from(token, 'base64url').toString('utf-8');
+    const colonIdx = decoded.indexOf(':');
+    const kundeEmail = decoded.slice(0, colonIdx);
+    const shopEmail = decoded.slice(colonIdx + 1);
+    await pool.query(
+      `INSERT INTO afmeldinger (shop_email, kunde_email) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+      [shopEmail, kundeEmail]
+    );
+    res.send(`<!DOCTYPE html><html lang="da"><head><meta charset="utf-8"><title>Afmeldt</title>
+      <style>body{font-family:Arial,sans-serif;text-align:center;padding:80px 20px;color:#333}
+      h2{color:#6366f1}p{color:#666}</style></head>
+      <body><h2>Du er afmeldt</h2><p>Du vil ikke modtage flere mails fra denne butik.</p></body></html>`);
+  } catch {
+    res.status(400).send('Ugyldigt afmeld-link.');
+  }
+});
+
+async function filtrerAfmeldte(shopEmail, kunder) {
+  if (!kunder.length) return kunder;
+  const emails = kunder.map(k => k.email);
+  const res = await pool.query(
+    `SELECT kunde_email FROM afmeldinger WHERE shop_email = $1 AND kunde_email = ANY($2)`,
+    [shopEmail, emails]
+  );
+  const afmeldte = new Set(res.rows.map(r => r.kunde_email));
+  return kunder.filter(k => !afmeldte.has(k.email));
+}
+
+async function tjekMailKvote(shopEmail, plan, antal) {
+  const iDag = new Date().toISOString().split('T')[0];
+  const res = await pool.query(
+    `SELECT COALESCE(SUM(antal_modtagere), 0) AS sendt FROM kampagner WHERE shop_email = $1 AND dato = $2`,
+    [shopEmail, iDag]
+  );
+  const sendt = parseInt(res.rows[0].sendt);
+  const graense = plan === 'pro' ? 2000 : 200;
+  if (sendt + antal > graense) {
+    throw new Error(`Daglig mailkvote overskredet (${graense} mails/dag på ${plan}-planen)`);
+  }
+}
+
 // Send mails
 app.post('/api/mail/send', requireAuth, async (req, res) => {
   try {
-    const { kunder, emne, tekst, rabatKode } = req.body;
-    const resultater = await sendMails(kunder, emne, tekst);
+    const { kunder: alleKunder, emne, tekst, rabatKode } = req.body;
+    const kunder = await filtrerAfmeldte(req.shop.email, alleKunder);
+    await tjekMailKvote(req.shop.email, req.shop.plan, kunder.length);
+
+    const shopOpts = { shopEmail: req.shop.email, fromName: req.shop.wooUrl || 'Din butik' };
+    const resultater = await sendMails(kunder, emne, tekst, shopOpts);
 
     await gemKampagne(req.shop.email, {
       emne,
@@ -411,6 +460,12 @@ async function koerMigrationer() {
   await pool.query(`ALTER TABLE triggers ADD COLUMN IF NOT EXISTS genaktiver_rabat_dage INT NOT NULL DEFAULT 14`);
   await pool.query(`ALTER TABLE triggers ADD COLUMN IF NOT EXISTS review_rabat_procent INT`);
   await pool.query(`ALTER TABLE triggers ADD COLUMN IF NOT EXISTS review_rabat_dage INT NOT NULL DEFAULT 14`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS afmeldinger (
+    shop_email   TEXT NOT NULL,
+    kunde_email  TEXT NOT NULL,
+    afmeldt_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (shop_email, kunde_email)
+  )`);
 }
 
 const PORT = process.env.PORT || 3001;

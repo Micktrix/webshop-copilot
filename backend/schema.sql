@@ -26,6 +26,13 @@ CREATE TABLE IF NOT EXISTS events (
 CREATE INDEX IF NOT EXISTS events_ts_idx ON events (ts DESC);
 CREATE INDEX IF NOT EXISTS events_type_idx ON events (type);
 
+CREATE TABLE IF NOT EXISTS afmeldinger (
+  shop_email   TEXT NOT NULL,
+  kunde_email  TEXT NOT NULL,
+  afmeldt_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (shop_email, kunde_email)
+);
+
 CREATE TABLE IF NOT EXISTS kampagner (
   id               BIGSERIAL PRIMARY KEY,
   shop_email       TEXT NOT NULL REFERENCES shops(email) ON DELETE CASCADE,
