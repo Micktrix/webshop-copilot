@@ -58,7 +58,6 @@
     .plan-row .bar { height: 10px; border-radius: 4px; transition: width .4s; }
     .bar-gratis { background: #475569; }
     .bar-pro { background: #6366f1; }
-    .bar-business { background: #a855f7; }
     .plan-row .tal { width: 24px; text-align: right; color: #64748b; font-size: .8rem; }
 
     /* Event-tidslinje */
@@ -93,10 +92,12 @@
     .badge { display: inline-block; padding: .2rem .5rem; border-radius: 4px; font-size: .72rem; font-weight: 600; }
     .badge-gratis { background: #1e293b; color: #64748b; border: 1px solid #334155; }
     .badge-pro { background: #1d4ed8; color: #bfdbfe; }
-    .badge-business { background: #7c3aed; color: #ddd6fe; }
+    .badge-demo { background: #164e63; color: #67e8f9; }
     .badge-aktiv { background: #065f46; color: #6ee7b7; }
     .badge-inaktiv { background: #7f1d1d; color: #fca5a5; }
     .badge-churned { background: #78350f; color: #fcd34d; }
+    .btn-danger { background: none; border: 1px solid #7f1d1d; color: #f87171; padding: .25rem .6rem; border-radius: 6px; cursor: pointer; font-size: .75rem; }
+    .btn-danger:hover { background: #7f1d1d; color: white; }
 
     select {
       background: #0f172a; border: 1px solid #334155; color: #f1f5f9;
@@ -171,7 +172,7 @@
           <option value="">Alle</option>
           <option value="gratis">Gratis</option>
           <option value="pro">Pro</option>
-          <option value="business">Business</option>
+          <option value="demo">Demo</option>
           <option value="churned">Churned</option>
           <option value="inaktiv">Inaktive</option>
         </select>
@@ -185,6 +186,7 @@
           <th>URL</th>
           <th>Branche</th>
           <th>Plan</th>
+          <th>Demo</th>
           <th>Status</th>
           <th>Oprettet</th>
           <th>Sidst aktiv</th>
@@ -287,13 +289,13 @@
 
     // Plan-fordeling
     const total = Object.values(s.planFordeling).reduce((a, b) => a + b, 0) || 1;
-    document.getElementById('planFordeling').innerHTML = ['gratis', 'pro', 'business'].map(p => `
+    document.getElementById('planFordeling').innerHTML = ['gratis', 'pro'].map(p => `
       <div class="plan-row">
         <span class="navn">${p.charAt(0).toUpperCase() + p.slice(1)}</span>
         <div class="bar-wrap">
-          <div class="bar bar-${p}" style="width:${Math.round(s.planFordeling[p] / total * 100)}%"></div>
+          <div class="bar bar-${p}" style="width:${Math.round((s.planFordeling[p] || 0) / total * 100)}%"></div>
         </div>
-        <span class="tal">${s.planFordeling[p]}</span>
+        <span class="tal">${s.planFordeling[p] || 0}</span>
       </div>
     `).join('');
 
@@ -333,7 +335,8 @@
       if (søg && !s.email.toLowerCase().includes(søg) && !(s.wooUrl || '').toLowerCase().includes(søg)) return false;
       if (filter === 'churned') return s.churned;
       if (filter === 'inaktiv') return !s.aktiv;
-      if (filter && ['gratis','pro','business'].includes(filter)) return s.plan === filter;
+      if (filter === 'demo') return s.demo;
+      if (filter && ['gratis','pro'].includes(filter)) return s.plan === filter;
       return true;
     });
 
@@ -349,8 +352,12 @@
           <select onchange="opdaterPlan('${s.email}', this.value)">
             <option ${s.plan==='gratis'?'selected':''}>gratis</option>
             <option ${s.plan==='pro'?'selected':''}>pro</option>
-            <option ${s.plan==='business'?'selected':''}>business</option>
           </select>
+        </td>
+        <td>
+          <button class="btn-sm" onclick="toggleDemo('${s.email}', ${s.demo})" style="${s.demo ? 'border-color:#67e8f9;color:#67e8f9' : ''}">
+            ${s.demo ? 'Demo ✓' : 'Demo'}
+          </button>
         </td>
         <td>
           ${s.churned
@@ -362,13 +369,14 @@
         </td>
         <td style="color:#64748b;font-size:.8rem">${s.oprettet ? new Date(s.oprettet).toLocaleDateString('da-DK') : '—'}</td>
         <td style="color:#64748b;font-size:.8rem">${s.sidstAktiv ? new Date(s.sidstAktiv).toLocaleDateString('da-DK') : '—'}</td>
-        <td>
+        <td style="display:flex;gap:4px">
           <button class="btn-sm" onclick="toggleAktiv('${s.email}', ${s.aktiv})">
             ${s.aktiv ? 'Deaktiver' : 'Aktiver'}
           </button>
+          <button class="btn-danger" onclick="sletShop('${s.email}')">Slet</button>
         </td>
       </tr>
-    `).join('') : `<tr><td colspan="8" class="tom">Ingen shops matcher</td></tr>`;
+    `).join('') : `<tr><td colspan="9" class="tom">Ingen shops matcher</td></tr>`;
   }
 
   async function opdaterPlan(email, plan) {
@@ -392,6 +400,24 @@
       method: 'PATCH',
       headers: { ...adminHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ aktiv: !nuvaerende })
+    });
+    await hentShops();
+  }
+
+  async function toggleDemo(email, nuvaerende) {
+    await fetch(`${API}/admin/shops/${encodeURIComponent(email)}`, {
+      method: 'PATCH',
+      headers: { ...adminHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ demo: !nuvaerende })
+    });
+    await hentShops();
+  }
+
+  async function sletShop(email) {
+    if (!confirm(`Slet ${email}? Dette kan ikke fortrydes.`)) return;
+    await fetch(`${API}/admin/shops/${encodeURIComponent(email)}`, {
+      method: 'DELETE',
+      headers: adminHeaders()
     });
     await hentShops();
   }

@@ -4,7 +4,7 @@ import { hentAggregeredeStats } from './events.js';
 const ADMIN_USER = process.env.ADMIN_USER || 'admin';
 const ADMIN_PASS = process.env.ADMIN_PASS || 'skift-mig';
 
-const PLAN_PRISER = { gratis: 0, pro: 199, business: 399 };
+const PLAN_PRISER = { gratis: 0, pro: 299 };
 
 function erChurned(shop) {
   const grænse = new Date();
@@ -40,6 +40,7 @@ export function registerAdminRoutes(app) {
         email:      s.email,
         plan:       s.plan,
         aktiv:      s.aktiv,
+        demo:       s.demo,
         churned:    erChurned(s),
         oprettet:   s.oprettet,
         sidstAktiv: s.sidst_aktiv,
@@ -54,15 +55,26 @@ export function registerAdminRoutes(app) {
   app.patch('/admin/shops/:email', requireAdmin, async (req, res) => {
     try {
       const email = decodeURIComponent(req.params.email);
-      const { plan, aktiv, branche } = req.body;
+      const { plan, aktiv, branche, demo } = req.body;
       await pool.query(
         `UPDATE shops SET
            plan    = COALESCE($1, plan),
            aktiv   = COALESCE($2, aktiv),
-           branche = COALESCE($3, branche)
-         WHERE email = $4`,
-        [plan ?? null, aktiv ?? null, branche ?? null, email]
+           branche = COALESCE($3, branche),
+           demo    = COALESCE($4, demo)
+         WHERE email = $5`,
+        [plan ?? null, aktiv ?? null, branche ?? null, demo ?? null, email]
       );
+      res.json({ ok: true });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.delete('/admin/shops/:email', requireAdmin, async (req, res) => {
+    try {
+      const email = decodeURIComponent(req.params.email);
+      await pool.query('DELETE FROM shops WHERE email = $1', [email]);
       res.json({ ok: true });
     } catch (err) {
       res.status(500).json({ error: err.message });
