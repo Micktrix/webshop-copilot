@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Webshop Co-pilot — Log ind</title>
+  <title>Vixx — Log ind</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -131,7 +131,7 @@
 </head>
 <body>
 <div class="kort">
-  <div class="logo">Webshop Co-pilot</div>
+  <div class="logo">Vixx</div>
   <div class="undertitel">Få indsigt i din forretning — hver dag</div>
 
   <div class="tabs">
@@ -220,7 +220,7 @@
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
 
-    const res = await fetch('https://webshop-copilot.onrender.com/api/login', {
+    const res = await fetch('/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -272,7 +272,7 @@
       platform: aktivPlatform,
     };
 
-    const res = await fetch('https://webshop-copilot.onrender.com/api/register', {
+    const res = await fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
