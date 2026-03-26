@@ -3,7 +3,9 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import 'dotenv/config';
-import { createWooClient, getOrders, getCustomers, getForladteKurve, getKategorier, getShopBeskrivelse } from './woo.js';
+import * as woo from './woo.js';
+import * as shopify from './shopify.js';
+const { createWooClient } = woo;
 import { beregnNoeglettal, beregnChurn, beregnNyeKunder, beregnTopProdukter, beregnLTV, beregnPrognose, beregnSaesonSammenligning, beregnCrossSell, beregnRFM } from './analytics.js';
 import { hentMarginer, gemMarginer, beregnMarginer } from './margin.js';
 import { overvaagsKonkurrenter } from './markedsforing.js';
@@ -22,6 +24,31 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Vælger den rigtige platform-adapter baseret på shop.platform
+function getAdapter(shop) {
+  if (shop.platform === 'shopify') {
+    const client = shopify.createShopifyClient(shop.wooUrl, shop.wooKey);
+    return {
+      getOrders:          () => shopify.getOrders(client),
+      getCustomers:       () => shopify.getCustomers(client),
+      getForladteKurve:   () => shopify.getForladteKurve(client),
+      getKategorier:      () => shopify.getKategorier(client),
+      getShopBeskrivelse: () => shopify.getShopBeskrivelse(shop.wooUrl),
+      wooClient: null  // coupon-operationer kun WooCommerce
+    };
+  }
+  const client = woo.createWooClient(shop.wooUrl, shop.wooKey, shop.wooSecret);
+  return {
+    getOrders:          () => woo.getOrders(client),
+    getCustomers:       () => woo.getCustomers(client),
+    getForladteKurve:   () => woo.getForladteKurve(shop.wooUrl),
+    getKategorier:      () => woo.getKategorier(client),
+    getShopBeskrivelse: () => woo.getShopBeskrivelse(shop.wooUrl),
+    wooClient: client
+  };
+}
+
 const app = express();
 app.use(helmet());
 app.use(cors({
@@ -45,13 +72,21 @@ registerAdminRoutes(app);
 // Auth endpoints
 app.post('/api/register', loginLimiter, async (req, res) => {
   try {
-    const { wooUrl, wooKey, wooSecret } = req.body;
-    if (wooUrl && wooKey && wooSecret) {
+    const { wooUrl, wooKey, wooSecret, platform } = req.body;
+    if (wooUrl && wooKey) {
       try {
-        const client = createWooClient(wooUrl, wooKey, wooSecret);
-        await client.get('/orders', { params: { per_page: 1 } });
+        if (platform === 'shopify') {
+          const client = shopify.createShopifyClient(wooUrl, wooKey);
+          await client.get('/shop.json');
+        } else {
+          const client = createWooClient(wooUrl, wooKey, wooSecret);
+          await client.get('/orders', { params: { per_page: 1 } });
+        }
       } catch {
-        return res.status(400).json({ error: 'Kunne ikke forbinde til WooCommerce — tjek URL og API-nøgler.' });
+        return res.status(400).json({ error: platform === 'shopify'
+          ? 'Kunne ikke forbinde til Shopify — tjek URL og Access Token.'
+          : 'Kunne ikke forbinde til WooCommerce — tjek URL og API-nøgler.'
+        });
       }
     }
     const token = await registerShop(req.body);
@@ -79,11 +114,10 @@ app.get('/api/dashboard', requireAuth, async (req, res) => {
       orders = demoOrders;
       customers = demoCustomers;
     } else {
-      const { wooUrl, wooKey, wooSecret } = req.shop;
-      const client = createWooClient(wooUrl, wooKey, wooSecret);
+      const adapter = getAdapter(req.shop);
       [orders, customers] = await Promise.all([
-        getOrders(client),
-        getCustomers(client)
+        adapter.getOrders(),
+        adapter.getCustomers()
       ]);
     }
 
@@ -123,7 +157,7 @@ app.get('/api/dashboard', requireAuth, async (req, res) => {
 app.get('/api/forladte-kurve', requireAuth, async (req, res) => {
   try {
     if (req.shop.demo) return res.json(demoForladteKurve);
-    const kurve = await getForladteKurve(req.shop.wooUrl);
+    const kurve = await getAdapter(req.shop).getForladteKurve();
     res.json(kurve);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -217,9 +251,7 @@ app.get('/api/marginer', requireAuth, (req, res) => {
 app.post('/api/marginer', requireAuth, async (req, res) => {
   try {
     gemMarginer(req.shop.email, req.body);
-    const { wooUrl, wooKey, wooSecret } = req.shop;
-    const client = createWooClient(wooUrl, wooKey, wooSecret);
-    const orders = await getOrders(client);
+    const orders = await getAdapter(req.shop).getOrders();
     const topProdukter = beregnTopProdukter(orders);
     res.json(beregnMarginer(topProdukter, req.body));
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -232,9 +264,7 @@ app.get('/api/konkurrenter', requireAuth, async (req, res) => {
     if (req.shop.demo) {
       orders = demoOrders;
     } else {
-      const { wooUrl, wooKey, wooSecret } = req.shop;
-      const client = createWooClient(wooUrl, wooKey, wooSecret);
-      orders = await getOrders(client);
+      orders = await getAdapter(req.shop).getOrders();
     }
     const topProdukter = beregnTopProdukter(orders);
     const data = await overvaagsKonkurrenter(topProdukter);
@@ -252,13 +282,12 @@ app.get('/api/markedsforing', requireAuth, async (req, res) => {
       shopHtml = '';
       shopUrl = 'demo-shop.dk';
     } else {
-      const { wooUrl, wooKey, wooSecret } = req.shop;
-      shopUrl = wooUrl;
-      const client = createWooClient(wooUrl, wooKey, wooSecret);
+      shopUrl = req.shop.wooUrl;
+      const adapter = getAdapter(req.shop);
       [orders, kategorier, shopHtml] = await Promise.all([
-        getOrders(client),
-        getKategorier(client),
-        getShopBeskrivelse(wooUrl)
+        adapter.getOrders(),
+        adapter.getKategorier(),
+        adapter.getShopBeskrivelse()
       ]);
     }
     const topProdukter = beregnTopProdukter(orders);
@@ -279,12 +308,11 @@ app.post('/api/content-pakke', requireAuth, async (req, res) => {
       kategorier = ['Kaffe', 'Kaffemaskiner', 'Tilbehør'];
       shopUrl = 'demo-shop.dk';
     } else {
-      const { wooUrl, wooKey, wooSecret } = req.shop;
-      shopUrl = wooUrl;
-      const client = createWooClient(wooUrl, wooKey, wooSecret);
+      shopUrl = req.shop.wooUrl;
+      const adapter = getAdapter(req.shop);
       [orders, kategorier] = await Promise.all([
-        getOrders(client),
-        getKategorier(client)
+        adapter.getOrders(),
+        adapter.getKategorier()
       ]);
     }
     const topProdukter = beregnTopProdukter(orders);
@@ -308,9 +336,8 @@ app.post('/api/trigger', requireAuth, (req, res) => {
 // Send ugerapport manuelt (test)
 app.post('/api/rapport/send', requireAuth, async (req, res) => {
   try {
-    const { wooUrl, wooKey, wooSecret } = req.shop;
-    const client = createWooClient(wooUrl, wooKey, wooSecret);
-    const [orders, customers] = await Promise.all([getOrders(client), getCustomers(client)]);
+    const adapter = getAdapter(req.shop);
+    const [orders, customers] = await Promise.all([adapter.getOrders(), adapter.getCustomers()]);
     const churn = beregnChurn(orders, customers);
     const topProdukter = beregnTopProdukter(orders);
     const ugensData = beregnUgensData(orders, customers, churn, topProdukter);
@@ -325,7 +352,7 @@ app.post('/api/rapport/send', requireAuth, async (req, res) => {
 // Hent alle shops fra databasen
 async function alleShops() {
   const result = await pool.query(
-    `SELECT email, woo_url AS "wooUrl", woo_key AS "wooKey", woo_secret AS "wooSecret", plan, aktiv, demo FROM shops WHERE aktiv = true`
+    `SELECT email, woo_url AS "wooUrl", woo_key AS "wooKey", woo_secret AS "wooSecret", platform, plan, aktiv, demo FROM shops WHERE aktiv = true`
   );
   return result.rows;
 }

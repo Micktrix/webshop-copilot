@@ -5,14 +5,14 @@ import pool from './db.js';
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRY = '7d';
 
-export async function registerShop({ email, password, wooUrl, wooKey, wooSecret }) {
+export async function registerShop({ email, password, wooUrl, wooKey, wooSecret, platform }) {
   const passwordHash = await bcrypt.hash(password, 12);
 
   const result = await pool.query(
-    `INSERT INTO shops (email, password_hash, woo_url, woo_key, woo_secret)
-     VALUES ($1, $2, $3, $4, $5)
+    `INSERT INTO shops (email, password_hash, woo_url, woo_key, woo_secret, platform)
+     VALUES ($1, $2, $3, $4, $5, $6)
      RETURNING email, plan, aktiv, demo, oprettet`,
-    [email, passwordHash, wooUrl, wooKey, wooSecret]
+    [email, passwordHash, wooUrl, wooKey, wooSecret || null, platform || 'woocommerce']
   );
 
   const shop = result.rows[0];
@@ -51,7 +51,7 @@ export async function requireAuth(req, res, next) {
   }
 
   const result = await pool.query(
-    'SELECT email, woo_url AS "wooUrl", woo_key AS "wooKey", woo_secret AS "wooSecret", plan, aktiv, demo FROM shops WHERE email = $1',
+    'SELECT email, woo_url AS "wooUrl", woo_key AS "wooKey", woo_secret AS "wooSecret", platform, plan, aktiv, demo FROM shops WHERE email = $1',
     [payload.email]
   );
 

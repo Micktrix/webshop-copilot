@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS shops (
   woo_url      TEXT,
   woo_key      TEXT,
   woo_secret   TEXT,
+  platform     TEXT NOT NULL DEFAULT 'woocommerce',
   plan         TEXT NOT NULL DEFAULT 'gratis',
   aktiv        BOOLEAN NOT NULL DEFAULT true,
   demo         BOOLEAN NOT NULL DEFAULT false,

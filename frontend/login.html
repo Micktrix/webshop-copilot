@@ -109,6 +109,24 @@
       color: #aaa;
       margin-top: 6px;
     }
+
+    .platform-knap {
+      flex: 1;
+      padding: 9px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 8px;
+      background: white;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      color: #888;
+      transition: all 0.15s;
+    }
+    .platform-knap.aktiv {
+      border-color: #6366f1;
+      color: #6366f1;
+      background: #eef2ff;
+    }
   </style>
 </head>
 <body>
@@ -146,20 +164,37 @@
       <input type="password" id="opret-password" placeholder="Vælg en adgangskode">
     </div>
 
-    <div class="sektion-titel">WooCommerce forbindelse</div>
+    <div class="sektion-titel">Platform</div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button type="button" class="platform-knap aktiv" id="btn-woo" onclick="vaelgPlatform('woocommerce')">
+        🛍 WooCommerce
+      </button>
+      <button type="button" class="platform-knap" id="btn-shopify" onclick="vaelgPlatform('shopify')">
+        🟢 Shopify
+      </button>
+    </div>
 
     <div class="felt">
-      <label>Din butiks URL</label>
+      <label id="url-label">Din butiks URL</label>
       <input type="text" id="opret-url" placeholder="https://minbutik.dk">
     </div>
-    <div class="felt">
-      <label>Consumer Key</label>
-      <input type="text" id="opret-key" placeholder="ck_...">
-      <div class="hjaelp">Findes i WooCommerce → Indstillinger → Avanceret → REST API</div>
+    <div id="woo-felter">
+      <div class="felt">
+        <label>Consumer Key</label>
+        <input type="text" id="opret-key" placeholder="ck_...">
+        <div class="hjaelp">Findes i WooCommerce → Indstillinger → Avanceret → REST API</div>
+      </div>
+      <div class="felt">
+        <label>Consumer Secret</label>
+        <input type="text" id="opret-secret" placeholder="cs_...">
+      </div>
     </div>
-    <div class="felt">
-      <label>Consumer Secret</label>
-      <input type="text" id="opret-secret" placeholder="cs_...">
+    <div id="shopify-felter" style="display:none">
+      <div class="felt">
+        <label>Access Token</label>
+        <input type="text" id="opret-token" placeholder="shpat_...">
+        <div class="hjaelp">Opret en Custom App i Shopify Admin → Apps → Develop apps</div>
+      </div>
     </div>
 
     <button class="knap" id="opret-knap" onclick="opretKonto()">Opret konto og forbind butik</button>
@@ -203,19 +238,38 @@
     window.location.href = 'index.html';
   }
 
+  let aktivPlatform = 'woocommerce';
+
+  function vaelgPlatform(platform) {
+    aktivPlatform = platform;
+    document.getElementById('btn-woo').classList.toggle('aktiv', platform === 'woocommerce');
+    document.getElementById('btn-shopify').classList.toggle('aktiv', platform === 'shopify');
+    document.getElementById('woo-felter').style.display = platform === 'woocommerce' ? 'block' : 'none';
+    document.getElementById('shopify-felter').style.display = platform === 'shopify' ? 'block' : 'none';
+    document.getElementById('url-label').textContent = platform === 'shopify'
+      ? 'Shopify butik URL (f.eks. minbutik.myshopify.com)'
+      : 'Din butiks URL';
+    document.getElementById('opret-url').placeholder = platform === 'shopify'
+      ? 'minbutik.myshopify.com'
+      : 'https://minbutik.dk';
+  }
+
   async function opretKonto() {
     const knap = document.getElementById('opret-knap');
     const fejl = document.getElementById('opret-fejl');
     fejl.style.display = 'none';
     knap.disabled = true;
-    knap.textContent = 'Forbinder til WooCommerce...';
+    knap.textContent = aktivPlatform === 'shopify' ? 'Forbinder til Shopify...' : 'Forbinder til WooCommerce...';
 
     const body = {
       email: document.getElementById('opret-email').value,
       password: document.getElementById('opret-password').value,
       wooUrl: document.getElementById('opret-url').value,
-      wooKey: document.getElementById('opret-key').value,
-      wooSecret: document.getElementById('opret-secret').value,
+      wooKey: aktivPlatform === 'shopify'
+        ? document.getElementById('opret-token').value
+        : document.getElementById('opret-key').value,
+      wooSecret: aktivPlatform === 'shopify' ? null : document.getElementById('opret-secret').value,
+      platform: aktivPlatform,
     };
 
     const res = await fetch('https://webshop-copilot.onrender.com/api/register', {
