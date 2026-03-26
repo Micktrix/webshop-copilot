@@ -53,6 +53,9 @@ const app = express();
 app.use(helmet());
 app.use(cors({
   origin: [
+    'https://vixx.dk',
+    'https://www.vixx.dk',
+    'https://webshop-copilot.onrender.com',
     'https://webshop-copilot-frontend.onrender.com',
     'http://localhost:3000',
     'http://localhost:5500',
