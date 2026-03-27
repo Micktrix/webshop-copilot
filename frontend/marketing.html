@@ -405,10 +405,21 @@
 
 <script>
   const token = vixxCheckAuth();
-  renderSidebar('marketing');
 
   let alleKunder = { ifare: [], loyale: [], alle: [] };
   let aktivtSegment = 'alle';
+
+  (async () => {
+    const profilRes = await fetch('/api/profil', { headers: { 'x-token': token } });
+    const profil = await profilRes.json();
+    renderSidebar('marketing', profil.plan);
+    const harPro = await vixxKraeverPro('.vixx-main');
+    if (!harPro) return;
+    hentData();
+    hentKampagner();
+    hentForladteKurve();
+    hentTrigger();
+  })();
 
   function vaelgSegment(el, segment) {
     document.querySelectorAll('.segment-knap').forEach(b => b.classList.remove('aktiv'));
@@ -865,10 +876,6 @@
     }, 50);
   }
 
-  hentData();
-  hentKampagner();
-  hentForladteKurve();
-  hentTrigger();
 </script>
 </body>
 </html>

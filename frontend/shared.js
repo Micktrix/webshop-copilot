@@ -1,5 +1,7 @@
 // Delt sidebar + auth til alle Vixx-sider
 
+const API = 'https://webshop-copilot.onrender.com';
+
 const SIDEBAR_CSS = `
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8fafc; color: #1a1a2e; display: flex; }
@@ -40,6 +42,17 @@ const SIDEBAR_CSS = `
   .send-knap { width: 100%; padding: 10px; border: none; background: #6366f1; color: white; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
   .send-knap:hover { background: #4f46e5; }
   .send-knap:disabled { background: #ccc; cursor: not-allowed; }
+  .sidebar-upgrade { margin: 10px 10px 14px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 10px; padding: 14px; }
+  .sidebar-upgrade p { font-size: 0.78rem; color: rgba(255,255,255,0.85); margin-bottom: 10px; line-height: 1.4; }
+  .sidebar-upgrade button { width: 100%; padding: 8px; background: white; color: #6366f1; border: none; border-radius: 7px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s; }
+  .sidebar-upgrade button:hover { opacity: 0.9; }
+  .pro-gate { background: white; border-radius: 16px; border: 1px solid #e2e8f0; padding: 60px 40px; text-align: center; max-width: 480px; margin: 60px auto; }
+  .pro-gate-ikon { font-size: 3rem; margin-bottom: 16px; }
+  .pro-gate h2 { font-size: 1.3rem; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+  .pro-gate p { color: #64748b; font-size: 0.93rem; margin-bottom: 24px; line-height: 1.6; }
+  .pro-gate-knap { display: inline-block; padding: 12px 28px; background: #6366f1; color: white; border: none; border-radius: 9px; font-size: 0.95rem; font-weight: 700; cursor: pointer; text-decoration: none; transition: background 0.2s; }
+  .pro-gate-knap:hover { background: #4f46e5; }
+  .pro-gate-pris { font-size: 0.82rem; color: #94a3b8; margin-top: 12px; }
 `;
 
 function injectSidebarCSS() {
@@ -48,7 +61,7 @@ function injectSidebarCSS() {
   document.head.appendChild(style);
 }
 
-function renderSidebar(activePage) {
+function renderSidebar(activePage, plan) {
   injectSidebarCSS();
 
   const nav = {
@@ -70,6 +83,12 @@ function renderSidebar(activePage) {
     { id: 'oekonomi', ikon: '💰', label: 'Økonomi', href: nav.dashboard + '#oekonomi' },
   ];
 
+  const upgradeBanner = plan === 'pro' ? '' : `
+    <div class="sidebar-upgrade">
+      <p>Opgrader til Pro og få adgang til Kundeklub, Marketing & SEO</p>
+      <button onclick="vixxOpgrader()">Opgrader — 299 kr/md</button>
+    </div>`;
+
   const html = `
     <aside class="sidebar">
       <div class="sidebar-header">
@@ -88,10 +107,47 @@ function renderSidebar(activePage) {
           return `<a class="nav-item${aktiv}" href="${item.href}"><span class="nav-ikon">${item.ikon}</span> ${item.label}${pro}</a>`;
         }).join('')}
       </nav>
+      ${upgradeBanner}
     </aside>`;
 
   const container = document.getElementById('sidebar-container');
   if (container) container.innerHTML = html;
+}
+
+async function vixxOpgrader() {
+  const token = localStorage.getItem('token');
+  try {
+    const res = await fetch('/api/stripe/checkout', {
+      method: 'POST',
+      headers: { 'x-token': token }
+    });
+    const data = await res.json();
+    if (data.url) window.location.href = data.url;
+    else alert('Fejl: ' + (data.error || 'Prøv igen'));
+  } catch {
+    alert('Kunne ikke forbinde til betalingssiden. Prøv igen.');
+  }
+}
+
+// Bruger på gratis-plan — vis Pro-gate i stedet for indhold
+async function vixxKraeverPro(containerSelector) {
+  const token = localStorage.getItem('token');
+  const res = await fetch('/api/profil', { headers: { 'x-token': token } });
+  const profil = await res.json();
+  if (profil.plan === 'pro') return true;
+
+  const el = document.querySelector(containerSelector);
+  if (el) {
+    el.innerHTML = `
+      <div class="pro-gate">
+        <div class="pro-gate-ikon">⭐</div>
+        <h2>Denne funktion kræver Pro</h2>
+        <p>Opgrader til Vixx Pro og få adgang til Kundeklub, automatiseret marketing, SEO-analyse og meget mere.</p>
+        <button class="pro-gate-knap" onclick="vixxOpgrader()">Opgrader til Pro</button>
+        <p class="pro-gate-pris">299 kr/md · Ingen binding · Annuller når som helst</p>
+      </div>`;
+  }
+  return false;
 }
 
 function vixxCheckAuth() {

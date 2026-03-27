@@ -288,7 +288,15 @@
       <span class="nav-ikon">💰</span> Økonomi
     </a>
   </nav>
+  <div id="sidebar-upgrade-banner" style="display:none;margin:10px 10px 14px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:10px;padding:14px;">
+    <p style="font-size:0.78rem;color:rgba(255,255,255,0.85);margin-bottom:10px;line-height:1.4;">Opgrader til Pro og få adgang til Kundeklub, Marketing & SEO</p>
+    <button onclick="opgrader()" style="width:100%;padding:8px;background:white;color:#6366f1;border:none;border-radius:7px;font-size:0.82rem;font-weight:700;cursor:pointer;">Opgrader — 299 kr/md</button>
+  </div>
 </aside>
+
+<div id="upgrade-toast" style="display:none;position:fixed;top:20px;right:20px;background:#16a34a;color:white;padding:14px 20px;border-radius:10px;font-size:0.9rem;font-weight:600;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+  Pro aktiveret! Velkommen ombord.
+</div>
 
 <div class="main">
 
@@ -461,8 +469,33 @@
 
   let nyeKunderDenneMaaned = 0;
 
-
   function logud() { localStorage.removeItem('token'); window.location.href = 'login.html'; }
+
+  async function opgrader() {
+    try {
+      const res = await fetch('/api/stripe/checkout', { method: 'POST', headers: { 'x-token': token } });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else alert('Fejl: ' + (data.error || 'Prøv igen'));
+    } catch { alert('Kunne ikke forbinde til betalingssiden.'); }
+  }
+
+  // Vis upgrade banner og håndtér ?upgraded=1
+  (async () => {
+    try {
+      const res = await fetch('/api/profil', { headers: { 'x-token': token } });
+      const profil = await res.json();
+      if (profil.plan !== 'pro') {
+        document.getElementById('sidebar-upgrade-banner').style.display = 'block';
+      }
+    } catch {}
+    if (new URLSearchParams(location.search).get('upgraded') === '1') {
+      const toast = document.getElementById('upgrade-toast');
+      toast.style.display = 'block';
+      setTimeout(() => toast.style.display = 'none', 4000);
+      history.replaceState({}, '', 'dashboard.html');
+    }
+  })();
 
   let nyeKunderData = { denneMaaned: 0, forrigeMaaned: 0 };
   let nyeKunderChart = null;

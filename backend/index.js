@@ -23,6 +23,7 @@ import { registerAdminRoutes } from './admin.js';
 import { demoOrders, demoCustomers, demoForladteKurve } from './demo-data.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import Stripe from 'stripe';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -62,6 +63,40 @@ app.use(cors({
     'http://127.0.0.1:5500'
   ]
 }));
+
+// Stripe webhook — must come BEFORE express.json() to get raw body
+app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  const sig = req.headers['stripe-signature'];
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+  } catch (err) {
+    console.error('Stripe webhook fejl:', err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    const shopEmail = session.metadata?.shopEmail || session.customer_email;
+    if (shopEmail) {
+      await pool.query(`UPDATE shops SET plan = 'pro', stripe_customer_id = $2 WHERE email = $1`, [shopEmail, session.customer]);
+      console.log(`Pro aktiveret for ${shopEmail}`);
+    }
+  }
+
+  if (event.type === 'customer.subscription.deleted') {
+    const sub = event.data.object;
+    const result = await pool.query(`SELECT email FROM shops WHERE stripe_customer_id = $1`, [sub.customer]);
+    if (result.rows[0]) {
+      await pool.query(`UPDATE shops SET plan = 'gratis' WHERE email = $1`, [result.rows[0].email]);
+      console.log(`Pro nedgraderet for ${result.rows[0].email}`);
+    }
+  }
+
+  res.json({ received: true });
+});
+
 app.use(express.json());
 
 const loginLimiter = rateLimit({
@@ -105,6 +140,33 @@ app.post('/api/login', loginLimiter, async (req, res) => {
     res.json({ token });
   } catch (err) {
     res.status(401).json({ error: err.message });
+  }
+});
+
+// Profil (plan-info)
+app.get('/api/profil', requireAuth, (req, res) => {
+  res.json({ email: req.shop.email, plan: req.shop.plan });
+});
+
+// Stripe checkout — opgrader til Pro
+app.post('/api/stripe/checkout', requireAuth, async (req, res) => {
+  try {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    const frontendUrl = process.env.FRONTEND_URL || 'https://www.vixx.dk';
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      customer_email: req.shop.email,
+      line_items: [{ price: process.env.STRIPE_PRICE_ID, quantity: 1 }],
+      success_url: `${frontendUrl}/dashboard.html?upgraded=1`,
+      cancel_url: `${frontendUrl}/dashboard.html`,
+      metadata: { shopEmail: req.shop.email },
+      locale: 'da'
+    });
+    res.json({ url: session.url });
+  } catch (err) {
+    console.error('Stripe fejl:', err.message);
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -521,6 +583,7 @@ async function koerMigrationer() {
     afmeldt_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (shop_email, kunde_email)
   )`);
+  await pool.query(`ALTER TABLE shops ADD COLUMN IF NOT EXISTS stripe_customer_id TEXT`);
 }
 
 const PORT = process.env.PORT || 3001;

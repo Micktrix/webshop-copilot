@@ -139,7 +139,6 @@
 </div>
 
 <script>
-  renderSidebar('seo');
   const token = vixxCheckAuth();
 
   // Generisk toggle-hjælpefunktion
@@ -155,11 +154,15 @@
     }
   }
 
-  // Sæt shop-navn i sidebar
-  fetch('/api/dashboard', { headers: { 'x-token': token } })
-    .then(r => r.json())
-    .then(d => { if (d.shop?.wooUrl) document.getElementById('sidebar-shopnavn').textContent = d.shop.wooUrl; })
-    .catch(() => {});
+  // Init: hent plan og vis sidebar + Pro-gate hvis nødvendigt
+  (async () => {
+    const profilRes = await fetch('/api/profil', { headers: { 'x-token': token } });
+    const profil = await profilRes.json();
+    renderSidebar('seo', profil.plan);
+    const harPro = await vixxKraeverPro('.vixx-main');
+    if (!harPro) return;
+    // Pro-brugere: toggle-sektioner vises på klik (lazy-load)
+  })();
 
   // Produkt-titel analyse + søgeord (delt kald)
   let seoData = null;
