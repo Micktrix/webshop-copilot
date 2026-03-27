@@ -300,7 +300,7 @@
     `).join('');
 
     // Tidslinje
-    const dage = Object.entries(s.tidslinje);
+    const dage = Object.entries(s.tidslinje || {});
     const max = Math.max(...dage.map(([,v]) => v), 1);
     document.getElementById('tidslinje').innerHTML = dage.map(([dato, antal]) => `
       <div class="tidslinje-bar"
