@@ -113,7 +113,7 @@ app.get('/api/dashboard', requireAuth, async (req, res) => {
   try {
     let orders, customers;
 
-    if (req.shop.demo) {
+    if (req.shop.demo || !req.shop.wooUrl) {
       orders = demoOrders;
       customers = demoCustomers;
     } else {
@@ -159,7 +159,7 @@ app.get('/api/dashboard', requireAuth, async (req, res) => {
 // Forladte kurve
 app.get('/api/forladte-kurve', requireAuth, async (req, res) => {
   try {
-    if (req.shop.demo) return res.json(demoForladteKurve);
+    if (req.shop.demo || !req.shop.wooUrl) return res.json(demoForladteKurve);
     const kurve = await getAdapter(req.shop).getForladteKurve();
     res.json(kurve);
   } catch (err) {
@@ -313,7 +313,7 @@ app.post('/api/marginer', requireAuth, async (req, res) => {
 app.get('/api/konkurrenter', requireAuth, async (req, res) => {
   try {
     let orders;
-    if (req.shop.demo) {
+    if (req.shop.demo || !req.shop.wooUrl) {
       orders = demoOrders;
     } else {
       orders = await getAdapter(req.shop).getOrders();
@@ -328,7 +328,7 @@ app.get('/api/konkurrenter', requireAuth, async (req, res) => {
 app.get('/api/markedsforing', requireAuth, async (req, res) => {
   try {
     let orders, kategorier, shopHtml, shopUrl;
-    if (req.shop.demo) {
+    if (req.shop.demo || !req.shop.wooUrl) {
       orders = demoOrders;
       kategorier = ['Kaffe', 'Kaffemaskiner', 'Tilbehør'];
       shopHtml = '';
@@ -355,7 +355,7 @@ app.post('/api/content-pakke', requireAuth, async (req, res) => {
   try {
     const { titel, beskrivelse, shopProfil } = req.body;
     let orders, kategorier, shopUrl;
-    if (req.shop.demo) {
+    if (req.shop.demo || !req.shop.wooUrl) {
       orders = demoOrders;
       kategorier = ['Kaffe', 'Kaffemaskiner', 'Tilbehør'];
       shopUrl = 'demo-shop.dk';
