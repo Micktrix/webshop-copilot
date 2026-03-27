@@ -4,7 +4,8 @@ import nodemailer from 'nodemailer';
 import 'dotenv/config';
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+const resendKey = process.env.RESEND_API_KEY || process.env.resend_api_key;
+const resend = resendKey ? new Resend(resendKey) : null;
 
 const AFSENDER_MAIL = process.env.RESEND_FROM || 'noreply@vixx.dk';
 const BASE_URL = process.env.BASE_URL || 'https://vixx.dk';
