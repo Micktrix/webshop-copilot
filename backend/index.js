@@ -17,7 +17,7 @@ import { gemKampagne, hentKampagner } from './kampagner.js';
 import { hentTrigger, gemTrigger, koerTriggers } from './triggers.js';
 import { beregnUgensData, sendUgerapport } from './rapport.js';
 import { genererMarkedsforing, genererContentPakke } from './markedsforing.js';
-import { analyserSEO } from './seo.js';
+import { analyserSEO, genererBlogIdeer, genererProduktBeskrivelse } from './seo.js';
 import { logEvent } from './events.js';
 import { registerAdminRoutes } from './admin.js';
 import { demoOrders, demoCustomers, demoForladteKurve } from './demo-data.js';
@@ -397,6 +397,34 @@ app.get('/api/seo', requireAuth, async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// SEO — Blog-idéer
+app.get('/api/seo/blog-ideer', requireAuth, async (req, res) => {
+  try {
+    let orders, kategorier, shopUrl;
+    if (req.shop.demo || !req.shop.wooUrl) {
+      orders = demoOrders; kategorier = ['Kaffe', 'Kaffemaskiner', 'Tilbehør']; shopUrl = 'demo-shop.dk';
+    } else {
+      shopUrl = req.shop.wooUrl;
+      const adapter = getAdapter(req.shop);
+      [orders, kategorier] = await Promise.all([adapter.getOrders(), adapter.getKategorier()]);
+    }
+    const topProdukter = beregnTopProdukter(orders);
+    const data = await genererBlogIdeer({ topProdukter, kategorier, shopUrl });
+    res.json(data);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// SEO — Produkt-beskrivelse
+app.post('/api/seo/produkt-beskrivelse', requireAuth, async (req, res) => {
+  try {
+    const { produktnavn, kategori } = req.body;
+    if (!produktnavn) return res.status(400).json({ error: 'produktnavn er påkrævet' });
+    const shopUrl = req.shop.demo || !req.shop.wooUrl ? 'demo-shop.dk' : req.shop.wooUrl;
+    const data = await genererProduktBeskrivelse({ produktnavn, kategori: kategori || '', shopUrl });
+    res.json(data);
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // Auto-trigger + rapport indstillinger

@@ -308,29 +308,6 @@
     .markeds-knap:hover { background: #6366f1; }
     .markeds-loading { color: #888; font-size: 0.88rem; display: flex; align-items: center; gap: 10px; }
 
-    /* SEO */
-    .seo-produkt-liste { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
-    .seo-produkt-item { border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 16px; }
-    .seo-produkt-item.god { border-color: #86efac; background: #f0fdf4; }
-    .seo-produkt-item.ok { border-color: #fde68a; background: #fffbeb; }
-    .seo-produkt-item.svag { border-color: #fca5a5; background: #fef2f2; }
-    .seo-badge { display: inline-block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 999px; margin-bottom: 8px; }
-    .seo-badge.god { background: #dcfce7; color: #15803d; }
-    .seo-badge.ok { background: #fef9c3; color: #a16207; }
-    .seo-badge.svag { background: #fee2e2; color: #b91c1c; }
-    .seo-original { font-size: 0.82rem; color: #888; margin-bottom: 4px; }
-    .seo-forslag { font-size: 0.92rem; font-weight: 600; color: #1a1a2e; margin-bottom: 6px; }
-    .seo-begrundelse { font-size: 0.8rem; color: #666; }
-    .seo-copy { float: right; font-size: 0.75rem; background: #f1f5f9; border: none; border-radius: 6px; padding: 4px 10px; cursor: pointer; color: #475569; }
-    .seo-copy:hover { background: #e2e8f0; }
-    .seo-soegord-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-    .seo-soegord-kolonne h3 { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
-    .seo-soegord-kolonne.lette h3 { color: #15803d; }
-    .seo-soegord-kolonne.mellemsvare h3 { color: #a16207; }
-    .seo-soegord-kolonne.vaerdifulde h3 { color: #6366f1; }
-    .seo-soegord-tag { display: inline-block; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px 10px; font-size: 0.82rem; margin: 0 4px 6px 0; cursor: pointer; transition: all 0.15s; }
-    .seo-soegord-tag:hover { background: #6366f1; color: white; border-color: #6366f1; }
-
     /* RFM */
     .rfm-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
     .rfm-segment { border-radius: 10px; padding: 14px 18px; flex: 1; min-width: 120px; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; }
@@ -443,7 +420,7 @@
       <span class="nav-ikon">📣</span> Markedsføring
       <span class="nav-pro-badge">Pro</span>
     </a>
-    <a class="nav-item" href="#seo" onclick="setAktiv(this)">
+    <a class="nav-item" href="seo.html">
       <span class="nav-ikon">🔎</span> SEO
       <span class="nav-pro-badge">Pro</span>
     </a>
@@ -847,44 +824,6 @@
         <button class="send-knap" onclick="sendForladte()" style="margin-top:16px;width:auto;padding:10px 24px">✉ Send påmindelses-mail til alle</button>
       </div>
     </div>
-    </section>
-
-    <!-- SEO -->
-    <section id="seo" class="sektion">
-      <div class="sektion-header">
-        <h2>🔎 SEO <span class="badge groen">Pro</span></h2>
-        <div class="sektion-divider"></div>
-      </div>
-
-      <div class="markeds-kort" style="margin-bottom:16px">
-        <div class="markeds-header" onclick="toggleSEO(this)">
-          <div>
-            <h2>🏷️ Produkt-titel analyse</h2>
-            <div class="markeds-undertekst">AI gennemgår dine produkt-titler og foreslår søgeordsoptimerede alternativer</div>
-          </div>
-          <span class="markeds-pil">▼</span>
-        </div>
-        <div class="markeds-body" id="seo-produkt-body">
-          <div id="seo-produkt-indhold">
-            <div class="markeds-loading"><span class="spinner" style="border-color:rgba(0,0,0,0.15);border-top-color:#6366f1"></span> Analyserer produkter...</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="markeds-kort" style="margin-bottom:16px">
-        <div class="markeds-header" onclick="toggleSEOSoegord(this)">
-          <div>
-            <h2>🔍 Søgeords-idéer</h2>
-            <div class="markeds-undertekst">Søgeord din butik bør målrette — sorteret efter sværhedsgrad</div>
-          </div>
-          <span class="markeds-pil">▼</span>
-        </div>
-        <div class="markeds-body" id="seo-soegord-body">
-          <div id="seo-soegord-indhold">
-            <div class="markeds-loading"><span class="spinner" style="border-color:rgba(0,0,0,0.15);border-top-color:#6366f1"></span> Genererer søgeords-idéer...</div>
-          </div>
-        </div>
-      </div>
     </section>
 
     <section id="segmentering" class="sektion">
@@ -1688,80 +1627,6 @@
   }
 
   let markedsHentet = false;
-
-  // SEO
-  let seoHentet = false;
-
-  function toggleSEO(header) {
-    const body = document.getElementById('seo-produkt-body');
-    const pil = header.querySelector('.markeds-pil');
-    const aaben = body.classList.toggle('aaben');
-    pil.style.transform = aaben ? 'rotate(180deg)' : '';
-    if (aaben && !seoHentet) {
-      seoHentet = true;
-      hentSEO();
-    }
-  }
-
-  function toggleSEOSoegord(header) {
-    const body = document.getElementById('seo-soegord-body');
-    const pil = header.querySelector('.markeds-pil');
-    const aaben = body.classList.toggle('aaben');
-    pil.style.transform = aaben ? 'rotate(180deg)' : '';
-    if (aaben && !seoHentet) {
-      seoHentet = true;
-      hentSEO();
-    }
-  }
-
-  async function hentSEO() {
-    try {
-      const res = await fetch('/api/seo', { headers: { 'x-token': token } });
-      const data = await res.json();
-
-      // Produkt-analyse
-      const produktEl = document.getElementById('seo-produkt-indhold');
-      if (!data.produktAnalyse?.length) {
-        produktEl.innerHTML = '<div class="tom">Ingen produkter at analysere.</div>';
-      } else {
-        produktEl.innerHTML = `<div class="seo-produkt-liste">${data.produktAnalyse.map(p => `
-          <div class="seo-produkt-item ${p.vurdering}">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start">
-              <span class="seo-badge ${p.vurdering}">${p.vurdering === 'god' ? '✓ God' : p.vurdering === 'ok' ? '~ OK' : '✗ Svag'}</span>
-              <button class="seo-copy" onclick="navigator.clipboard.writeText('${p.forslag.replace(/'/g, "\\'")}');this.textContent='Kopieret!'">Kopiér forslag</button>
-            </div>
-            <div class="seo-original">Original: ${p.original}</div>
-            <div class="seo-forslag">→ ${p.forslag}</div>
-            <div class="seo-begrundelse">${p.begrundelse}</div>
-          </div>`).join('')}
-        </div>`;
-      }
-
-      // Søgeords-idéer
-      const soegordEl = document.getElementById('seo-soegord-indhold');
-      const s = data.soegord || {};
-      soegordEl.innerHTML = `
-        <div class="seo-soegord-grid">
-          <div class="seo-soegord-kolonne lette">
-            <h3>🟢 Lette at ranke</h3>
-            ${(s.lette || []).map(k => `<span class="seo-soegord-tag" onclick="navigator.clipboard.writeText('${k}')">${k}</span>`).join('')}
-          </div>
-          <div class="seo-soegord-kolonne mellemsvare">
-            <h3>🟡 Mellemsvære</h3>
-            ${(s.mellемsvære || s['mellемsvære'] || s.mellemsvare || []).map(k => `<span class="seo-soegord-tag" onclick="navigator.clipboard.writeText('${k}')">${k}</span>`).join('')}
-          </div>
-          <div class="seo-soegord-kolonne vaerdifulde">
-            <h3>🟣 Værdifulde</h3>
-            ${(s.værdifulde || s.vaerdifulde || []).map(k => `<span class="seo-soegord-tag" onclick="navigator.clipboard.writeText('${k}')">${k}</span>`).join('')}
-          </div>
-        </div>
-        <p style="font-size:0.78rem;color:#aaa;margin-top:16px">Klik på et søgeord for at kopiere det</p>`;
-
-    } catch (err) {
-      document.getElementById('seo-produkt-indhold').innerHTML = '<div class="tom">Kunne ikke hente SEO-analyse.</div>';
-      document.getElementById('seo-soegord-indhold').innerHTML = '';
-    }
-  }
 
   function toggleMarkedsforing(header) {
     const body = document.getElementById('markeds-body');

@@ -50,3 +50,72 @@ Returner KUN dette JSON (ingen forklaring, ingen markdown):
   const match = raw.match(/\{[\s\S]*\}/);
   return JSON.parse(match ? match[0] : raw);
 }
+
+export async function genererBlogIdeer({ topProdukter, kategorier, shopUrl }) {
+  const produktListe = topProdukter.slice(0, 5).map(p => p.navn).join(', ');
+  const kategoriListe = kategorier.slice(0, 5).join(', ');
+
+  const prompt = `Du er en dansk content-strateg der hjælper webshops med SEO via blogindlæg.
+
+Butik: ${shopUrl}
+Kategorier: ${kategoriListe}
+Topsælgende produkter: ${produktListe}
+
+Generer 6 blogindlæg-idéer der:
+- Matcher søgeord potentielle kunder søger på
+- Understøtter salget af ovenstående produkter
+- Er realistiske for en lille webshop at skrive
+
+Returner KUN dette JSON (ingen forklaring, ingen markdown):
+{
+  "ideer": [
+    {
+      "titel": "Blogindlæg-titel der er SEO-venlig",
+      "soegord": "primært søgeord",
+      "beskrivelse": "2 sætninger om hvad indlægget skal handle om",
+      "svaerhed": "let|medium|svær"
+    }
+  ]
+}`;
+
+  const response = await client.messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 1200,
+    messages: [{ role: 'user', content: prompt }]
+  });
+
+  const raw = response.content[0].text;
+  const match = raw.match(/\{[\s\S]*\}/);
+  return JSON.parse(match ? match[0] : raw);
+}
+
+export async function genererProduktBeskrivelse({ produktnavn, kategori, shopUrl }) {
+  const prompt = `Du er en dansk SEO-tekstforfatter der skriver produktbeskrivelser til webshops.
+
+Produkt: ${produktnavn}
+Kategori: ${kategori}
+Butik: ${shopUrl}
+
+Skriv en SEO-optimeret produktbeskrivelse der:
+- Er 80-120 ord
+- Indeholder relevante søgeord naturligt
+- Fremhæver fordele frem for features
+- Er på dansk og har en venlig tone
+
+Returner KUN dette JSON (ingen forklaring, ingen markdown):
+{
+  "beskrivelse": "den færdige produktbeskrivelse her",
+  "metaBeskrivelse": "meta description på max 155 tegn",
+  "soegord": ["søgeord1", "søgeord2", "søgeord3"]
+}`;
+
+  const response = await client.messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 600,
+    messages: [{ role: 'user', content: prompt }]
+  });
+
+  const raw = response.content[0].text;
+  const match = raw.match(/\{[\s\S]*\}/);
+  return JSON.parse(match ? match[0] : raw);
+}

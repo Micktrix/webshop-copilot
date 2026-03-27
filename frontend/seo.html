@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vixx — SEO</title>
+  <script src="shared.js"></script>
+  <style>
+    /* SEO-specifikke styles */
+    .seo-produkt-liste { display: flex; flex-direction: column; gap: 12px; margin-bottom: 8px; }
+    .seo-produkt-item { border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 16px; }
+    .seo-produkt-item.god { border-color: #86efac; background: #f0fdf4; }
+    .seo-produkt-item.ok { border-color: #fde68a; background: #fffbeb; }
+    .seo-produkt-item.svag { border-color: #fca5a5; background: #fef2f2; }
+    .seo-badge { display: inline-block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 999px; margin-bottom: 8px; }
+    .seo-badge.god { background: #dcfce7; color: #15803d; }
+    .seo-badge.ok { background: #fef9c3; color: #a16207; }
+    .seo-badge.svag { background: #fee2e2; color: #b91c1c; }
+    .seo-original { font-size: 0.82rem; color: #888; margin-bottom: 4px; }
+    .seo-forslag { font-size: 0.92rem; font-weight: 600; color: #1a1a2e; margin-bottom: 6px; }
+    .seo-begrundelse { font-size: 0.8rem; color: #666; }
+    .seo-copy { float: right; font-size: 0.75rem; background: #f1f5f9; border: none; border-radius: 6px; padding: 4px 10px; cursor: pointer; color: #475569; }
+    .seo-copy:hover { background: #e2e8f0; }
+
+    .seo-soegord-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .seo-soegord-kolonne h3 { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+    .seo-soegord-kolonne.lette h3 { color: #15803d; }
+    .seo-soegord-kolonne.mellemsvare h3 { color: #a16207; }
+    .seo-soegord-kolonne.vaerdifulde h3 { color: #6366f1; }
+    .seo-soegord-tag { display: inline-block; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px 10px; font-size: 0.82rem; margin: 0 4px 6px 0; cursor: pointer; transition: all 0.15s; }
+    .seo-soegord-tag:hover { background: #6366f1; color: white; border-color: #6366f1; }
+
+    .blog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .blog-kort { border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 16px; background: white; }
+    .blog-svaerhed { display: inline-block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; margin-bottom: 8px; }
+    .blog-svaerhed.let { background: #dcfce7; color: #15803d; }
+    .blog-svaerhed.medium { background: #fef9c3; color: #a16207; }
+    .blog-svaerhed.svaer { background: #fee2e2; color: #b91c1c; }
+    .blog-titel { font-size: 0.92rem; font-weight: 600; color: #1a1a2e; margin-bottom: 6px; }
+    .blog-soegord { font-size: 0.78rem; color: #6366f1; font-weight: 600; margin-bottom: 6px; }
+    .blog-beskrivelse { font-size: 0.82rem; color: #666; line-height: 1.5; }
+    .blog-copy { margin-top: 10px; width: 100%; padding: 7px; border: 1px solid #e2e8f0; border-radius: 7px; background: white; font-size: 0.78rem; cursor: pointer; color: #475569; transition: all 0.15s; }
+    .blog-copy:hover { background: #1a1a2e; color: white; border-color: #1a1a2e; }
+
+    .pb-form { display: flex; flex-direction: column; gap: 12px; }
+    .pb-form label { font-size: 0.82rem; font-weight: 600; color: #555; margin-bottom: 4px; display: block; }
+    .pb-form input { width: 100%; padding: 10px 14px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.9rem; outline: none; font-family: inherit; }
+    .pb-form input:focus { border-color: #6366f1; }
+    .pb-resultat { margin-top: 20px; }
+    .pb-tekst-boks { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; font-size: 0.9rem; line-height: 1.7; color: #1a1a2e; margin-bottom: 12px; }
+    .pb-meta-boks { background: #ede9fe; border-radius: 8px; padding: 12px 16px; font-size: 0.82rem; color: #4c1d95; margin-bottom: 12px; }
+    .pb-meta-label { font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .pb-soegord-liste { display: flex; flex-wrap: wrap; gap: 6px; }
+  </style>
+</head>
+<body>
+<div id="sidebar-container"></div>
+
+<div class="vixx-main">
+  <div class="sektion">
+    <div class="sektion-header">
+      <h2>🔎 SEO <span class="badge groen">Pro</span></h2>
+      <div class="sektion-divider"></div>
+    </div>
+
+    <!-- Produkt-titel analyse -->
+    <div class="markeds-kort">
+      <div class="markeds-header" onclick="toggle('seo-produkt-body', this, hentSEO)">
+        <div>
+          <h2>🏷️ Produkt-titel analyse</h2>
+          <div class="markeds-undertekst">AI gennemgår dine produkt-titler og foreslår søgeordsoptimerede alternativer</div>
+        </div>
+        <span class="markeds-pil">▼</span>
+      </div>
+      <div class="markeds-body" id="seo-produkt-body">
+        <div id="seo-produkt-indhold">
+          <div class="markeds-loading"><span class="spinner"></span> Analyserer produkter...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Søgeords-idéer -->
+    <div class="markeds-kort">
+      <div class="markeds-header" onclick="toggle('seo-soegord-body', this, hentSEO)">
+        <div>
+          <h2>🔍 Søgeords-idéer</h2>
+          <div class="markeds-undertekst">Søgeord din butik bør målrette — sorteret efter sværhedsgrad</div>
+        </div>
+        <span class="markeds-pil">▼</span>
+      </div>
+      <div class="markeds-body" id="seo-soegord-body">
+        <div id="seo-soegord-indhold">
+          <div class="markeds-loading"><span class="spinner"></span> Genererer søgeords-idéer...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Blog-idé generator -->
+    <div class="markeds-kort">
+      <div class="markeds-header" onclick="toggle('blog-body', this, hentBlogIdeer)">
+        <div>
+          <h2>📰 Blog-idé generator</h2>
+          <div class="markeds-undertekst">AI foreslår blogindlæg der tiltrækker kunder via Google — baseret på dine produkter</div>
+        </div>
+        <span class="markeds-pil">▼</span>
+      </div>
+      <div class="markeds-body" id="blog-body">
+        <div id="blog-indhold">
+          <div class="markeds-loading"><span class="spinner"></span> Genererer blogidéer...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Produkt-beskrivelse generator -->
+    <div class="markeds-kort">
+      <div class="markeds-header" onclick="toggle('pb-body', this)">
+        <div>
+          <h2>📝 Produkt-beskrivelse generator</h2>
+          <div class="markeds-undertekst">Skriv et produktnavn — AI genererer en SEO-optimeret beskrivelse</div>
+        </div>
+        <span class="markeds-pil">▼</span>
+      </div>
+      <div class="markeds-body" id="pb-body">
+        <div class="pb-form">
+          <div>
+            <label>Produktnavn</label>
+            <input id="pb-produktnavn" type="text" placeholder="f.eks. Bodum Bistro kaffemaskine">
+          </div>
+          <div>
+            <label>Kategori <span style="font-weight:400;color:#aaa">(valgfri)</span></label>
+            <input id="pb-kategori" type="text" placeholder="f.eks. Kaffemaskiner">
+          </div>
+          <button class="send-knap" onclick="genererBeskrivelse()" style="width:auto;padding:10px 24px">✦ Generer beskrivelse</button>
+        </div>
+        <div id="pb-resultat" class="pb-resultat" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  renderSidebar('seo');
+  const token = vixxCheckAuth();
+
+  // Generisk toggle-hjælpefunktion
+  const hentet = {};
+  function toggle(bodyId, header, fetchFn) {
+    const body = document.getElementById(bodyId);
+    const pil = header.querySelector('.markeds-pil');
+    const aaben = body.classList.toggle('aaben');
+    pil.style.transform = aaben ? 'rotate(180deg)' : '';
+    if (aaben && fetchFn && !hentet[bodyId]) {
+      hentet[bodyId] = true;
+      fetchFn();
+    }
+  }
+
+  // Sæt shop-navn i sidebar
+  fetch('/api/dashboard', { headers: { 'x-token': token } })
+    .then(r => r.json())
+    .then(d => { if (d.shop?.wooUrl) document.getElementById('sidebar-shopnavn').textContent = d.shop.wooUrl; })
+    .catch(() => {});
+
+  // Produkt-titel analyse + søgeord (delt kald)
+  let seoData = null;
+  async function hentSEO() {
+    if (seoData) { visSEOData(seoData); return; }
+    try {
+      const res = await fetch('/api/seo', { headers: { 'x-token': token } });
+      seoData = await res.json();
+      visSEOData(seoData);
+    } catch {
+      document.getElementById('seo-produkt-indhold').innerHTML = '<div class="tom">Kunne ikke hente analyse.</div>';
+      document.getElementById('seo-soegord-indhold').innerHTML = '';
+    }
+  }
+
+  function visSEOData(data) {
+    // Produkt-analyse
+    const produktEl = document.getElementById('seo-produkt-indhold');
+    if (!data.produktAnalyse?.length) {
+      produktEl.innerHTML = '<div class="tom">Ingen produkter at analysere.</div>';
+    } else {
+      produktEl.innerHTML = `<div class="seo-produkt-liste">${data.produktAnalyse.map(p => `
+        <div class="seo-produkt-item ${p.vurdering}">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <span class="seo-badge ${p.vurdering}">${p.vurdering === 'god' ? '✓ God' : p.vurdering === 'ok' ? '~ OK' : '✗ Svag'}</span>
+            <button class="seo-copy" onclick="navigator.clipboard.writeText(this.dataset.tekst);this.textContent='Kopieret!'" data-tekst="${p.forslag.replace(/"/g,'&quot;')}">Kopiér forslag</button>
+          </div>
+          <div class="seo-original">Original: ${p.original}</div>
+          <div class="seo-forslag">→ ${p.forslag}</div>
+          <div class="seo-begrundelse">${p.begrundelse}</div>
+        </div>`).join('')}
+      </div>`;
+    }
+
+    // Søgeord
+    const s = data.soegord || {};
+    const mellemsvare = s.mellemsvære || s['mellемsvære'] || s.mellemsvare || [];
+    document.getElementById('seo-soegord-indhold').innerHTML = `
+      <div class="seo-soegord-grid">
+        <div class="seo-soegord-kolonne lette">
+          <h3>🟢 Lette at ranke</h3>
+          ${(s.lette || []).map(k => `<span class="seo-soegord-tag" onclick="navigator.clipboard.writeText('${k.replace(/'/g,"\\'")}');this.style.background='#6366f1';this.style.color='white'">${k}</span>`).join('')}
+        </div>
+        <div class="seo-soegord-kolonne mellemsvare">
+          <h3>🟡 Mellemsvære</h3>
+          ${mellemsvare.map(k => `<span class="seo-soegord-tag" onclick="navigator.clipboard.writeText('${k.replace(/'/g,"\\'")}');this.style.background='#6366f1';this.style.color='white'">${k}</span>`).join('')}
+        </div>
+        <div class="seo-soegord-kolonne vaerdifulde">
+          <h3>🟣 Værdifulde</h3>
+          ${(s.værdifulde || s.vaerdifulde || []).map(k => `<span class="seo-soegord-tag" onclick="navigator.clipboard.writeText('${k.replace(/'/g,"\\'")}');this.style.background='#6366f1';this.style.color='white'">${k}</span>`).join('')}
+        </div>
+      </div>
+      <p style="font-size:0.78rem;color:#aaa;margin-top:16px">Klik på et søgeord for at kopiere det</p>`;
+  }
+
+  // Blog-idéer
+  async function hentBlogIdeer() {
+    try {
+      const res = await fetch('/api/seo/blog-ideer', { headers: { 'x-token': token } });
+      const data = await res.json();
+      const ideer = data.ideer || [];
+      if (!ideer.length) {
+        document.getElementById('blog-indhold').innerHTML = '<div class="tom">Ingen idéer genereret.</div>';
+        return;
+      }
+      document.getElementById('blog-indhold').innerHTML = `
+        <div class="blog-grid">
+          ${ideer.map(i => `
+            <div class="blog-kort">
+              <span class="blog-svaerhed ${i.svaerhed}">${i.svaerhed}</span>
+              <div class="blog-titel">${i.titel}</div>
+              <div class="blog-soegord">🔑 ${i.soegord}</div>
+              <div class="blog-beskrivelse">${i.beskrivelse}</div>
+              <button class="blog-copy" onclick="navigator.clipboard.writeText(this.dataset.tekst);this.textContent='✓ Kopieret!'" data-tekst="${i.titel.replace(/"/g,'&quot;')}">Kopiér titel</button>
+            </div>`).join('')}
+        </div>`;
+    } catch {
+      document.getElementById('blog-indhold').innerHTML = '<div class="tom">Kunne ikke hente blog-idéer.</div>';
+    }
+  }
+
+  // Produkt-beskrivelse
+  async function genererBeskrivelse() {
+    const produktnavn = document.getElementById('pb-produktnavn').value.trim();
+    if (!produktnavn) { alert('Indtast et produktnavn'); return; }
+    const kategori = document.getElementById('pb-kategori').value.trim();
+    const resultatEl = document.getElementById('pb-resultat');
+    resultatEl.style.display = 'block';
+    resultatEl.innerHTML = '<div class="markeds-loading"><span class="spinner"></span> Genererer beskrivelse...</div>';
+
+    try {
+      const res = await fetch('/api/seo/produkt-beskrivelse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-token': token },
+        body: JSON.stringify({ produktnavn, kategori })
+      });
+      const data = await res.json();
+      resultatEl.innerHTML = `
+        <div class="pb-tekst-boks">${data.beskrivelse}</div>
+        <div class="pb-meta-boks">
+          <div class="pb-meta-label">Meta description</div>
+          ${data.metaBeskrivelse}
+        </div>
+        <div class="pb-soegord-liste">
+          ${(data.soegord || []).map(k => `<span class="seo-soegord-tag">${k}</span>`).join('')}
+        </div>
+        <div style="display:flex;gap:10px;margin-top:14px">
+          <button class="send-knap" style="width:auto;padding:9px 20px" onclick="navigator.clipboard.writeText(document.querySelector('.pb-tekst-boks').textContent);this.textContent='✓ Kopieret!'">Kopiér beskrivelse</button>
+          <button class="send-knap" style="width:auto;padding:9px 20px;background:#f1f5f9;color:#555" onclick="document.getElementById('pb-resultat').style.display='none';document.getElementById('pb-produktnavn').value='';document.getElementById('pb-kategori').value=''">Generer ny</button>
+        </div>`;
+    } catch {
+      resultatEl.innerHTML = '<div class="tom">Kunne ikke generere beskrivelse. Prøv igen.</div>';
+    }
+  }
+</script>
+</body>
+</html>
