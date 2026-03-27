@@ -46,13 +46,16 @@ const SIDEBAR_CSS = `
   .sidebar-upgrade p { font-size: 0.78rem; color: rgba(255,255,255,0.85); margin-bottom: 10px; line-height: 1.4; }
   .sidebar-upgrade button { width: 100%; padding: 8px; background: white; color: #6366f1; border: none; border-radius: 7px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s; }
   .sidebar-upgrade button:hover { opacity: 0.9; }
-  .pro-gate { background: white; border-radius: 16px; border: 1px solid #e2e8f0; padding: 60px 40px; text-align: center; max-width: 480px; margin: 60px auto; }
-  .pro-gate-ikon { font-size: 3rem; margin-bottom: 16px; }
-  .pro-gate h2 { font-size: 1.3rem; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
-  .pro-gate p { color: #64748b; font-size: 0.93rem; margin-bottom: 24px; line-height: 1.6; }
-  .pro-gate-knap { display: inline-block; padding: 12px 28px; background: #6366f1; color: white; border: none; border-radius: 9px; font-size: 0.95rem; font-weight: 700; cursor: pointer; text-decoration: none; transition: background 0.2s; }
+  .pro-blur-wrapper { position: relative; }
+  .pro-blur-inner { filter: blur(4px); pointer-events: none; user-select: none; max-height: 600px; overflow: hidden; }
+  .pro-blur-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(248,250,252,0.3) 0%, rgba(248,250,252,0.97) 60%); display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 48px; }
+  .pro-overlay-kort { background: white; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 8px 32px rgba(99,102,241,0.12); padding: 32px 40px; text-align: center; max-width: 420px; width: 90%; }
+  .pro-overlay-ikon { font-size: 2rem; margin-bottom: 10px; }
+  .pro-overlay-kort h2 { font-size: 1.15rem; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+  .pro-overlay-kort p { color: #64748b; font-size: 0.88rem; margin-bottom: 20px; line-height: 1.5; }
+  .pro-gate-knap { display: inline-block; padding: 11px 26px; background: #6366f1; color: white; border: none; border-radius: 9px; font-size: 0.92rem; font-weight: 700; cursor: pointer; text-decoration: none; transition: background 0.2s; }
   .pro-gate-knap:hover { background: #4f46e5; }
-  .pro-gate-pris { font-size: 0.82rem; color: #94a3b8; margin-top: 12px; }
+  .pro-gate-pris { font-size: 0.78rem; color: #94a3b8; margin-top: 10px; }
 `;
 
 function injectSidebarCSS() {
@@ -129,7 +132,7 @@ async function vixxOpgrader() {
   }
 }
 
-// Bruger på gratis-plan — vis Pro-gate i stedet for indhold
+// Bruger på gratis-plan — vis sløret preview med upgrade-overlay
 async function vixxKraeverPro(containerSelector) {
   const token = localStorage.getItem('token');
   const res = await fetch('/api/profil', { headers: { 'x-token': token } });
@@ -138,13 +141,19 @@ async function vixxKraeverPro(containerSelector) {
 
   const el = document.querySelector(containerSelector);
   if (el) {
+    const original = el.innerHTML;
     el.innerHTML = `
-      <div class="pro-gate">
-        <div class="pro-gate-ikon">⭐</div>
-        <h2>Denne funktion kræver Pro</h2>
-        <p>Opgrader til Vixx Pro og få adgang til Kundeklub, automatiseret marketing, SEO-analyse og meget mere.</p>
-        <button class="pro-gate-knap" onclick="vixxOpgrader()">Opgrader til Pro</button>
-        <p class="pro-gate-pris">299 kr/md · Ingen binding · Annuller når som helst</p>
+      <div class="pro-blur-wrapper">
+        <div class="pro-blur-inner">${original}</div>
+        <div class="pro-blur-overlay">
+          <div class="pro-overlay-kort">
+            <div class="pro-overlay-ikon">⭐</div>
+            <h2>Dette er en Pro-funktion</h2>
+            <p>Opgrader og få adgang til Kundeklub, automatiseret marketing, SEO-analyse og meget mere.</p>
+            <button class="pro-gate-knap" onclick="vixxOpgrader()">Opgrader til Pro — 299 kr/md</button>
+            <p class="pro-gate-pris">Ekskl. moms · Ingen binding · Annuller når som helst</p>
+          </div>
+        </div>
       </div>`;
   }
   return false;
