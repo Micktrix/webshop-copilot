@@ -461,9 +461,6 @@
 
   let nyeKunderDenneMaaned = 0;
 
-  document.querySelector('header').insertAdjacentHTML('beforeend',
-    '<button onclick="logud()" style="margin-left:auto;background:rgba(255,255,255,0.1);border:none;color:white;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:0.85rem;">Log ud</button>'
-  );
 
   function logud() { localStorage.removeItem('token'); window.location.href = 'login.html'; }
 
