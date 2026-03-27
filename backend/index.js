@@ -12,7 +12,7 @@ import { overvaagsKonkurrenter } from './markedsforing.js';
 import { genererTip } from './ai.js';
 import { registerShop, loginShop, requireAuth } from './auth.js';
 import pool from './db.js';
-import { genererMail, sendMails } from './mail.js';
+import { genererMail, sendMails, sendVelkomstMail } from './mail.js';
 import { gemKampagne, hentKampagner } from './kampagner.js';
 import { hentTrigger, gemTrigger, koerTriggers } from './triggers.js';
 import { beregnUgensData, sendUgerapport } from './rapport.js';
@@ -129,6 +129,8 @@ app.post('/api/register', loginLimiter, async (req, res) => {
     }
     const token = await registerShop(req.body);
     res.json({ token });
+    // Send velkomstmail asynkront (blokerer ikke svaret)
+    sendVelkomstMail(req.body.email).catch(e => console.warn('Velkomstmail fejl:', e.message));
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
