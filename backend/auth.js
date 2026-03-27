@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import pool from './db.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -37,6 +38,35 @@ export async function loginShop({ email, password }) {
   );
 
   return jwt.sign({ email: shop.email }, JWT_SECRET, { expiresIn: JWT_EXPIRY });
+}
+
+export async function anmodNulstilAdgangskode(email) {
+  const result = await pool.query('SELECT email FROM shops WHERE email = $1', [email]);
+  if (!result.rows[0]) return; // Giv ikke info om hvorvidt emailen findes
+
+  const token = crypto.randomBytes(32).toString('hex');
+  const udloeber = new Date(Date.now() + 60 * 60 * 1000); // 1 time
+
+  await pool.query(
+    'UPDATE shops SET reset_token = $1, reset_token_expires = $2 WHERE email = $3',
+    [token, udloeber, email]
+  );
+
+  return token;
+}
+
+export async function nulstilAdgangskode(token, nyAdgangskode) {
+  const result = await pool.query(
+    'SELECT email FROM shops WHERE reset_token = $1 AND reset_token_expires > now()',
+    [token]
+  );
+  if (!result.rows[0]) throw new Error('Linket er ugyldigt eller udløbet.');
+
+  const passwordHash = await bcrypt.hash(nyAdgangskode, 12);
+  await pool.query(
+    'UPDATE shops SET password_hash = $1, reset_token = NULL, reset_token_expires = NULL WHERE email = $2',
+    [passwordHash, result.rows[0].email]
+  );
 }
 
 export async function requireAuth(req, res, next) {

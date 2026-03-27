@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <script src="/cookie-banner.js"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-B3YP50009W"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-B3YP50009W');</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hvad er churn — og hvordan måler du det i din WooCommerce-butik?</title>
+  <meta name="description" content="Churn er den andel af dine kunder der aldrig handler igen. Lær hvad churn betyder for din webshop, hvordan du beregner det, og hvad du kan gøre ved det.">
+  <link rel="canonical" href="https://www.vixx.dk/blog/hvad-er-churn-woocommerce.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.vixx.dk/blog/hvad-er-churn-woocommerce.html">
+  <meta property="og:title" content="Hvad er churn — og hvordan måler du det i din WooCommerce-butik?">
+  <meta property="og:description" content="Churn er den andel af dine kunder der aldrig handler igen. Lær hvad churn betyder for din webshop, og hvad du kan gøre ved det.">
+  <meta property="og:locale" content="da_DK">
+  <meta property="og:site_name" content="Vixx">
+  <script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Hvad er churn — og hvordan måler du det i din WooCommerce-butik?",
+    "description": "Churn er den andel af dine kunder der aldrig handler igen. Lær hvad churn betyder for din webshop, og hvad du kan gøre ved det.",
+    "datePublished": "2026-03-27",
+    "author": { "@type": "Organization", "name": "Vixx" },
+    "publisher": { "@type": "Organization", "name": "Vixx", "url": "https://www.vixx.dk" }
+  }</script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8fafc; color: #1a1a2e; }
+    .top { background: #0f172a; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; }
+    .top-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .brand-ikon { width: 32px; height: 32px; background: #6366f1; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1rem; }
+    .brand-navn { color: white; font-weight: 700; font-size: 1rem; }
+    .top-cta { background: #6366f1; color: white; text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; transition: background 0.15s; }
+    .top-cta:hover { background: #4f46e5; }
+    .artikel-wrap { max-width: 720px; margin: 0 auto; padding: 56px 24px 96px; }
+    .breadcrumb { font-size: 0.82rem; color: #94a3b8; margin-bottom: 28px; }
+    .breadcrumb a { color: #6366f1; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .meta { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .tag { background: #eef2ff; color: #6366f1; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .dato { font-size: 0.82rem; color: #94a3b8; }
+    h1 { font-size: 2rem; font-weight: 800; color: #0f172a; line-height: 1.25; margin-bottom: 16px; }
+    .ingress { font-size: 1.1rem; color: #475569; line-height: 1.65; margin-bottom: 40px; border-left: 3px solid #6366f1; padding-left: 18px; }
+    h2 { font-size: 1.2rem; font-weight: 700; color: #0f172a; margin: 40px 0 12px; }
+    h3 { font-size: 1rem; font-weight: 700; color: #0f172a; margin: 28px 0 10px; }
+    p { color: #475569; line-height: 1.75; margin-bottom: 16px; font-size: 0.97rem; }
+    ul, ol { color: #475569; line-height: 1.75; margin: 0 0 16px 22px; font-size: 0.97rem; }
+    li { margin-bottom: 6px; }
+    strong { color: #1a1a2e; }
+    .boks { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 24px 28px; margin: 28px 0; }
+    .boks-titel { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.8px; color: #6366f1; font-weight: 700; margin-bottom: 10px; }
+    .formel { background: #f1f5f9; border-radius: 8px; padding: 16px 20px; font-family: monospace; font-size: 0.95rem; color: #0f172a; margin: 16px 0; text-align: center; }
+    .cta-boks { background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 16px; padding: 36px 32px; text-align: center; margin-top: 56px; }
+    .cta-boks h2 { color: white; margin: 0 0 10px; font-size: 1.3rem; }
+    .cta-boks p { color: rgba(255,255,255,0.8); margin-bottom: 24px; font-size: 0.95rem; }
+    .cta-knap { display: inline-block; background: white; color: #6366f1; text-decoration: none; padding: 13px 28px; border-radius: 9px; font-weight: 700; font-size: 0.95rem; transition: opacity 0.15s; }
+    .cta-knap:hover { opacity: 0.92; }
+    .relaterede { margin-top: 56px; border-top: 1px solid #e2e8f0; padding-top: 40px; }
+    .relaterede h3 { font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 16px; }
+    .rel-links { display: flex; flex-direction: column; gap: 10px; }
+    .rel-links a { color: #6366f1; text-decoration: none; font-size: 0.92rem; font-weight: 500; }
+    .rel-links a:hover { text-decoration: underline; }
+    @media (max-width: 600px) { h1 { font-size: 1.5rem; } .top { padding: 14px 20px; } }
+  </style>
+</head>
+<body>
+
+<div class="top">
+  <a class="top-brand" href="/index.html">
+    <div class="brand-ikon">◈</div>
+    <span class="brand-navn">Vixx</span>
+  </a>
+  <a class="top-cta" href="/login.html">Prøv gratis →</a>
+</div>
+
+<div class="artikel-wrap">
+
+  <div class="breadcrumb">
+    <a href="/index.html">Vixx</a> › <a href="/blog/">Blog</a> › Hvad er churn?
+  </div>
+
+  <div class="meta">
+    <span class="tag">Analyse</span>
+    <span class="dato">27. marts 2026</span>
+  </div>
+
+  <h1>Hvad er churn — og hvordan måler du det i din WooCommerce-butik?</h1>
+
+  <p class="ingress">Churn er den andel af dine kunder der aldrig handler igen. For de fleste webshops er det et af de vigtigste tal — alligevel er det det færreste der overhovedet ved, hvad deres churnrate er. Her er hvad det betyder, og hvad du kan gøre ved det.</p>
+
+  <h2>Hvad er churn?</h2>
+  <p>Churn (også kaldet kundefrafald) er kort sagt: <strong>den procentdel af dine kunder der stopper med at købe hos dig</strong>. I abonnementsbranchen er det enkelt at måle — enten betaler kunden næste måned, eller gør de ikke. I en webshop er det lidt mere nuanceret.</p>
+  <p>For en webshop definerer man typisk churn som kunder der ikke har købt noget inden for en given periode — f.eks. 90 eller 180 dage afhængigt af din branche og gennemsnitlige købsfrekvens.</p>
+
+  <div class="boks">
+    <div class="boks-titel">Eksempel</div>
+    <p style="margin:0">Du har 500 kunder der har handlet inden for det seneste år. Af dem er 320 ikke vendt tilbage i over 90 dage. Det giver en churnrate på <strong>64%</strong> — altså 64% af dine kunder er ved at være tabt.</p>
+  </div>
+
+  <h2>Hvordan beregner du din churnrate?</h2>
+  <p>Den enkleste måde at beregne churn på for en webshop er:</p>
+  <div class="formel">Churnrate = (kunder uden køb i X dage) ÷ (alle kunder) × 100</div>
+  <p>Hvad X skal være afhænger af din butik. Sælger du forbrugsvarer folk køber månedligt, er 90 dage passende. Sælger du møbler eller elektronik, giver 365 dage mere mening.</p>
+
+  <h2>Hvorfor er churn så vigtigt?</h2>
+  <p>En ny kunde koster typisk 5–7 gange mere at skaffe end at fastholde en eksisterende. Hvis din churnrate er høj, løber du konstant for at fylde en utæt spand — du bruger penge på markedsføring for at erstatte kunder du allerede har mistet.</p>
+  <p>Høj churn er ofte et tegn på et af disse problemer:</p>
+  <ul>
+    <li>Kunden var ikke det rigtige match til din butik (forkert trafik)</li>
+    <li>Oplevelsen efter købet skuffede (levering, kvalitet, service)</li>
+    <li>Du har ingen strategi for at hente kunder tilbage</li>
+    <li>Konkurrenterne er billigere eller hurtigere</li>
+  </ul>
+
+  <h2>Hvad kan du gøre for at reducere churn?</h2>
+
+  <h3>1. Identificér dem i tide</h3>
+  <p>Kunder churner ikke fra dag til dag — de bliver gradvist mere inaktive. Sæt en grænse: kunder der ikke har købt i f.eks. 60 dage er i risiko. Det er her du skal sætte ind, ikke efter 180 dage.</p>
+
+  <h3>2. Send en win-back kampagne</h3>
+  <p>En målrettet e-mail til inaktive kunder — gerne med et lille incitament som gratis fragt eller 10% rabat — kan nemt hente 5–15% af dem tilbage. Det kræver at du segmenterer din kundeliste, ikke sender det til alle.</p>
+
+  <h3>3. Arbejd med post-purchase oplevelsen</h3>
+  <p>Den mail der sendes dagen efter et køb er din bedste mulighed for at skabe et godt indtryk. Spørg om tilfredshed, anbefal relaterede produkter, og gør det nemt at komme tilbage.</p>
+
+  <h3>4. Følg churn over tid</h3>
+  <p>Churn er ikke et tal du måler én gang. Det er noget du overvåger løbende. Er din churnrate stigende måned for måned? Falder den efter du har lavet en kampagne? Tallene fortæller historien.</p>
+
+  <div class="boks">
+    <div class="boks-titel">Hvad er en god churnrate for en webshop?</div>
+    <p>Det varierer meget efter branche. En gennemsnitlig e-commerce churnrate ligger typisk på <strong>60–80%</strong> (ja, det er normalt at miste mange kunder). Er du under 50%, gør du det rigtig godt. Over 80% er et signal om at der er noget strukturelt galt — enten med produktet, prisen eller konkurrencesituationen.</p>
+  </div>
+
+  <h2>Hvordan finder du disse tal i WooCommerce?</h2>
+  <p>WooCommerce har desværre ingen indbygget churn-analyse. Du kan trække ordredata manuelt og beregne det i Excel — men det er tidskrævende og giver kun et øjebliksbillede.</p>
+  <p>Det er præcis problemet Vixx løser: dashboardet beregner automatisk din churnrate dagligt ud fra dine WooCommerce- eller Shopify-data, segmenterer kunder i aktive, i risiko og tabte — og lader dig sende målrettede win-back kampagner direkte derfra.</p>
+
+  <div class="cta-boks">
+    <h2>Se din churnrate i dag</h2>
+    <p>Forbind din WooCommerce- eller Shopify-butik og få dit dashboard op at køre på under 2 minutter. Gratis at starte.</p>
+    <a class="cta-knap" href="/login.html">Prøv Vixx gratis →</a>
+  </div>
+
+  <div class="relaterede">
+    <h3>Relaterede artikler</h3>
+    <div class="rel-links">
+      <a href="/blog/woocommerce-analyse-guide.html">WooCommerce-analyse: de 5 tal du skal kende som webshop-ejer →</a>
+      <a href="/blog/win-back-kampagne-eksempel.html">Sådan skriver du en win-back kampagne der rent faktisk virker →</a>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

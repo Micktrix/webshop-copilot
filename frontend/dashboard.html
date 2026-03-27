@@ -295,6 +295,9 @@
     <p style="font-size:0.78rem;color:rgba(255,255,255,0.85);margin-bottom:10px;line-height:1.4;">Opgrader til Pro og få adgang til Kundeklub, Marketing & SEO</p>
     <button onclick="opgrader()" style="width:100%;padding:8px;background:white;color:#6366f1;border:none;border-radius:7px;font-size:0.82rem;font-weight:700;cursor:pointer;">Opgrader — 299 kr/md ekskl. moms</button>
   </div>
+  <div id="sidebar-pro-menu" style="display:none;margin:10px 10px 14px;">
+    <button onclick="administrerAbonnement()" style="width:100%;padding:9px 12px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.65);border-radius:8px;font-size:0.82rem;cursor:pointer;text-align:left;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">⚙ Administrer abonnement</button>
+  </div>
 </aside>
 
 <div id="upgrade-toast" style="display:none;position:fixed;top:20px;right:20px;background:#16a34a;color:white;padding:14px 20px;border-radius:10px;font-size:0.9rem;font-weight:600;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,0.15);">
@@ -483,13 +486,24 @@
     } catch { alert('Kunne ikke forbinde til betalingssiden.'); }
   }
 
-  // Vis upgrade banner og håndtér ?upgraded=1
+  async function administrerAbonnement() {
+    try {
+      const res = await fetch('/api/stripe/portal', { method: 'POST', headers: { 'x-token': token } });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else alert('Fejl: ' + (data.error || 'Prøv igen'));
+    } catch { alert('Kunne ikke åbne abonnementsportalen.'); }
+  }
+
+  // Vis upgrade banner / pro-menu og håndtér ?upgraded=1
   (async () => {
     try {
       const res = await fetch('/api/profil', { headers: { 'x-token': token } });
       const profil = await res.json();
       if (profil.plan !== 'pro') {
         document.getElementById('sidebar-upgrade-banner').style.display = 'block';
+      } else {
+        document.getElementById('sidebar-pro-menu').style.display = 'block';
       }
     } catch {}
     if (new URLSearchParams(location.search).get('upgraded') === '1') {

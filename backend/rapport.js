@@ -89,7 +89,7 @@ export async function sendUgerapport(shop, ugensData, tip) {
     ${ifare > 0 ? `
     <!-- CTA -->
     <div style="padding:20px 32px 0;text-align:center">
-      <a href="${shop.wooUrl}" style="display:inline-block;background:#6366f1;color:white;padding:12px 28px;border-radius:8px;font-weight:600;font-size:0.9rem;text-decoration:none">Åbn dashboard og tag handling</a>
+      <a href="https://www.vixx.dk/dashboard.html" style="display:inline-block;background:#6366f1;color:white;padding:12px 28px;border-radius:8px;font-weight:600;font-size:0.9rem;text-decoration:none">Åbn dashboard og tag handling</a>
     </div>` : ''}
 
     <!-- Footer -->

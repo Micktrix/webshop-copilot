@@ -10,9 +10,9 @@ import { beregnNoeglettal, beregnChurn, beregnNyeKunder, beregnTopProdukter, ber
 import { hentMarginer, gemMarginer, beregnMarginer } from './margin.js';
 import { overvaagsKonkurrenter } from './markedsforing.js';
 import { genererTip } from './ai.js';
-import { registerShop, loginShop, requireAuth } from './auth.js';
+import { registerShop, loginShop, requireAuth, anmodNulstilAdgangskode, nulstilAdgangskode } from './auth.js';
 import pool from './db.js';
-import { genererMail, sendMails, sendVelkomstMail } from './mail.js';
+import { genererMail, sendMails, sendVelkomstMail, sendEnMail } from './mail.js';
 import { gemKampagne, hentKampagner } from './kampagner.js';
 import { hentTrigger, gemTrigger, koerTriggers } from './triggers.js';
 import { beregnUgensData, sendUgerapport } from './rapport.js';
@@ -129,8 +129,56 @@ app.post('/api/register', loginLimiter, async (req, res) => {
     }
     const token = await registerShop(req.body);
     res.json({ token });
-    // Send velkomstmail asynkront (blokerer ikke svaret)
+    // Send velkomstmail + ejernotifikation asynkront
     sendVelkomstMail(req.body.email).catch(e => console.warn('Velkomstmail fejl:', e.message));
+    sendEnMail({
+      to: 'info@gard.dk',
+      subject: `Ny Vixx-bruger: ${req.body.email}`,
+      html: `<p>Ny bruger oprettet på Vixx:</p><ul><li><strong>Email:</strong> ${req.body.email}</li><li><strong>Platform:</strong> ${req.body.platform || 'woocommerce'}</li><li><strong>Butik:</strong> ${req.body.wooUrl || '—'}</li></ul>`,
+      text: `Ny bruger: ${req.body.email} (${req.body.platform || 'woocommerce'}) — ${req.body.wooUrl || '—'}`
+    }).catch(e => console.warn('Ejernotifikation fejl:', e.message));
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/api/glemt-adgangskode', loginLimiter, async (req, res) => {
+  const { email } = req.body;
+  try {
+    await pool.query('ALTER TABLE shops ADD COLUMN IF NOT EXISTS reset_token TEXT, ADD COLUMN IF NOT EXISTS reset_token_expires TIMESTAMPTZ');
+  } catch {}
+  const token = await anmodNulstilAdgangskode(email);
+  if (token) {
+    const frontendUrl = process.env.FRONTEND_URL || 'https://www.vixx.dk';
+    const link = `${frontendUrl}/nulstil-adgangskode.html?token=${token}`;
+    await sendEnMail({
+      to: email,
+      subject: 'Nulstil din adgangskode — Vixx',
+      html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:40px 20px">
+        <div style="text-align:center;margin-bottom:28px">
+          <div style="display:inline-block;background:#6366f1;border-radius:10px;width:44px;height:44px;line-height:44px;font-size:1.3rem;color:white;text-align:center">◈</div>
+          <h1 style="font-size:1.2rem;font-weight:700;color:#0f172a;margin:12px 0 4px">Nulstil adgangskode</h1>
+        </div>
+        <p style="color:#475569;line-height:1.7">Vi har modtaget en anmodning om at nulstille adgangskoden til din Vixx-konto. Klik på knappen nedenfor — linket er gyldigt i 1 time.</p>
+        <div style="text-align:center;margin:28px 0">
+          <a href="${link}" style="display:inline-block;background:#6366f1;color:white;text-decoration:none;padding:13px 28px;border-radius:9px;font-weight:700;font-size:0.95rem">Nulstil adgangskode →</a>
+        </div>
+        <p style="color:#94a3b8;font-size:0.85rem">Hvis du ikke bad om dette, kan du roligt ignorere denne mail.</p>
+        <hr style="border:none;border-top:1px solid #eee;margin:28px 0">
+        <p style="font-size:11px;color:#aaa;text-align:center">Vixx · www.vixx.dk</p>
+      </div>`,
+      text: `Nulstil din adgangskode her: ${link}\n\nLinket udløber om 1 time.`
+    }).catch(e => console.warn('Reset-mail fejl:', e.message));
+  }
+  // Svar altid det samme — giv ikke info om hvem der er registreret
+  res.json({ ok: true });
+});
+
+app.post('/api/nulstil-adgangskode', async (req, res) => {
+  const { token, password } = req.body;
+  try {
+    await nulstilAdgangskode(token, password);
+    res.json({ ok: true });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -168,6 +216,25 @@ app.post('/api/stripe/checkout', requireAuth, async (req, res) => {
     res.json({ url: session.url });
   } catch (err) {
     console.error('Stripe fejl:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Stripe Customer Portal — administrer abonnement
+app.post('/api/stripe/portal', requireAuth, async (req, res) => {
+  try {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    const frontendUrl = process.env.FRONTEND_URL || 'https://www.vixx.dk';
+    const result = await pool.query('SELECT stripe_customer_id FROM shops WHERE email = $1', [req.shop.email]);
+    const customerId = result.rows[0]?.stripe_customer_id;
+    if (!customerId) return res.status(400).json({ error: 'Ingen aktiv Stripe-kunde fundet.' });
+    const session = await stripe.billingPortal.sessions.create({
+      customer: customerId,
+      return_url: `${frontendUrl}/dashboard.html`
+    });
+    res.json({ url: session.url });
+  } catch (err) {
+    console.error('Stripe portal fejl:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
@@ -547,11 +614,11 @@ async function koerUgerapporter() {
   if (nu.getDay() !== 1 || nu.getHours() !== 8) return;
 
   for (const shop of await alleShops()) {
-    const trigger = hentTrigger(shop.email);
+    const trigger = await hentTrigger(shop.email);
     if (!trigger?.ugerapport) continue;
     try {
-      const client = createWooClient(shop.wooUrl, shop.wooKey, shop.wooSecret);
-      const [orders, customers] = await Promise.all([getOrders(client), getCustomers(client)]);
+      const adapter = getAdapter(shop);
+      const [orders, customers] = await Promise.all([adapter.getOrders(), adapter.getCustomers()]);
       const churn = beregnChurn(orders, customers);
       const topProdukter = beregnTopProdukter(orders);
       const ugensData = beregnUgensData(orders, customers, churn, topProdukter);
