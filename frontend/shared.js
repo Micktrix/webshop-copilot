@@ -53,6 +53,7 @@ function renderSidebar(activePage) {
 
   const nav = {
     dashboard: 'index.html',
+    marketing: 'marketing.html',
     seo: 'seo.html'
   };
 
@@ -61,18 +62,12 @@ function renderSidebar(activePage) {
     { id: 'dashboard', ikon: '📊', label: 'Dashboard', href: nav.dashboard },
     { id: 'kunder', ikon: '👥', label: 'Kunder', href: nav.dashboard + '#kunder' },
     { section: '✦ Pro' },
-    { id: 'kundeklub', ikon: '⭐', label: 'Kundeklub', href: nav.dashboard + '#kundeklub', pro: true },
-    { id: 'ai-content', ikon: '📣', label: 'AI Content', href: nav.dashboard + '#pro', pro: true },
-    { id: 'konkurrenter', ikon: '🔍', label: 'Konkurrenter', href: nav.dashboard + '#pro', pro: true },
-    { id: 'forladte', ikon: '🛒', label: 'Forladte kurve', href: nav.dashboard + '#pro', pro: true },
-    { id: 'markedsforing', ikon: '📣', label: 'Markedsføring', href: nav.dashboard + '#pro', pro: true },
+    { id: 'marketing', ikon: '⭐', label: 'Kundeklub & Marketing', href: nav.marketing, pro: true },
     { id: 'seo', ikon: '🔎', label: 'SEO', href: nav.seo, pro: true },
     { section: 'Analyse' },
     { id: 'segmentering', ikon: '🎯', label: 'Segmentering', href: nav.dashboard + '#segmentering' },
     { id: 'produkter', ikon: '📦', label: 'Produkter', href: nav.dashboard + '#produkter' },
     { id: 'oekonomi', ikon: '💰', label: 'Økonomi', href: nav.dashboard + '#oekonomi' },
-    { section: 'Automatisering' },
-    { id: 'automatisering', ikon: '⚡', label: 'Automatisering', href: nav.dashboard + '#automatisering' },
   ];
 
   const html = `
