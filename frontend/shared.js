@@ -89,7 +89,7 @@ function renderSidebar(activePage, plan) {
   const upgradeBanner = plan === 'pro' ? '' : `
     <div class="sidebar-upgrade">
       <p>Opgrader til Pro og få adgang til Kundeklub, Marketing & SEO</p>
-      <button onclick="vixxOpgrader()">Opgrader — 299 kr/md</button>
+      <button onclick="vixxOpgrader()">Opgrader — 299 kr/md ekskl. moms</button>
     </div>`;
 
   const html = `
@@ -151,7 +151,7 @@ async function vixxKraeverPro(containerSelector) {
             <h2>Dette er en Pro-funktion</h2>
             <p>Opgrader og få adgang til Kundeklub, automatiseret marketing, SEO-analyse og meget mere.</p>
             <button class="pro-gate-knap" onclick="vixxOpgrader()">Opgrader til Pro — 299 kr/md</button>
-            <p class="pro-gate-pris">Ekskl. moms · Ingen binding · Annuller når som helst</p>
+            <p class="pro-gate-pris">299 kr/md ekskl. moms · Ingen binding · Annuller når som helst</p>
           </div>
         </div>
       </div>`;
