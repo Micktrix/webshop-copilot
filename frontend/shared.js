@@ -52,7 +52,7 @@ function renderSidebar(activePage) {
   injectSidebarCSS();
 
   const nav = {
-    dashboard: 'index.html',
+    dashboard: 'dashboard.html',
     marketing: 'marketing.html',
     seo: 'seo.html'
   };

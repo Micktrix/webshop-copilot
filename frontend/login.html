@@ -205,7 +205,7 @@
 <script>
   // Tjek om allerede logget ind
   if (localStorage.getItem('token')) {
-    window.location.href = 'index.html';
+    window.location.href = 'dashboard.html';
   }
 
   function skiftTab(tab) {
@@ -235,7 +235,7 @@
     }
 
     localStorage.setItem('token', data.token);
-    window.location.href = 'index.html';
+    window.location.href = 'dashboard.html';
   }
 
   let aktivPlatform = 'woocommerce';
@@ -288,7 +288,7 @@
     }
 
     localStorage.setItem('token', data.token);
-    window.location.href = 'index.html';
+    window.location.href = 'dashboard.html';
   }
 </script>
 </body>

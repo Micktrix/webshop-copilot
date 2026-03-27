@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vixx</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8fafc;
+      color: #1a1a2e;
+      display: flex;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 230px;
+      min-height: 100vh;
+      background: #0f172a;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 50;
+    }
+
+    header {
+      background: transparent;
+      color: white;
+      padding: 22px 20px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .sidebar-brand { display: flex; align-items: center; gap: 10px; }
+    .sidebar-brand .brand-ikon {
+      width: 32px; height: 32px; background: #6366f1;
+      border-radius: 8px; display: flex; align-items: center;
+      justify-content: center; font-size: 1rem; flex-shrink: 0;
+    }
+    header h1 { font-size: 1rem; font-weight: 700; color: white; line-height: 1.2; }
+    header > span, .sidebar-shopnavn { font-size: 0.75rem; opacity: 0.45; color: white; }
+    header > button {
+      width: 100% !important; margin: 0 !important;
+      background: rgba(255,255,255,0.07) !important;
+      border: 1px solid rgba(255,255,255,0.1) !important;
+      color: rgba(255,255,255,0.7) !important;
+      padding: 7px 12px !important; border-radius: 8px !important;
+      font-size: 0.82rem !important; cursor: pointer; text-align: left !important;
+      transition: background 0.15s;
+    }
+    header > button:hover { background: rgba(255,255,255,0.12) !important; }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 12px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow-y: auto;
+    }
+    .nav-section-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.25);
+      padding: 12px 10px 4px;
+      font-weight: 600;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: all 0.15s;
+      cursor: pointer;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.07); color: white; }
+    .nav-item.aktiv { background: rgba(99,102,241,0.2); color: #a5b4fc; }
+    .nav-item .nav-ikon { font-size: 1rem; width: 20px; text-align: center; opacity: 0.8; }
+    .nav-pro-badge {
+      margin-left: auto;
+      background: #dcfce7;
+      color: #16a34a;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── MAIN ── */
+    .main {
+      margin-left: 230px;
+      flex: 1;
+      min-height: 100vh;
+      padding: 32px 32px 64px;
+      max-width: calc(100vw - 230px);
+    }
+
+    .container { width: 100%; }
+
+    .sektion { margin-bottom: 40px; scroll-margin-top: 24px; }
+    .sektion-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .sektion-header h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .sektion-divider {
+      flex: 1;
+      height: 1px;
+      background: #e2e8f0;
+    }
+
+    .noeglettal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+
+    .kort { background: white; border-radius: 14px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; }
+    .kort .label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+    .kort .vaerdi { font-size: 2rem; font-weight: 700; margin-top: 8px; color: #0f172a; }
+    .kort .vaerdi span { font-size: 1rem; font-weight: 400; color: #888; }
+    .graf-tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+    .graf-tab { padding: 6px 14px; border: 1px solid #e0e0e0; border-radius: 8px; background: white; cursor: pointer; font-size: 0.82rem; color: #888; font-weight: 500; transition: all 0.15s; }
+    .graf-tab.aktiv { background: #1a1a2e; color: white; border-color: #1a1a2e; }
+    .cac-panel { display: none; padding: 12px 0; }
+    .cac-panel .cac-stor { font-size: 2.4rem; font-weight: 700; color: #1a1a2e; margin: 12px 0 4px; }
+    .cac-panel .cac-info { color: #888; font-size: 0.85rem; margin-bottom: 20px; }
+    .cac-panel label { font-size: 0.82rem; color: #555; font-weight: 500; display: block; margin-bottom: 6px; }
+    .cac-panel input { padding: 9px 14px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.9rem; outline: none; width: 200px; }
+    .cac-panel input:focus { border-color: #6366f1; }
+
+    .midterrad { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
+
+    .graf-kort { background: white; border-radius: 14px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; }
+    .graf-kort h2 { font-size: 0.95rem; font-weight: 600; margin-bottom: 16px; }
+
+    .ai-kort {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; border-radius: 14px; padding: 24px;
+      box-shadow: 0 4px 16px rgba(99,102,241,0.2); display: flex; flex-direction: column; gap: 12px;
+    }
+    .ai-kort .ai-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; }
+    .ai-kort .ai-tekst { font-size: 0.95rem; line-height: 1.6; opacity: 0.9; }
+    .ai-kort .ai-ikon { font-size: 1.5rem; }
+
+    .bundrad { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+
+    .kunde-kort { background: white; border-radius: 14px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; }
+
+    .kunde-liste h2 { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    #ifare-liste, #loyale-liste { max-height: 300px; overflow-y: auto; }
+    #top-produkter, #ltv-liste { max-height: 300px; overflow-y: auto; }
+
+    .badge { background: #fee2e2; color: #dc2626; border-radius: 99px; padding: 2px 8px; font-size: 0.75rem; font-weight: 600; }
+    .badge.groen { background: #dcfce7; color: #16a34a; }
+
+    .kunde-raekke { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem; }
+    .kunde-raekke:last-child { border-bottom: none; }
+    .kunde-navn { font-weight: 500; }
+    .kunde-info { color: #888; font-size: 0.8rem; }
+    .dage-tag { background: #fef3c7; color: #d97706; border-radius: 6px; padding: 2px 8px; font-size: 0.78rem; font-weight: 600; }
+    .dage-tag.groen { background: #dcfce7; color: #16a34a; }
+
+    .tom { color: #aaa; font-size: 0.9rem; padding: 12px 0; }
+
+    .send-knap {
+      margin-top: 16px; width: 100%; padding: 10px; border: none;
+      background: #6366f1; color: white; border-radius: 8px; font-size: 0.88rem;
+      font-weight: 600; cursor: pointer; transition: background 0.2s;
+    }
+    .send-knap:hover { background: #4f46e5; }
+    .send-knap:disabled { background: #ccc; cursor: not-allowed; }
+
+    /* Kundeklub/Analyse kort */
+    .klub-kort { background: white; border-radius: 14px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; margin-bottom: 24px; }
+    .klub-kort h2 { font-size: 0.95rem; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+    html { scroll-behavior: smooth; }
+    #loading { text-align: center; padding: 80px; color: #888; font-size: 1rem; }
+
+    /* Top produkter + LTV */
+    .produkt-raekke { display: grid; grid-template-columns: 1fr auto auto; gap: 16px; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.88rem; }
+    .produkt-raekke:last-child { border-bottom: none; }
+    .produkt-rang { font-size: 0.75rem; font-weight: 700; color: #aaa; width: 20px; }
+    .produkt-navn { font-weight: 500; }
+    .produkt-antal { color: #888; font-size: 0.8rem; }
+    .produkt-omsaetning { font-weight: 700; color: #1a1a2e; text-align: right; }
+    .ltv-raekke { display: grid; grid-template-columns: auto 1fr auto auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.88rem; }
+    .ltv-raekke:last-child { border-bottom: none; }
+    .ltv-rang { font-size: 0.75rem; font-weight: 700; color: #aaa; width: 20px; }
+    .ltv-total { font-weight: 700; color: #6366f1; }
+    .ltv-ordrer { color: #888; font-size: 0.8rem; text-align: right; }
+
+    /* Prognose */
+    .prognose-bar { display: flex; align-items: center; gap: 16px; margin-top: 12px; }
+    .prognose-tal { font-size: 1.8rem; font-weight: 700; color: #1a1a2e; }
+    .prognose-pil { font-size: 0.85rem; font-weight: 600; padding: 3px 10px; border-radius: 99px; }
+    .prognose-pil.op { background: #dcfce7; color: #16a34a; }
+    .prognose-pil.ned { background: #fee2e2; color: #dc2626; }
+    .prognose-pil.neutral { background: #f4f6f9; color: #888; }
+
+    /* RFM */
+    .rfm-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .rfm-segment { border-radius: 10px; padding: 14px 18px; flex: 1; min-width: 120px; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; }
+    .rfm-segment:hover { border-color: currentColor; }
+    .rfm-segment .rfm-navn { font-weight: 700; font-size: 0.88rem; }
+    .rfm-segment .rfm-antal { font-size: 1.6rem; font-weight: 700; }
+    .rfm-segment .rfm-pct { font-size: 0.75rem; opacity: 0.7; }
+    .rfm-detaljer { display: none; }
+    .rfm-detaljer.vis { display: block; }
+
+    /* Cross-sell */
+    .crosssell-raekke { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.88rem; }
+    .crosssell-raekke:last-child { border-bottom: none; }
+    .crosssell-pil { color: #6366f1; font-weight: 700; }
+    .crosssell-antal { margin-left: auto; background: #ede9fe; color: #6366f1; border-radius: 99px; padding: 2px 10px; font-size: 0.78rem; font-weight: 600; }
+
+    /* Sæson sammenligning */
+    .saeson-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .saeson-kort { background: #f4f6f9; border-radius: 10px; padding: 16px; text-align: center; }
+    .saeson-kort .s-label { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .saeson-kort .s-tal { font-size: 1.5rem; font-weight: 700; color: #1a1a2e; }
+
+    /* Margin */
+    .margin-raekke { display: grid; grid-template-columns: 1fr 100px 80px 80px 80px; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.88rem; }
+    .margin-raekke:last-child { border-bottom: none; }
+    .margin-raekke input { padding: 6px 10px; border: 1px solid #e0e0e0; border-radius: 7px; font-size: 0.85rem; width: 100%; outline: none; }
+    .margin-raekke input:focus { border-color: #6366f1; }
+    .margin-pct { font-weight: 700; }
+    .margin-pct.god { color: #16a34a; }
+    .margin-pct.ok { color: #d97706; }
+    .margin-pct.darlig { color: #dc2626; }
+
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <header>
+    <div class="sidebar-brand">
+      <div class="brand-ikon">◈</div>
+      <div>
+        <h1>Vixx</h1>
+      </div>
+    </div>
+    <span class="sidebar-shopnavn" id="sidebar-shopnavn">—</span>
+    <button onclick="logud()" style="margin-top:auto;background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,0.6);padding:8px 12px;border-radius:8px;cursor:pointer;font-size:0.78rem;width:100%;text-align:left;margin-top:12px">↩ Log ud</button>
+  </header>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Oversigt</div>
+    <a class="nav-item aktiv" href="#oversigt" onclick="setAktiv(this)">
+      <span class="nav-ikon">📊</span> Dashboard
+    </a>
+    <a class="nav-item" href="#kunder" onclick="setAktiv(this)">
+      <span class="nav-ikon">👥</span> Kunder
+    </a>
+    <div class="nav-section-label">✦ Pro</div>
+    <a class="nav-item" href="marketing.html">
+      <span class="nav-ikon">⭐</span> Kundeklub &amp; Marketing
+      <span class="nav-pro-badge">Pro</span>
+    </a>
+    <a class="nav-item" href="seo.html">
+      <span class="nav-ikon">🔎</span> SEO
+      <span class="nav-pro-badge">Pro</span>
+    </a>
+    <div class="nav-section-label">Analyse</div>
+    <a class="nav-item" href="#segmentering" onclick="setAktiv(this)">
+      <span class="nav-ikon">🎯</span> Segmentering
+    </a>
+    <a class="nav-item" href="#produkter" onclick="setAktiv(this)">
+      <span class="nav-ikon">📦</span> Produkter
+    </a>
+    <a class="nav-item" href="#oekonomi" onclick="setAktiv(this)">
+      <span class="nav-ikon">💰</span> Økonomi
+    </a>
+  </nav>
+</aside>
+
+<div class="main">
+
+
+<div class="container">
+  <div id="loading">Henter data...</div>
+  <div id="dashboard" style="display:none">
+
+    <section id="oversigt" class="sektion">
+      <div class="sektion-header">
+        <h2>📊 Dashboard</h2>
+        <div class="sektion-divider"></div>
+      </div>
+
+    <div class="noeglettal">
+      <div class="kort">
+        <div class="label">Omsætning — 30 dage</div>
+        <div class="vaerdi" id="omsaetning">— <span>kr</span></div>
+      </div>
+      <div class="kort">
+        <div class="label">Antal ordrer</div>
+        <div class="vaerdi" id="ordrer">—</div>
+      </div>
+      <div class="kort">
+        <div class="label">Gennemsnitskøb</div>
+        <div class="vaerdi" id="gennemsnit">— <span>kr</span></div>
+      </div>
+    </div>
+
+    <div class="midterrad">
+      <div class="graf-kort">
+        <div class="graf-tabs">
+          <button class="graf-tab aktiv" onclick="skiftGrafTab('omsaetning', this)">Omsætning</button>
+          <button class="graf-tab" onclick="skiftGrafTab('nye', this)">Nye kunder</button>
+          <button class="graf-tab" onclick="skiftGrafTab('cac', this)">CAC</button>
+          <button class="graf-tab" onclick="skiftGrafTab('saeson', this)">Vs. i fjor</button>
+        </div>
+
+        <div id="graf-omsaetning">
+          <canvas id="graf" height="120"></canvas>
+          <div class="prognose-bar" id="prognose-bar" style="display:none">
+            <div>
+              <div style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">Prognose næste måned</div>
+              <div class="prognose-tal" id="prognose-tal">—</div>
+            </div>
+            <span class="prognose-pil" id="prognose-pil"></span>
+          </div>
+        </div>
+
+        <div id="graf-nye" style="display:none">
+          <canvas id="graf-nye-kunder" height="120"></canvas>
+        </div>
+
+        <div id="graf-saeson" style="display:none;padding:12px 0" id="graf-saeson">
+          <div id="saeson-graf-indhold"></div>
+        </div>
+
+        <div class="cac-panel" id="graf-cac">
+          <label>Månedligt marketingbudget (kr)</label>
+          <input type="number" id="budget-input" placeholder="f.eks. 5000" min="0" oninput="opdaterCAC()">
+          <div class="cac-stor" id="cac">—</div>
+          <div class="cac-info" id="cac-info">Indtast dit budget ovenfor</div>
+        </div>
+      </div>
+      <div class="ai-kort">
+        <div class="ai-ikon">✦</div>
+        <div class="ai-label">AI-anbefaling</div>
+        <div class="ai-tekst" id="ai-tip">Henter anbefaling...</div>
+      </div>
+    </div>
+    </section>
+
+    <section id="kunder" class="sektion">
+      <div class="sektion-header">
+        <h2>👥 Kunder</h2>
+        <div class="sektion-divider"></div>
+      </div>
+    <div class="bundrad">
+      <div class="kunde-kort">
+        <div class="kunde-liste">
+          <h2>Kunder i fare <span class="badge" id="ifare-antal">0</span></h2>
+          <div id="ifare-liste"><div class="tom">Ingen kunder i fare lige nu.</div></div>
+          <button class="send-knap" id="ifare-knap" onclick="window.location.href='marketing.html'" style="display:none">✉ Gå til Kundeklub for at sende mail</button>
+        </div>
+      </div>
+      <div class="kunde-kort">
+        <div class="kunde-liste">
+          <h2>Loyale kunder <span class="badge groen" id="loyale-antal">0</span></h2>
+          <div id="loyale-liste"><div class="tom">Ingen loyale kunder fundet.</div></div>
+          <button class="send-knap" id="loyale-knap" onclick="window.location.href='marketing.html'" style="display:none">✉ Gå til Kundeklub for at sende mail</button>
+        </div>
+      </div>
+    </div>
+    </section>
+
+
+    <section id="segmentering" class="sektion">
+      <div class="sektion-header">
+        <h2>🎯 Segmentering</h2>
+        <div class="sektion-divider"></div>
+      </div>
+    <!-- RFM Segmentering -->
+    <div class="klub-kort">
+      <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:4px">Kundesegmentering <span class="badge groen">RFM</span></h2>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:16px">Baseret på hvornår, hvor tit og hvor meget dine kunder køber</p>
+      <div class="rfm-grid" id="rfm-segmenter"></div>
+      <div class="rfm-detaljer" id="rfm-detaljer"></div>
+    </div>
+    </section>
+
+    <section id="produkter" class="sektion">
+      <div class="sektion-header">
+        <h2>📦 Produkter</h2>
+        <div class="sektion-divider"></div>
+      </div>
+
+    <!-- Top produkter + LTV -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+      <div class="klub-kort">
+        <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:16px">Top produkter</h2>
+        <div id="top-produkter"><div class="tom">Ingen data.</div></div>
+      </div>
+      <div class="klub-kort">
+        <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:16px">Bedste kunder — total omsætning</h2>
+        <div id="ltv-liste"><div class="tom">Ingen data.</div></div>
+      </div>
+    </div>
+
+    <!-- Cross-sell + Sæson -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="klub-kort">
+        <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:4px">Cross-sell muligheder</h2>
+        <p style="font-size:0.82rem;color:#888;margin-bottom:16px">Produkter der ofte købes sammen</p>
+        <div id="crosssell-liste"><div class="tom">Ikke nok data endnu.</div></div>
+      </div>
+      <div class="klub-kort">
+        <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:4px">Sæsonsammenligning</h2>
+        <p style="font-size:0.82rem;color:#888;margin-bottom:16px">Denne måned vs. samme måned sidste år</p>
+        <div id="saeson-indhold"></div>
+      </div>
+    </div>
+    </section>
+
+    <section id="oekonomi" class="sektion">
+      <div class="sektion-header">
+        <h2>💰 Økonomi</h2>
+        <div class="sektion-divider"></div>
+      </div>
+
+    <!-- Margin kalkulator -->
+    <div class="klub-kort">
+      <h2 style="font-size:0.95rem;font-weight:600;margin-bottom:4px">Marginkalkulator</h2>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:16px">Indtast kostpris per produkt og se din reelle fortjeneste</p>
+      <div style="display:grid;grid-template-columns:1fr 100px 80px 80px 80px;gap:12px;padding-bottom:8px;border-bottom:2px solid #f0f0f0;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#888">
+        <span>Produkt</span><span>Kostpris (kr)</span><span>Salgspris</span><span>Margin %</span><span>Profit</span>
+      </div>
+      <div id="margin-liste"></div>
+      <button class="send-knap" onclick="gemMarginer()" style="width:auto;padding:9px 20px;margin-top:12px">Gem kostpriser</button>
+    </div>
+    </section>
+
+
+  </div>
+</div>
+</div>
+
+<script>
+  const token = localStorage.getItem('token');
+  if (!token) window.location.href = 'login.html';
+
+  let nyeKunderDenneMaaned = 0;
+
+  document.querySelector('header').insertAdjacentHTML('beforeend',
+    '<button onclick="logud()" style="margin-left:auto;background:rgba(255,255,255,0.1);border:none;color:white;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:0.85rem;">Log ud</button>'
+  );
+
+  function logud() { localStorage.removeItem('token'); window.location.href = 'login.html'; }
+
+  let nyeKunderData = { denneMaaned: 0, forrigeMaaned: 0 };
+  let nyeKunderChart = null;
+
+  function skiftGrafTab(tab, el) {
+    document.querySelectorAll('.graf-tab').forEach(b => b.classList.remove('aktiv'));
+    el.classList.add('aktiv');
+    document.getElementById('graf-omsaetning').style.display = tab === 'omsaetning' ? 'block' : 'none';
+    document.getElementById('graf-nye').style.display = tab === 'nye' ? 'block' : 'none';
+    document.getElementById('graf-cac').style.display = tab === 'cac' ? 'block' : 'none';
+    document.getElementById('graf-saeson').style.display = tab === 'saeson' ? 'block' : 'none';
+  }
+
+  function byggNyeKunderGraf() {
+    const ctx = document.getElementById('graf-nye-kunder');
+    if (nyeKunderChart) nyeKunderChart.destroy();
+    const iDag = new Date();
+    const denneMaanedNavn = iDag.toLocaleString('da-DK', { month: 'long' });
+    const forrigeMaanedNavn = new Date(iDag.getFullYear(), iDag.getMonth() - 1, 1).toLocaleString('da-DK', { month: 'long' });
+
+    nyeKunderChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [forrigeMaanedNavn, denneMaanedNavn],
+        datasets: [{
+          data: [nyeKunderData.forrigeMaaned, nyeKunderData.denneMaaned],
+          backgroundColor: ['rgba(99,102,241,0.2)', 'rgba(99,102,241,0.8)'],
+          borderColor: ['#6366f1', '#6366f1'],
+          borderWidth: 2,
+          borderRadius: 8
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 12 } } },
+          y: { grid: { color: '#f0f0f0' }, ticks: { stepSize: 1, font: { size: 11 } }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  function opdaterCAC() {
+    const budget = parseFloat(document.getElementById('budget-input').value);
+    localStorage.setItem('marketingBudget', budget || '');
+    const cacEl = document.getElementById('cac');
+    const infoEl = document.getElementById('cac-info');
+    if (!budget || budget <= 0) {
+      cacEl.textContent = '—';
+      infoEl.textContent = 'Indtast dit budget ovenfor';
+      return;
+    }
+    if (nyeKunderDenneMaaned === 0) {
+      cacEl.textContent = '—';
+      infoEl.textContent = 'Ingen nye kunder denne måned';
+      return;
+    }
+    const cac = Math.round(budget / nyeKunderDenneMaaned);
+    cacEl.textContent = cac.toLocaleString('da-DK') + ' kr';
+    infoEl.textContent = 'pr. ny kunde · ' + budget.toLocaleString('da-DK') + ' kr budget ÷ ' + nyeKunderDenneMaaned + ' nye kunder';
+  }
+
+  async function hentData() {
+    try {
+      const res = await fetch('/api/dashboard', { headers: { 'x-token': token } });
+      if (res.status === 401) { window.location.href = 'login.html'; return; }
+      const data = await res.json();
+
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      if (data.shop?.wooUrl) document.getElementById('sidebar-shopnavn').textContent = data.shop.wooUrl;
+
+      document.getElementById('omsaetning').innerHTML = data.noeglettal.omsaetning.toLocaleString('da-DK') + ' <span>kr</span>';
+      document.getElementById('ordrer').textContent = data.noeglettal.antalOrdrer;
+      document.getElementById('gennemsnit').innerHTML = data.noeglettal.gennemsnit.toLocaleString('da-DK') + ' <span>kr</span>';
+
+      // Nye kunder
+      nyeKunderDenneMaaned = data.nyeKunder.denneMaaned;
+      nyeKunderData = data.nyeKunder;
+      byggNyeKunderGraf();
+
+      // Genindlæs budget fra localStorage og beregn CAC
+      const gemt = localStorage.getItem('marketingBudget');
+      if (gemt) { document.getElementById('budget-input').value = gemt; }
+      opdaterCAC();
+
+      const tipHtml = data.tip
+        .replace(/##\s*/g, '')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      document.getElementById('ai-tip').innerHTML = tipHtml;
+
+      const grafData = data.noeglettal.grafData;
+      new Chart(document.getElementById('graf'), {
+        type: 'line',
+        data: {
+          labels: grafData.map(d => d.dato.slice(5)),
+          datasets: [{ data: grafData.map(d => d.beloeb), borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.08)', borderWidth: 2, pointRadius: 2, fill: true, tension: 0.4 }]
+        },
+        options: { plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 8, font: { size: 11 } } }, y: { grid: { color: '#f0f0f0' }, ticks: { font: { size: 11 } } } } }
+      });
+
+      const ifare = data.churn.ifare;
+      const loyale = data.churn.loyale;
+
+      document.getElementById('ifare-antal').textContent = ifare.length;
+      document.getElementById('loyale-antal').textContent = loyale.length;
+
+      if (ifare.length > 0) {
+        document.getElementById('ifare-liste').innerHTML = ifare.map(k => `
+          <div class="kunde-raekke">
+            <div><div class="kunde-navn">${k.navn}</div><div class="kunde-info">${k.email}</div></div>
+            <div class="dage-tag">${k.dageSiden} dage siden</div>
+          </div>`).join('');
+        document.getElementById('ifare-knap').style.display = 'block';
+      }
+
+      if (loyale.length > 0) {
+        document.getElementById('loyale-liste').innerHTML = loyale.map(k => `
+          <div class="kunde-raekke">
+            <div><div class="kunde-navn">${k.navn}</div><div class="kunde-info">${k.email}</div></div>
+            <div class="dage-tag groen">Aktiv</div>
+          </div>`).join('');
+        document.getElementById('loyale-knap').style.display = 'block';
+      }
+
+      // Top produkter
+      if (data.topProdukter?.length) {
+        document.getElementById('top-produkter').innerHTML = data.topProdukter.map((p, i) => `
+          <div class="produkt-raekke">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="produkt-rang">${i + 1}</span>
+              <div><div class="produkt-navn">${p.navn}</div><div class="produkt-antal">${p.antalSolgt} solgt</div></div>
+            </div>
+            <div class="produkt-omsaetning">${p.omsaetning.toLocaleString('da-DK')} kr</div>
+          </div>`).join('');
+      }
+
+      // LTV — bedste kunder
+      if (data.ltv?.length) {
+        document.getElementById('ltv-liste').innerHTML = data.ltv.map((k, i) => `
+          <div class="ltv-raekke">
+            <span class="ltv-rang">${i + 1}</span>
+            <div><div class="kunde-navn">${k.navn}</div><div class="kunde-info">${k.email}</div></div>
+            <div class="ltv-ordrer">${k.antalOrdrer} køb</div>
+            <div class="ltv-total">${k.totalKoeb.toLocaleString('da-DK')} kr</div>
+          </div>`).join('');
+      }
+
+      // Cross-sell
+      if (data.crossSell?.length) {
+        document.getElementById('crosssell-liste').innerHTML = data.crossSell.map(p => `
+          <div class="crosssell-raekke">
+            <span>${p.a}</span>
+            <span class="crosssell-pil">+</span>
+            <span>${p.b}</span>
+            <span class="crosssell-antal">${p.antal}x</span>
+          </div>`).join('');
+      }
+
+      // Sæsonsammenligning
+      if (data.saesonSammenligning) {
+        const ss = data.saesonSammenligning;
+        const iDag = new Date();
+        const mndNavn = iDag.toLocaleString('da-DK', { month: 'long' });
+        const vaekstTekst = ss.vaekst != null
+          ? `<div style="margin-top:16px;text-align:center;font-size:1.1rem;font-weight:700;color:${ss.vaekst >= 0 ? '#16a34a' : '#dc2626'}">${ss.vaekst >= 0 ? '↑' : '↓'} ${Math.abs(ss.vaekst)}% vs. ${mndNavn} ${iDag.getFullYear() - 1}</div>`
+          : `<div style="margin-top:12px;color:#888;font-size:0.85rem">Ingen data fra samme måned sidste år</div>`;
+        document.getElementById('saeson-indhold').innerHTML = `
+          <div class="saeson-grid">
+            <div class="saeson-kort">
+              <div class="s-label">${mndNavn} ${iDag.getFullYear()}</div>
+              <div class="s-tal">${ss.denneMaaned.omsaetning.toLocaleString('da-DK')} kr</div>
+              <div style="font-size:0.8rem;color:#888;margin-top:4px">${ss.denneMaaned.ordrer} ordrer</div>
+            </div>
+            <div class="saeson-kort">
+              <div class="s-label">${mndNavn} ${iDag.getFullYear() - 1}</div>
+              <div class="s-tal">${ss.sidsteAar.omsaetning.toLocaleString('da-DK')} kr</div>
+              <div style="font-size:0.8rem;color:#888;margin-top:4px">${ss.sidsteAar.ordrer} ordrer</div>
+            </div>
+          </div>${vaekstTekst}`;
+        document.getElementById('saeson-graf-indhold').innerHTML = document.getElementById('saeson-indhold').innerHTML;
+      }
+
+      // RFM
+      if (data.rfm?.segmenter) {
+        const segFarver = { Champions: '#16a34a', Loyale: '#6366f1', Lovende: '#0ea5e9', 'I fare': '#d97706', 'Tabt stor': '#dc2626', Sover: '#aaa' };
+        const total = data.rfm.kunder.length || 1;
+        document.getElementById('rfm-segmenter').innerHTML = Object.entries(data.rfm.segmenter).map(([navn, kunder]) => `
+          <div class="rfm-segment" style="background:${segFarver[navn] || '#888'}18;color:${segFarver[navn] || '#888'}" onclick="visRFMSegment('${navn}', ${JSON.stringify(kunder).replace(/"/g, '&quot;')})">
+            <div class="rfm-navn">${navn}</div>
+            <div class="rfm-antal">${kunder.length}</div>
+            <div class="rfm-pct">${Math.round(kunder.length / total * 100)}% af kunder</div>
+          </div>`).join('');
+      }
+
+      // Margin — hent gemte kostpriser og byg tabel
+      hentOgVisMargin(data.topProdukter || []);
+
+      // Prognose
+      if (data.prognose) {
+        const p = data.prognose;
+        document.getElementById('prognose-bar').style.display = 'flex';
+        document.getElementById('prognose-tal').textContent = p.prognose.toLocaleString('da-DK') + ' kr';
+        const pilEl = document.getElementById('prognose-pil');
+        if (p.pct > 0) { pilEl.textContent = '↑ ' + p.pct + '%'; pilEl.className = 'prognose-pil op'; }
+        else if (p.pct < 0) { pilEl.textContent = '↓ ' + Math.abs(p.pct) + '%'; pilEl.className = 'prognose-pil ned'; }
+        else { pilEl.textContent = '→ Stabil'; pilEl.className = 'prognose-pil neutral'; }
+      }
+
+    } catch (err) {
+      document.getElementById('loading').textContent = 'Kunne ikke forbinde til backend.';
+    }
+  }
+
+  // Sidebar navigation
+  function setAktiv(el) {
+    document.querySelectorAll('.nav-item').forEach(a => a.classList.remove('aktiv'));
+    el.classList.add('aktiv');
+  }
+
+  // Highlight active section on scroll
+  const sektioner = document.querySelectorAll('section[id]');
+  const navItems = document.querySelectorAll('.nav-item');
+  window.addEventListener('scroll', () => {
+    let aktiv = '';
+    sektioner.forEach(s => {
+      if (s.getBoundingClientRect().top <= 80) aktiv = s.id;
+    });
+    navItems.forEach(a => {
+      a.classList.toggle('aktiv', a.getAttribute('href') === '#' + aktiv);
+    });
+  }, { passive: true });
+
+  hentData();
+</script>
+</body>
+</html>
