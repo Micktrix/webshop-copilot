@@ -416,11 +416,8 @@
     const profilRes = await fetch('/api/profil', { headers: { 'x-token': token } });
     const profil = await profilRes.json();
     renderSidebar('marketing', profil.plan);
-    if (profil.plan !== 'pro') {
-      // Vis indholdsstrukturen så den kan sløres
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('indhold').style.display = 'block';
-    }
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('indhold').style.display = 'block';
     const harPro = await vixxKraeverPro('.vixx-main');
     if (!harPro) return;
     hentData();
