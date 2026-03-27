@@ -151,7 +151,7 @@ async function vixxKraeverPro(containerSelector) {
         <div class="pro-modal-ikon">⭐</div>
         <h2>Dette er en Pro-funktion</h2>
         <p>Opgrader til Vixx Pro og få adgang til Kundeklub, automatiseret marketing, SEO-analyse og meget mere.</p>
-        <button class="pro-gate-knap" onclick="vixxOpgrader()">Opgrader til Pro — 299 kr/md</button>
+        <button class="pro-gate-knap" onclick="vixxOpgrader()">Opgrader til Pro — 299 kr/md ekskl. moms</button>
         <p class="pro-gate-pris">299 kr/md ekskl. moms · Ingen binding · Annuller når som helst</p>
       </div>`;
     modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('vis'); });
