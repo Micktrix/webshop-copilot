@@ -17,6 +17,7 @@ import { gemKampagne, hentKampagner } from './kampagner.js';
 import { hentTrigger, gemTrigger, koerTriggers } from './triggers.js';
 import { beregnUgensData, sendUgerapport } from './rapport.js';
 import { genererMarkedsforing, genererContentPakke } from './markedsforing.js';
+import { analyserSEO } from './seo.js';
 import { logEvent } from './events.js';
 import { registerAdminRoutes } from './admin.js';
 import { demoOrders, demoCustomers, demoForladteKurve } from './demo-data.js';
@@ -369,6 +370,30 @@ app.post('/api/content-pakke', requireAuth, async (req, res) => {
     const topProdukter = beregnTopProdukter(orders);
     const pakke = await genererContentPakke({ titel, beskrivelse, shopProfil, topProdukter, kategorier, shopUrl });
     res.json(pakke);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// SEO-analyse
+app.get('/api/seo', requireAuth, async (req, res) => {
+  try {
+    let orders, kategorier, shopUrl;
+    if (req.shop.demo || !req.shop.wooUrl) {
+      orders = demoOrders;
+      kategorier = ['Kaffe', 'Kaffemaskiner', 'Tilbehør'];
+      shopUrl = 'demo-shop.dk';
+    } else {
+      shopUrl = req.shop.wooUrl;
+      const adapter = getAdapter(req.shop);
+      [orders, kategorier] = await Promise.all([
+        adapter.getOrders(),
+        adapter.getKategorier()
+      ]);
+    }
+    const topProdukter = beregnTopProdukter(orders);
+    const data = await analyserSEO({ topProdukter, kategorier, shopUrl });
+    res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
