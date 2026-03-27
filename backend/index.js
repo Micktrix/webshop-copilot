@@ -56,7 +56,6 @@ app.use(cors({
     'https://vixx.dk',
     'https://www.vixx.dk',
     'https://webshop-copilot.onrender.com',
-    'https://webshop-copilot-frontend.onrender.com',
     'http://localhost:3000',
     'http://localhost:5500',
     'http://127.0.0.1:5500'

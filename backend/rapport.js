@@ -37,7 +37,7 @@ export async function sendUgerapport(shop, ugensData, tip) {
 
     <!-- Header -->
     <div style="background:#1a1a2e;padding:28px 32px">
-      <div style="color:white;font-size:1.1rem;font-weight:700">Webshop Co-pilot</div>
+      <div style="color:white;font-size:1.1rem;font-weight:700">Vixx</div>
       <div style="color:rgba(255,255,255,0.5);font-size:0.82rem;margin-top:4px">Ugerapport — ${new Date().toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
     </div>
 
@@ -94,7 +94,7 @@ export async function sendUgerapport(shop, ugensData, tip) {
 
     <!-- Footer -->
     <div style="padding:24px 32px;margin-top:24px;border-top:1px solid #f0f0f0;text-align:center">
-      <div style="font-size:0.78rem;color:#aaa">Webshop Co-pilot · Du modtager denne mail fordi du har slået ugerapport til</div>
+      <div style="font-size:0.78rem;color:#aaa">Vixx · Du modtager denne mail fordi du har slået ugerapport til</div>
     </div>
   </div>
 </body>
