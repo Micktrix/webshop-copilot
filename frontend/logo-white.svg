@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 80" width="340" height="80">
+  <!-- Indigo ikon-boks -->
+  <rect x="0" y="8" width="64" height="64" fill="#6366f1" rx="14"/>
+  <!-- ◈ symbol -->
+  <text x="32" y="58" font-family="Georgia, serif" font-size="40" fill="white" text-anchor="middle">◈</text>
+  <!-- Vixx tekst -->
+  <text x="84" y="46" font-family="Arial, sans-serif" font-size="36" font-weight="800" fill="white" letter-spacing="-1">Vixx</text>
+  <!-- vixx.dk -->
+  <text x="86" y="66" font-family="Arial, sans-serif" font-size="15" font-weight="600" fill="#6366f1" letter-spacing="1.5">vixx.dk</text>
+</svg>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <!-- Baggrund -->
+  <rect width="400" height="400" fill="#0f172a" rx="48"/>
+
+  <!-- Indigo ikon-boks -->
+  <rect x="140" y="60" width="120" height="120" fill="#6366f1" rx="24"/>
+
+  <!-- ◈ symbol -->
+  <text x="200" y="148" font-family="Georgia, serif" font-size="80" fill="white" text-anchor="middle">◈</text>
+
+  <!-- Vixx tekst -->
+  <text x="200" y="255" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="72" font-weight="800" fill="white" text-anchor="middle" letter-spacing="-2">Vixx</text>
+
+  <!-- vixx.dk undertekst -->
+  <text x="200" y="300" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="28" font-weight="500" fill="#6366f1" text-anchor="middle" letter-spacing="2">vixx.dk</text>
+
+  <!-- Dekorativ linje under vixx.dk -->
+  <rect x="160" y="316" width="80" height="3" fill="#6366f1" rx="2" opacity="0.5"/>
+
+  <!-- Tagline -->
+  <text x="200" y="360" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="20" fill="rgba(255,255,255,0.35)" text-anchor="middle" letter-spacing="1">AI-dashboard til webshops</text>
+</svg>

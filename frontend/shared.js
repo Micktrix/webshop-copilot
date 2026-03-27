@@ -97,8 +97,7 @@ function renderSidebar(activePage, plan) {
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="sidebar-brand">
-          <div class="brand-ikon">◈</div>
-          <span class="sidebar-titel">Vixx</span>
+          <img src="/logo-white.svg" height="40" alt="Vixx">
         </div>
         <span class="sidebar-shopnavn" id="sidebar-shopnavn">—</span>
         <button class="sidebar-logud" onclick="vixxLogud()">↩ Log ud</button>

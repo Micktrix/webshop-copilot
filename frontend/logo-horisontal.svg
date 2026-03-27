@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 160" width="600" height="160">
+  <!-- Baggrund -->
+  <rect width="600" height="160" fill="#0f172a" rx="20"/>
+
+  <!-- Indigo ikon-boks -->
+  <rect x="30" y="30" width="100" height="100" fill="#6366f1" rx="20"/>
+
+  <!-- ◈ symbol -->
+  <text x="80" y="102" font-family="Georgia, serif" font-size="64" fill="white" text-anchor="middle">◈</text>
+
+  <!-- Vixx tekst -->
+  <text x="155" y="100" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="64" font-weight="800" fill="white" letter-spacing="-2" dominant-baseline="auto">Vixx</text>
+
+  <!-- Lodret skillelinje -->
+  <rect x="310" y="38" width="2" height="84" fill="rgba(255,255,255,0.12)" rx="1"/>
+
+  <!-- vixx.dk -->
+  <text x="336" y="78" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="26" font-weight="700" fill="#6366f1" letter-spacing="1">vixx.dk</text>
+
+  <!-- Tagline -->
+  <text x="336" y="112" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="19" fill="rgba(255,255,255,0.4)" letter-spacing="0.5">AI-dashboard til webshops</text>
+</svg>
