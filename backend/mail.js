@@ -79,6 +79,25 @@ Returner KUN dette JSON-format (ingen forklaring):
   }
 }
 
+export async function sendEnMail({ to, subject, html, text }) {
+  if (resend) {
+    return resend.emails.send({
+      from: `Vixx <${AFSENDER_MAIL}>`,
+      to,
+      subject,
+      html,
+      text
+    });
+  }
+  const testAccount = await nodemailer.createTestAccount();
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.ethereal.email',
+    port: 587,
+    auth: { user: testAccount.user, pass: testAccount.pass }
+  });
+  return transporter.sendMail({ from: `"Vixx" <noreply@test.dk>`, to, subject, html, text });
+}
+
 export async function sendMails(kunder, emne, tekst, shopOpts = {}) {
   const { shopEmail = '', fromName = 'Din butik' } = shopOpts;
   const resultater = [];

@@ -1,4 +1,4 @@
-import { createTransporter } from './mail.js';
+import { sendEnMail } from './mail.js';
 
 export function beregnUgensData(orders, customers, churn, topProdukter) {
   const iDag = new Date();
@@ -100,13 +100,9 @@ export async function sendUgerapport(shop, ugensData, tip) {
 </body>
 </html>`;
 
-  const transporter = await createTransporter();
-  const info = await transporter.sendMail({
-    from: '"Webshop Co-pilot" <noreply@webshop-copilot.dk>',
+  return sendEnMail({
     to: shop.email,
     subject: `Ugerapport: ${omsD.toLocaleString('da-DK')} kr denne uge${omsPct != null ? ` (${omsPct >= 0 ? '+' : ''}${omsPct}%)` : ''}`,
     html
   });
-
-  return info;
 }
