@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOS Dæk – App Demo</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue:   #1B4F8A;
+    --blue2:  #2563EB;
+    --orange: #F97316;
+    --green:  #22C55E;
+    --bg:     #F1F5F9;
+    --text:   #0F172A;
+    --sub:    #64748B;
+    --border: #E2E8F0;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(145deg, #1B4F8A 0%, #0a1f3a 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px;
+    gap: 20px;
+  }
+
+  .top-label {
+    color: rgba(255,255,255,0.6);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .screen-label {
+    color: white;
+    font-size: 17px;
+    font-weight: 700;
+    text-align: center;
+    min-height: 26px;
+  }
+
+  /* ── Phone frame ── */
+  .phone {
+    width: 375px;
+    background: #111;
+    border-radius: 52px;
+    padding: 12px;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.08),
+      0 40px 80px rgba(0,0,0,0.6);
+  }
+
+  .phone-inner {
+    background: var(--bg);
+    border-radius: 42px;
+    height: 718px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .notch {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 110px; height: 28px;
+    background: #111;
+    border-radius: 0 0 18px 18px;
+    z-index: 200;
+  }
+
+  /* ── Screens ── */
+  .screen {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .screen.active { display: flex; }
+
+  /* ── Navigation ── */
+  .nav-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-btn {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: white;
+    padding: 10px 22px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .nav-btn:hover:not(:disabled) { background: rgba(255,255,255,0.22); }
+  .nav-btn:disabled { opacity: 0.28; cursor: default; }
+
+  .dots { display: flex; gap: 7px; }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.28);
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .dot.active { background: white; width: 22px; border-radius: 4px; }
+
+  /* ── Shared UI atoms ── */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 38px 22px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .app-header {
+    background: var(--blue);
+    padding: 14px 20px 16px;
+    color: white;
+  }
+  .app-header .eyebrow { font-size: 11px; opacity: .7; margin-bottom: 2px; }
+  .app-header h1 { font-size: 19px; font-weight: 800; }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--sub);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    padding: 14px 16px 6px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 14px;
+    padding: 16px;
+    margin: 0 16px 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+  }
+
+  .progress-bar { display: flex; gap: 4px; padding: 14px 16px 2px; }
+  .progress-step { flex:1; height:4px; border-radius:2px; background: var(--border); }
+  .progress-step.done   { background: var(--blue); }
+  .progress-step.active { background: var(--orange); }
+  .step-label { font-size:11px; color:var(--sub); padding: 4px 16px 10px; }
+
+  .form-group { margin: 0 16px 12px; }
+  .form-label {
+    font-size: 11px; font-weight: 700; color: var(--sub);
+    text-transform: uppercase; letter-spacing: .06em; margin-bottom: 5px;
+  }
+  .form-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 15px;
+    color: var(--text);
+    background: white;
+  }
+
+  .primary-btn {
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 13px;
+    padding: 15px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin: 6px 16px 16px;
+    width: calc(100% - 32px);
+    display: block;
+  }
+  .primary-btn.orange { background: var(--orange); }
+  .primary-btn.dark   { background: #1e293b; }
+
+  .big-action {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: white;
+    border: none;
+    border-radius: 16px;
+    padding: 18px;
+    margin: 0 16px 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.09);
+    cursor: pointer;
+    width: calc(100% - 32px);
+    text-align: left;
+  }
+  .big-action .icon {
+    width: 50px; height: 50px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .big-action .t { font-size: 15px; font-weight: 700; color: var(--text); }
+  .big-action .s { font-size: 12px; color: var(--sub); margin-top: 2px; }
+  .chevron { margin-left: auto; color: var(--sub); font-size: 18px; }
+
+  .service-opt {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 13px;
+    padding: 14px 16px;
+    margin: 0 16px 10px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .service-opt.sel { border-color: var(--blue); background: #EFF6FF; }
+  .service-opt .icon { font-size: 26px; }
+  .service-opt .t { font-size: 14px; font-weight: 700; color: var(--text); }
+  .service-opt .s { font-size: 12px; color: var(--sub); }
+
+  .tab-bar {
+    display: flex;
+    background: white;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab {
+    flex: 1;
+    padding: 11px 0;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--sub);
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+  }
+  .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+  .job-item {
+    background: white;
+    border-radius: 13px;
+    padding: 14px;
+    margin: 0 16px 9px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .job-badge {
+    width: 40px; height: 40px;
+    border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .job-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .job-meta { font-size: 11px; color: var(--sub); margin-top: 2px; line-height: 1.5; }
+  .badge {
+    margin-left: auto;
+    font-size: 10px; font-weight: 700;
+    padding: 4px 9px; border-radius: 20px;
+    flex-shrink: 0;
+  }
+  .badge-wait   { background: #FEF3C7; color: #92400E; }
+  .badge-active { background: #DCFCE7; color: #166534; }
+
+  .spacer { flex: 1; }
+
+  /* ── Screen-specific ── */
+  /* Login */
+  #s1 { background: white; }
+
+  /* Confirm screen */
+  .confirm-body {
+    display: flex; flex-direction: column;
+    align-items: center; padding: 32px 20px 20px;
+    text-align: center; flex: 1;
+  }
+  .confirm-icon {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: #DCFCE7;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px; margin-bottom: 16px;
+  }
+
+  .sms-box {
+    background: #F0FDF4;
+    border-radius: 13px;
+    padding: 14px;
+    width: 100%; text-align: left; margin-bottom: 14px;
+  }
+  .sms-box .label { font-size: 11px; font-weight: 700; color: #166534; margin-bottom: 6px; }
+  .sms-box .msg   { font-size: 12px; color: #15803D; line-height: 1.55; }
+
+  .summary-box {
+    background: white;
+    border-radius: 13px;
+    padding: 14px;
+    width: 100%;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+  }
+  .sum-row {
+    display: flex; justify-content: space-between;
+    font-size: 13px; margin-bottom: 7px;
+  }
+  .sum-row:last-child { margin-bottom: 0; }
+  .sum-row .k { color: var(--sub); }
+  .sum-row .v { font-weight: 700; color: var(--text); }
+
+  /* Dækhotel banner */
+  .hotel-banner {
+    background: linear-gradient(135deg, #F97316, #ea580c);
+    border-radius: 14px;
+    padding: 16px;
+    margin: 12px 16px 0;
+    color: white;
+  }
+  .hotel-banner .hl  { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
+  .hotel-banner .sub { font-size: 12px; opacity: .85; }
+  .sms-all-btn {
+    background: white; color: #ea580c;
+    border: none; border-radius: 8px;
+    padding: 8px 16px; font-size: 12px; font-weight: 700;
+    margin-top: 12px; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="top-label">SOS Dæk System — Pitch Demo</div>
+<div class="screen-label" id="screenLabel">Redder · Login</div>
+
+<!-- ═══ PHONE ═══ -->
+<div class="phone">
+  <div class="phone-inner">
+    <div class="notch"></div>
+
+    <!-- S1: Login -->
+    <div class="screen active" id="s1">
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;">
+        <div style="width:68px;height:68px;background:var(--blue);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:14px;">🛞</div>
+        <h1 style="font-size:26px;font-weight:800;color:var(--text);">SOS Dæk</h1>
+        <p style="font-size:13px;color:var(--sub);margin-bottom:38px;">Vejhælp &amp; Dækservice</p>
+
+        <div class="form-group" style="width:100%;margin-bottom:12px;">
+          <div class="form-label">Email</div>
+          <div class="form-input" style="color:#94a3b8;">mads.hansen@sos.dk</div>
+        </div>
+        <div class="form-group" style="width:100%;margin-bottom:28px;">
+          <div class="form-label">Adgangskode</div>
+          <div class="form-input" style="color:#94a3b8;">••••••••</div>
+        </div>
+        <button class="primary-btn" style="margin:0;width:100%;" onclick="go(1)">Log ind</button>
+        <p style="font-size:12px;color:var(--sub);margin-top:18px;">Glemt adgangskode?</p>
+      </div>
+    </div>
+
+    <!-- S2: Redder hjem -->
+    <div class="screen" id="s2">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="app-header">
+        <div class="eyebrow">Logget ind som</div>
+        <h1>Mads Hansen · Redder</h1>
+      </div>
+
+      <div class="section-title">Hvad skal der ske?</div>
+
+      <button class="big-action" onclick="go(2)">
+        <div class="icon" style="background:#FFF7ED;">🛞</div>
+        <div>
+          <div class="t">Opret dæksag</div>
+          <div class="s">Kunden har brug for hjælp nu</div>
+        </div>
+        <span class="chevron">›</span>
+      </button>
+
+      <button class="big-action">
+        <div class="icon" style="background:#EFF6FF;">🎫</div>
+        <div>
+          <div class="t">Send rabatkode</div>
+          <div class="s">Dækket holder – tilbud til senere</div>
+        </div>
+        <span class="chevron">›</span>
+      </button>
+
+      <div class="section-title">Mine sager i dag</div>
+      <div class="card" style="display:flex;gap:12px;align-items:center;">
+        <span style="font-size:22px;">✅</span>
+        <div>
+          <div style="font-size:14px;font-weight:700;">2 sager oprettet</div>
+          <div style="font-size:12px;color:var(--sub);">Begge afventer dækbus</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S3: Opret sag – Trin 1 Kundedata -->
+    <div class="screen" id="s3">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="app-header">
+        <div class="eyebrow">Opret sag</div>
+        <h1>Kundeinformation</h1>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-step active"></div>
+        <div class="progress-step"></div>
+        <div class="progress-step"></div>
+      </div>
+      <div class="step-label">Trin 1 af 3</div>
+
+      <div class="form-group">
+        <div class="form-label">Fulde navn</div>
+        <div class="form-input">Lone Petersen</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Telefon</div>
+        <div class="form-input">+45 29 34 56 78</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Email</div>
+        <div class="form-input">lone@email.dk</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Adresse (hændelsessted)</div>
+        <div class="form-input">Kongevejen 44, 5000 Odense</div>
+      </div>
+
+      <div class="spacer"></div>
+      <button class="primary-btn" onclick="go(3)">Næste →</button>
+    </div>
+
+    <!-- S4: Opret sag – Trin 2 Dækinfo -->
+    <div class="screen" id="s4">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="app-header">
+        <div class="eyebrow">Opret sag</div>
+        <h1>Dækinformation</h1>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-step done"></div>
+        <div class="progress-step active"></div>
+        <div class="progress-step"></div>
+      </div>
+      <div class="step-label">Trin 2 af 3</div>
+
+      <div class="form-group">
+        <div class="form-label">Registreringsnummer</div>
+        <div class="form-input">AB 24 891</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Dækstørrelse</div>
+        <div class="form-input">205/55 R16</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Antal dæk der skal skiftes</div>
+        <div class="form-input">1 dæk</div>
+      </div>
+
+      <div class="form-group">
+        <div class="form-label" style="margin-bottom:8px;">Foto af dækket</div>
+        <div style="background:white;border:2px dashed var(--border);border-radius:13px;padding:26px;text-align:center;color:var(--sub);">
+          <div style="font-size:28px;margin-bottom:6px;">📷</div>
+          <div style="font-size:13px;font-weight:500;">Tryk for at tage billede</div>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+      <button class="primary-btn" onclick="go(4)">Næste →</button>
+    </div>
+
+    <!-- S5: Opret sag – Trin 3 Servicetype -->
+    <div class="screen" id="s5">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="app-header">
+        <div class="eyebrow">Opret sag</div>
+        <h1>Vælg service</h1>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-step done"></div>
+        <div class="progress-step done"></div>
+        <div class="progress-step active"></div>
+      </div>
+      <div class="step-label">Trin 3 af 3</div>
+
+      <div class="service-opt sel" onclick="pickService(this)">
+        <span class="icon">🔧</span>
+        <div>
+          <div class="t">Permanent lapning</div>
+          <div class="s">Dækbus kører ud til kunden</div>
+        </div>
+      </div>
+      <div class="service-opt" onclick="pickService(this)">
+        <span class="icon">🏪</span>
+        <div>
+          <div class="t">Permanent lapning</div>
+          <div class="s">Kunden kører selv ind til dækcenter</div>
+        </div>
+      </div>
+      <div class="service-opt" onclick="pickService(this)">
+        <span class="icon">🚐</span>
+        <div>
+          <div class="t">Nyt dæk</div>
+          <div class="s">Dækbus kører ud med nyt dæk</div>
+        </div>
+      </div>
+      <div class="service-opt" onclick="pickService(this)">
+        <span class="icon">🏁</span>
+        <div>
+          <div class="t">Nyt dæk</div>
+          <div class="s">Kunden kører selv ind til dækcenter</div>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+      <button class="primary-btn orange" onclick="go(5)">Opret sag &amp; send SMS 📱</button>
+    </div>
+
+    <!-- S6: Bekræftelse -->
+    <div class="screen" id="s6">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="confirm-body">
+        <div class="confirm-icon">✅</div>
+        <h2 style="font-size:21px;font-weight:800;color:var(--text);margin-bottom:6px;">Sag oprettet!</h2>
+        <p style="font-size:13px;color:var(--sub);margin-bottom:24px;">SMS sendt til Lone Petersen</p>
+
+        <div class="sms-box">
+          <div class="label">📱 SMS SENDT</div>
+          <div class="msg">"Hej Lone. Vi har oprettet en dæksag til dig. Vores dækbus ankommer til Kongevejen 44 – forventet ankomst kl. 14:30. Vi kontakter dig når vi er på vej. Hilsen SOS Dæk"</div>
+        </div>
+
+        <div class="summary-box">
+          <div class="sum-row"><span class="k">Kunde</span><span class="v">Lone Petersen</span></div>
+          <div class="sum-row"><span class="k">Reg.nr.</span><span class="v">AB 24 891</span></div>
+          <div class="sum-row"><span class="k">Dæk</span><span class="v">205/55 R16 × 1</span></div>
+          <div class="sum-row"><span class="k">Service</span><span class="v">Lapning · Dækbus</span></div>
+        </div>
+      </div>
+      <button class="primary-btn dark" onclick="go(6)">Se superbruger visning →</button>
+    </div>
+
+    <!-- S7: Superbruger – Dagens opgaver -->
+    <div class="screen" id="s7">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="app-header">
+        <div class="eyebrow">Superbruger · Odense</div>
+        <h1>Dagens opgaver</h1>
+      </div>
+      <div class="tab-bar">
+        <div class="tab active">Dækbus (3)</div>
+        <div class="tab">Værksted (5)</div>
+        <div class="tab" onclick="go(7)">Dækhotel</div>
+      </div>
+
+      <div style="padding-top:12px;">
+        <div class="job-item">
+          <div class="job-badge" style="background:#FFF7ED;">🔧</div>
+          <div>
+            <div class="job-name">Lone Petersen</div>
+            <div class="job-meta">Kongevejen 44, Odense<br>Permanent lapning · 205/55 R16 × 1</div>
+          </div>
+          <span class="badge badge-wait">Afventer</span>
+        </div>
+
+        <div class="job-item">
+          <div class="job-badge" style="background:#EFF6FF;">🚐</div>
+          <div>
+            <div class="job-name">Thomas Holm</div>
+            <div class="job-meta">Roskildevej 12, Odense<br>Nyt dæk · 225/45 R17 × 2</div>
+          </div>
+          <span class="badge badge-active">Igangsat</span>
+        </div>
+
+        <div class="job-item">
+          <div class="job-badge" style="background:#FFF7ED;">🔧</div>
+          <div>
+            <div class="job-name">Sara Kjær</div>
+            <div class="job-meta">Filosoffen 8, Odense<br>Permanent lapning · 195/65 R15 × 1</div>
+          </div>
+          <span class="badge badge-wait">Afventer</span>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+      <button class="primary-btn dark" onclick="go(7)">🗺️ Optimer min rute</button>
+    </div>
+
+    <!-- S8: Dækhotel -->
+    <div class="screen" id="s8">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="app-header">
+        <div class="eyebrow">Superbruger · Odense</div>
+        <h1>Dækhotel</h1>
+      </div>
+      <div class="tab-bar">
+        <div class="tab">Dækbus (3)</div>
+        <div class="tab">Værksted (5)</div>
+        <div class="tab active">Dækhotel</div>
+      </div>
+
+      <div class="hotel-banner">
+        <div class="hl">🌸 Sæsonpåminding – April</div>
+        <div class="sub">23 kunder klar til sommerdæk-skift</div>
+        <button class="sms-all-btn">Send SMS til alle →</button>
+      </div>
+
+      <div class="section-title">Indlagte hjul (3 af 47)</div>
+
+      <div class="job-item">
+        <div class="job-badge" style="background:#EFF6FF;">❄️</div>
+        <div>
+          <div class="job-name">Mette Larsen</div>
+          <div class="job-meta">Vinterdæk · 205/55 R16 × 4<br>Indlagt 15. nov 2024</div>
+        </div>
+      </div>
+
+      <div class="job-item">
+        <div class="job-badge" style="background:#F0FDF4;">☀️</div>
+        <div>
+          <div class="job-name">Klaus Møller</div>
+          <div class="job-meta">Sommerdæk · 225/45 R17 × 4<br>Indlagt 3. apr 2024</div>
+        </div>
+      </div>
+
+      <div class="job-item">
+        <div class="job-badge" style="background:#EFF6FF;">❄️</div>
+        <div>
+          <div class="job-name">Birgit Andersen</div>
+          <div class="job-meta">Vinterdæk · 195/65 R15 × 4<br>Indlagt 8. nov 2024</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /phone-inner -->
+</div><!-- /phone -->
+
+<div class="nav-row">
+  <button class="nav-btn" id="prevBtn" onclick="prev()" disabled>← Forrige</button>
+  <div class="dots" id="dots"></div>
+  <button class="nav-btn" id="nextBtn" onclick="next()">Næste →</button>
+</div>
+
+<script>
+  const labels = [
+    'Redder · Login',
+    'Redder · Forside',
+    'Opret sag · Trin 1 – Kundedata',
+    'Opret sag · Trin 2 – Dækinfo',
+    'Opret sag · Trin 3 – Servicetype',
+    'Sag oprettet · Bekræftelse & SMS',
+    'Superbruger · Dagens opgaver',
+    'Superbruger · Dækhotel',
+  ];
+
+  const screens = document.querySelectorAll('.screen');
+  let cur = 0;
+
+  function render() {
+    screens.forEach((s, i) => s.classList.toggle('active', i === cur));
+    document.getElementById('screenLabel').textContent = labels[cur];
+    document.getElementById('prevBtn').disabled = cur === 0;
+    document.getElementById('nextBtn').disabled = cur === screens.length - 1;
+    const dc = document.getElementById('dots');
+    dc.innerHTML = '';
+    screens.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i === cur ? ' active' : '');
+      d.onclick = () => go(i);
+      dc.appendChild(d);
+    });
+  }
+
+  function go(i)   { cur = i; render(); }
+  function next()  { if (cur < screens.length - 1) go(cur + 1); }
+  function prev()  { if (cur > 0) go(cur - 1); }
+
+  function pickService(el) {
+    document.querySelectorAll('.service-opt').forEach(o => o.classList.remove('sel'));
+    el.classList.add('sel');
+  }
+
+  render();
+</script>
+</body>
+</html>
