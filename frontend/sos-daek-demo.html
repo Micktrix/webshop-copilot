@@ -827,6 +827,8 @@
         <span class="nav">›</span>
       </div>
 
+      <button class="primary-btn orange" style="margin:10px 16px 4px;width:calc(100% - 32px);">＋ Opret walk-in booking</button>
+
       <div style="overflow-y:auto;flex:1;">
         <div class="time-slot">
           <span class="time">08:00</span>
@@ -844,7 +846,7 @@
         </div>
         <div class="time-slot">
           <span class="time">09:00</span>
-          <div class="slot-block slot-free">Ledig</div>
+          <div class="slot-block slot-free" style="cursor:pointer;color:#1B4F8A;font-weight:600;">＋ Ledig – tryk for walk-in</div>
         </div>
         <div class="time-slot">
           <span class="time">09:30</span>
@@ -862,7 +864,7 @@
         </div>
         <div class="time-slot">
           <span class="time">10:30</span>
-          <div class="slot-block slot-free">Ledig</div>
+          <div class="slot-block slot-free" style="cursor:pointer;color:#1B4F8A;font-weight:600;">＋ Ledig – tryk for walk-in</div>
         </div>
         <div class="time-slot">
           <span class="time">11:00</span>
@@ -895,33 +897,44 @@
       </div>
       <div class="hotel-banner">
         <div class="hl">🌸 Sæsonpåminding – April</div>
-        <div class="sub">23 kunder klar til sommerdæk-skift</div>
+        <div class="sub">23 kunder klar til sommerdæk-skift inkl. montering</div>
         <button class="sms-all-btn">Send SMS til alle →</button>
       </div>
       <div class="section-title">Indlagte hjul (3 af 47)</div>
+
       <div class="job-item">
         <div class="job-badge" style="background:#EFF6FF;">❄️</div>
         <div>
           <div class="job-name">Mette Larsen</div>
           <div class="job-meta">Vinterdæk · 205/55 R16 × 4<br>Indlagt 15. nov 2024</div>
         </div>
-        <span class="badge badge-booked">SMS sendt</span>
+        <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0;">
+          <span class="badge badge-booked">SMS sendt</span>
+          <button class="edit-btn" style="font-size:11px;">Book skift</button>
+        </div>
       </div>
+
       <div class="job-item">
         <div class="job-badge" style="background:#F0FDF4;">☀️</div>
         <div>
           <div class="job-name">Klaus Møller</div>
-          <div class="job-meta">Sommerdæk · 225/45 R17 × 4<br>Indlagt 3. apr 2024</div>
+          <div class="job-meta">Sommerdæk · 225/45 R17 × 4<br>Indlagt 3. apr 2024 · Skift booket 14. apr 09:00</div>
         </div>
-        <span class="badge badge-done">Afhentet</span>
+        <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0;">
+          <span class="badge badge-active">Skift booket</span>
+        </div>
       </div>
+
       <div class="job-item">
         <div class="job-badge" style="background:#EFF6FF;">❄️</div>
         <div>
           <div class="job-name">Birgit Andersen</div>
           <div class="job-meta">Vinterdæk · 195/65 R15 × 4<br>Indlagt 8. nov 2024</div>
         </div>
-        <span class="badge badge-wait">Afventer</span>
+        <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0;">
+          <span class="badge badge-wait">Afventer</span>
+          <button class="edit-btn" style="font-size:11px;">Book skift</button>
+        </div>
       </div>
     </div>
 
