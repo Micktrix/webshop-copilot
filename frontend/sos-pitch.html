@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOS DAH Dæk-app – Pitch</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; color: #1a1a2e; }
+
+    header {
+      background: linear-gradient(135deg, #c0392b, #e74c3c);
+      color: white;
+      padding: 48px 40px 40px;
+    }
+    header .label { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8; margin-bottom: 12px; }
+    header h1 { font-size: 36px; font-weight: 700; margin-bottom: 8px; }
+    header p { font-size: 17px; opacity: 0.9; max-width: 600px; }
+
+    nav {
+      background: white;
+      border-bottom: 1px solid #eee;
+      padding: 0 40px;
+      display: flex;
+      gap: 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      overflow-x: auto;
+    }
+    nav a {
+      padding: 14px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #666;
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+    }
+    nav a:hover { color: #e74c3c; border-bottom-color: #e74c3c; }
+
+    .container { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+
+    .section { margin-bottom: 52px; }
+
+    .pitch-question {
+      background: white;
+      border-left: 4px solid #e74c3c;
+      padding: 20px 24px;
+      border-radius: 8px;
+      margin-bottom: 40px;
+      font-size: 18px;
+      font-style: italic;
+      color: #c0392b;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    h2 { font-size: 22px; font-weight: 700; margin-bottom: 20px; color: #1a1a2e; }
+    h3 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-bottom: 12px; }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .card .icon { font-size: 28px; margin-bottom: 12px; }
+    .card h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .card p { font-size: 14px; color: #555; line-height: 1.6; }
+
+    .highlight { border-top: 3px solid #e74c3c; }
+    .highlight-green { border-top: 3px solid #27ae60; }
+    .highlight-blue { border-top: 3px solid #2980b9; }
+    .highlight-orange { border-top: 3px solid #e67e22; }
+    .highlight-purple { border-top: 3px solid #8e44ad; }
+
+    .number-card {
+      background: white;
+      border-radius: 10px;
+      padding: 24px 20px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .number-card .big { font-size: 28px; font-weight: 800; color: #e74c3c; }
+    .number-card .label { font-size: 13px; color: #666; margin-top: 4px; }
+
+    .flow-steps { display: flex; margin-top: 16px; }
+    .step {
+      flex: 1;
+      background: white;
+      padding: 18px 16px;
+      border-right: 1px solid #eee;
+    }
+    .step:last-child { border-right: none; border-radius: 0 10px 10px 0; }
+    .step:first-child { border-radius: 10px 0 0 10px; }
+    .step .num {
+      background: #e74c3c;
+      color: white;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 8px;
+    }
+    .step h5 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+    .step p { font-size: 12px; color: #666; line-height: 1.5; }
+
+    .price-table {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .price-table table { width: 100%; border-collapse: collapse; }
+    .price-table th {
+      background: #e74c3c;
+      color: white;
+      padding: 14px 20px;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .price-table td {
+      padding: 14px 20px;
+      font-size: 14px;
+      border-bottom: 1px solid #f0f0f0;
+      color: #333;
+    }
+    .price-table tr:last-child td { border-bottom: none; }
+    .price-table tr.total td { font-weight: 700; background: #fef9f9; color: #e74c3c; }
+    .price-table .note { font-size: 12px; color: #888; }
+
+    .phase-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+    }
+    .phase-card {
+      background: white;
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      position: relative;
+    }
+    .phase-num {
+      position: absolute;
+      top: -14px;
+      left: 20px;
+      background: #e74c3c;
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+    .phase-card h4 { font-size: 16px; font-weight: 700; margin-bottom: 6px; margin-top: 8px; }
+    .phase-card .price { font-size: 22px; font-weight: 800; color: #e74c3c; margin-bottom: 10px; }
+    .phase-card p { font-size: 13px; color: #555; line-height: 1.6; }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+    .admin-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border-left: 3px solid #2980b9;
+    }
+    .admin-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+    .admin-card ul { padding-left: 16px; }
+    .admin-card li { font-size: 13px; color: #555; padding: 2px 0; line-height: 1.5; }
+
+    .upsell-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+    .upsell-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .tag-booking { background: #fdecea; color: #c0392b; }
+    .tag-sms { background: #e8f5e9; color: #27ae60; }
+    .tag-fleet { background: #e3f2fd; color: #1565c0; }
+    .tag-abo { background: #fff8e1; color: #e65100; }
+    .upsell-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .upsell-card p { font-size: 13px; color: #555; line-height: 1.5; }
+
+    .scale-targets {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .scale-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .scale-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: #1a1a2e; }
+    .scale-card ul { padding-left: 16px; }
+    .scale-card li { font-size: 13px; color: #555; padding: 3px 0; }
+
+    .callout {
+      background: #fff8e1;
+      border-left: 4px solid #f39c12;
+      padding: 16px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #7d5a00;
+      margin-top: 16px;
+      line-height: 1.6;
+    }
+
+    .demo-link {
+      background: #e74c3c;
+      color: white;
+      text-align: center;
+      padding: 28px;
+      border-radius: 10px;
+    }
+    .demo-link p { font-size: 14px; opacity: 0.85; margin-bottom: 8px; }
+    .demo-link a { color: white; font-size: 18px; font-weight: 700; }
+
+    @media (max-width: 700px) {
+      .grid, .grid-3, .grid-4, .phase-row, .admin-grid, .upsell-grid, .scale-targets { grid-template-columns: 1fr; }
+      .flow-steps { flex-direction: column; }
+      .step { border-right: none; border-bottom: 1px solid #eee; border-radius: 0; }
+      .step:first-child { border-radius: 10px 10px 0 0; }
+      .step:last-child { border-radius: 0 0 10px 10px; border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="label">SOS Dansk Autohjælp – Intern Pitch</div>
+  <h1>Dæk &amp; Service App</h1>
+  <p>Sagsstyring, booking og upsell i ét system – bygget til vejhælp og dækservice.</p>
+</header>
+
+<nav>
+  <a href="#problem">Problem</a>
+  <a href="#system">Systemet</a>
+  <a href="#admin">Admin-panel</a>
+  <a href="#pris">Pris</a>
+  <a href="#upsell">Upsell</a>
+  <a href="#skalering">Skalering</a>
+  <a href="#naesteskridt">Næste skridt</a>
+</nav>
+
+<div class="container">
+
+  <!-- PROBLEM -->
+  <div class="section" id="problem">
+    <div class="pitch-question">"Hvordan håndterer I dæksager i dag, når redderen er ude?"</div>
+    <div class="grid">
+      <div class="card highlight">
+        <div class="icon">📋</div>
+        <h4>I dag</h4>
+        <p>Papir, telefon og hukommelse. Ingen systematisk opfølgning på kunder der fik midlertidig lapning. Ingen overblik over hvem der mangler at komme ind.</p>
+      </div>
+      <div class="card highlight-green">
+        <div class="icon">📱</div>
+        <h4>Med systemet</h4>
+        <p>Redder registrerer sagen på 2 minutter. Kunden booker selv via SMS-link. Superbruger ser dagens plan. Regionschef ser tallene. Ingen mister en sag.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- NØGLETAL -->
+  <div class="section">
+    <h2>Potentiale</h2>
+    <div class="grid grid-4">
+      <div class="number-card">
+        <div class="big">5</div>
+        <div class="label">regioner nationalt</div>
+      </div>
+      <div class="number-card">
+        <div class="big">56.000</div>
+        <div class="label">assistancer/år i Syddanmark</div>
+      </div>
+      <div class="number-card">
+        <div class="big">6.500</div>
+        <div class="label">kr/md per region (passivt)</div>
+      </div>
+      <div class="number-card">
+        <div class="big">32.500</div>
+        <div class="label">kr/md ved alle 5 regioner</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SYSTEMET -->
+  <div class="section" id="system">
+    <h2>Hvad systemet håndterer</h2>
+    <div class="grid" style="margin-bottom:20px;">
+      <div class="card highlight">
+        <div class="icon">🔧</div>
+        <h4>Permanent lapning</h4>
+        <p>Dækbus kører ud – eller kunde booker selv ind via SMS-link.</p>
+      </div>
+      <div class="card highlight">
+        <div class="icon">🛞</div>
+        <h4>Dækskifte</h4>
+        <p>Nyt dæk monteret på stedet eller ved station – kunde booker selv via SMS-link.</p>
+      </div>
+      <div class="card highlight">
+        <div class="icon">🔋</div>
+        <h4>Batteriskift</h4>
+        <p>Servicebil kører ud eller kunde booker ind – med batteri-type og CCA-registrering.</p>
+      </div>
+      <div class="card highlight">
+        <div class="icon">❄️</div>
+        <h4>Dækhotel</h4>
+        <p>Indlagring, udlagring og automatiske sæsonpåmindelser med booking-link.</p>
+      </div>
+    </div>
+
+    <h2>Redderens flow på stedet</h2>
+    <div class="flow-steps">
+      <div class="step">
+        <div class="num">1</div>
+        <h5>Reg.nr opslag</h5>
+        <p>Bil og dækstørrelse hentes automatisk</p>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <h5>Vælg servicetype</h5>
+        <p>Lapning, dækskifte, batteri</p>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <h5>Foto + noter</h5>
+        <p>Dokumenter skaden fra telefonen</p>
+      </div>
+      <div class="step">
+        <div class="num">4</div>
+        <h5>SMS til kunde</h5>
+        <p>Automatisk bekræftelse + booking-link</p>
+      </div>
+      <div class="step">
+        <div class="num">5</div>
+        <h5>Færdig</h5>
+        <p>Kunden booker selv – redder kører videre</p>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;" class="grid grid-3">
+      <div class="card highlight-blue">
+        <div class="icon">🚗</div>
+        <h4>Redder</h4>
+        <p>Opretter sager på stedet fra mobil. Hurtigt og fejlfrit.</p>
+      </div>
+      <div class="card highlight-green">
+        <div class="icon">🗂️</div>
+        <h4>Superbruger</h4>
+        <p>Kalendervisning med dagens bookinger. Kortvisning og ruteoptimering.</p>
+      </div>
+      <div class="card highlight-orange">
+        <div class="icon">📊</div>
+        <h4>Regionschef</h4>
+        <p>Statistik per station. Sager, responstid, omsætning. Fuldt overblik.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div class="section" id="admin">
+    <h2>Admin-panel – selvbetjening uden konsulenthjælp</h2>
+    <p style="font-size:15px; color:#555; margin-bottom:20px; line-height:1.7;">Alt der ellers ville kræve din hjælp, kan regionschefen og superbrugeren gøre selv. Det er det der gør systemet skalerbart – nye kunder onboarder uden at du er til stede.</p>
+    <div class="admin-grid">
+      <div class="admin-card">
+        <h4>🏢 Stationer</h4>
+        <ul>
+          <li>Tilføj og rediger stationer</li>
+          <li>Sæt åbningstider</li>
+          <li>Kapacitet per tidslot</li>
+          <li>Bloker tider (helligdage, møder)</li>
+        </ul>
+      </div>
+      <div class="admin-card">
+        <h4>👥 Brugere</h4>
+        <ul>
+          <li>Opret og slet brugere</li>
+          <li>Tildel roller (redder/superbruger/admin)</li>
+          <li>Nulstil adgangskoder</li>
+          <li>Se login-aktivitet</li>
+        </ul>
+      </div>
+      <div class="admin-card">
+        <h4>📱 SMS-tekster</h4>
+        <ul>
+          <li>Rediger alle automatiske beskeder</li>
+          <li>Tilpas bekræftelser og påmindelser</li>
+          <li>Sæt sæsonpåmindelses-datoer</li>
+          <li>Tænd/sluk for hver SMS-type</li>
+        </ul>
+      </div>
+      <div class="admin-card">
+        <h4>📦 Lager</h4>
+        <ul>
+          <li>Dæk og batterier per station</li>
+          <li>Notifikation ved lavt lager</li>
+          <li>Superbruger ser lager inden booking</li>
+        </ul>
+      </div>
+      <div class="admin-card">
+        <h4>📈 Rapporter</h4>
+        <ul>
+          <li>Valgfri periode og station</li>
+          <li>Eksportér til Excel</li>
+          <li>Omsætning, sager, responstid</li>
+          <li>Konvertering på upsell-tilbud</li>
+        </ul>
+      </div>
+      <div class="admin-card">
+        <h4>🔔 Notifikationer</h4>
+        <ul>
+          <li>SMS ved ny booking til stationen</li>
+          <li>Alert ved fuldt booket dag</li>
+          <li>Daglig opgave-oversigt til superbruger</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout">
+      Admin-panelet er det der gør at du kan holde ferie. Kunden løser selv 90% af det daglige – du tager kun fat når der er en teknisk fejl.
+    </div>
+  </div>
+
+  <!-- PRIS -->
+  <div class="section" id="pris">
+    <h2>Prismodel</h2>
+    <div class="phase-row" style="margin-bottom:24px;">
+      <div class="phase-card">
+        <div class="phase-num">Fase 1</div>
+        <h4>Implementering</h4>
+        <div class="price">20–25k kr</div>
+        <p>Fast projektpris – samme for alle regioner. Procesanalyse, konfiguration, oplæring og 4–6 ugers opfølgning. Du er konsulent. Herefter kører systemet selv.</p>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">Fase 2</div>
+        <h4>Månedlig licens</h4>
+        <div class="price">6.500 kr/md</div>
+        <p>Fast licenspris per region. 12 måneders binding, 3 mdr. opsigelse. Inkluderer hosting, drift, support og opdateringer.</p>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">Fase 3</div>
+        <h4>5 regioner</h4>
+        <div class="price">32.500 kr/md</div>
+        <p>Passiv månedlig indkomst ved fuld national udrulning. 390.000 kr/år uden løbende tidsforbrug.</p>
+      </div>
+    </div>
+
+    <div class="price-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Post</th>
+            <th>Hvad er inkluderet</th>
+            <th>Kr/md</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Hosting + infrastruktur</td>
+            <td class="note">Server, database, backup, oppetidsovervågning</td>
+            <td>800 kr</td>
+          </tr>
+          <tr>
+            <td>Support + SLA</td>
+            <td class="note">Hverdage 8-17, max 4 timers responstid på kritiske fejl</td>
+            <td>1.200 kr</td>
+          </tr>
+          <tr>
+            <td>Sikkerhed + GDPR</td>
+            <td class="note">Løbende sikkerhedsopdateringer, databeskyttelse</td>
+            <td>500 kr</td>
+          </tr>
+          <tr>
+            <td>Opdateringer + tilpasninger</td>
+            <td class="note">2 timers tilpasninger/md inkluderet</td>
+            <td>2.000 kr</td>
+          </tr>
+          <tr class="total">
+            <td>I alt per region</td>
+            <td></td>
+            <td>6.500 kr/md</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- UPSELL -->
+  <div class="section" id="upsell">
+    <h2>Upsell-muligheder i systemet</h2>
+    <div class="upsell-grid">
+      <div class="upsell-card">
+        <span class="tag tag-booking">Ved booking</span>
+        <h4>Sæsonservice-pakke</h4>
+        <p>Dækskifte + bremsetjek + batteri-tjek som ét-klik tillæg i booking-linket.</p>
+      </div>
+      <div class="upsell-card">
+        <span class="tag tag-booking">Ved booking</span>
+        <h4>Dæk-køb i appen</h4>
+        <p>Kunde vælger dæk direkte – klar ved ankomst. SOS DAH tjener margin på salget.</p>
+      </div>
+      <div class="upsell-card">
+        <span class="tag tag-booking">Ved booking</span>
+        <h4>Reparationsgaranti</h4>
+        <p>12 måneders garanti på lapning for 99 kr. Ren fortjeneste, nul ekstra arbejde.</p>
+      </div>
+      <div class="upsell-card">
+        <span class="tag tag-sms">Automatisk SMS</span>
+        <h4>Batteri-alderspåmindelse</h4>
+        <p>Efter 3–4 år: automatisk SMS med booking-link til nyt batteriskift.</p>
+      </div>
+      <div class="upsell-card">
+        <span class="tag tag-sms">Automatisk SMS</span>
+        <h4>Sæsonpåmindelser</h4>
+        <p>Dækhotel-kunder får SMS ved sæsonskifte med direkte booking-link.</p>
+      </div>
+      <div class="upsell-card">
+        <span class="tag tag-sms">Automatisk SMS</span>
+        <h4>Re-aktivering</h4>
+        <p>Kunder der ikke har bestilt i 12+ måneder får automatisk et personligt tilbud.</p>
+      </div>
+      <div class="upsell-card">
+        <span class="tag tag-fleet">Erhverv</span>
+        <h4>Flådeaftaler</h4>
+        <p>Alle firmabiler samlet. Dækhotel, påmindelser og samlet faktura per virksomhed.</p>
+      </div>
+      <div class="upsell-card">
+        <span class="tag tag-fleet">Erhverv</span>
+        <h4>Prioritetsbooking</h4>
+        <p>Erhvervskunder betaler for garanteret tid inden 24 timer.</p>
+      </div>
+      <div class="upsell-card">
+        <span class="tag tag-abo">Abonnement</span>
+        <h4>Dæk-abonnement</h4>
+        <p>99 kr/md: 2 sæsonskift/år + gratis lapning + prioritetsbooking. Fast cashflow.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKALERING -->
+  <div class="section" id="skalering">
+    <h2>Skalering</h2>
+    <p style="font-size:15px; color:#555; margin-bottom:20px; line-height:1.7;">SOS DAH er beviset. Systemet er ikke SOS DAH-specifikt – det er field service management med dæk og batteri som servicetype. Næste kunde tager 2 ugers tilpasning.</p>
+    <div class="scale-targets">
+      <div class="scale-card">
+        <h4>🇩🇰 Danmark – næste målgrupper</h4>
+        <ul>
+          <li>Falck Vejhjælp</li>
+          <li>Dækkompagniet</li>
+          <li>Vianor / Euromaster</li>
+          <li>Leasingfirmaer: ALD, LeasePlan, Arval</li>
+          <li>Bilforhandlerkæder med servicecenter</li>
+        </ul>
+      </div>
+      <div class="scale-card">
+        <h4>🌍 Nordisk potentiale</h4>
+        <ul>
+          <li>Sverige, Norge, Finland – kulturelt identisk marked</li>
+          <li>Systemet kræver minimal tilpasning</li>
+          <li>~50 mio kr/år ved nordisk udrulning</li>
+          <li>Exit: 15–30 mio kr ved 4–8x ARR</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout">
+      Forudsætning for skalering: Admin-panelet er selvbetjening. Nye kunder onboarder uden at du er til stede. Det er det der gør forskellen på et job og et produkt.
+    </div>
+  </div>
+
+  <!-- NÆSTE SKRIDT -->
+  <div class="section" id="naesteskridt">
+    <h2>Næste skridt</h2>
+    <div class="grid">
+      <div class="card">
+        <h4 style="margin-bottom:12px;">Inden mødet</h4>
+        <ul style="padding-left:18px; font-size:14px; color:#444; line-height:2;">
+          <li>Ring til kontakter hos SOS DAH</li>
+          <li>Find ud af om der allerede findes et system</li>
+          <li>Kend svaret på "hvad bruger I i dag?"</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="margin-bottom:12px;">På mødet</h4>
+        <ul style="padding-left:18px; font-size:14px; color:#444; line-height:2;">
+          <li>Åbn med pitch-spørgsmålet</li>
+          <li>Vis demo live</li>
+          <li>Luk med pilotaftale – én region, fast pris</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEMO -->
+  <div class="demo-link">
+    <p>Interaktiv demo</p>
+    <a href="https://webshop-copilot-frontend.onrender.com/sos-daek.html" target="_blank">
+      webshop-copilot-frontend.onrender.com/sos-daek.html
+    </a>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOS Dæk – App Demo</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue:   #1B4F8A;
+    --blue2:  #2563EB;
+    --orange: #F97316;
+    --green:  #22C55E;
+    --red:    #EF4444;
+    --purple: #8B5CF6;
+    --bg:     #F1F5F9;
+    --text:   #0F172A;
+    --sub:    #64748B;
+    --border: #E2E8F0;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(145deg, #1B4F8A 0%, #0a1f3a 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px;
+    gap: 20px;
+  }
+
+  .top-label {
+    color: rgba(255,255,255,0.6);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .screen-label {
+    color: white;
+    font-size: 17px;
+    font-weight: 700;
+    text-align: center;
+    min-height: 26px;
+  }
+
+  /* ── Phone frame ── */
+  .phone {
+    width: 375px;
+    background: #111;
+    border-radius: 52px;
+    padding: 12px;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.08),
+      0 40px 80px rgba(0,0,0,0.6);
+  }
+
+  .phone-inner {
+    background: var(--bg);
+    border-radius: 42px;
+    height: 718px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .notch {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 110px; height: 28px;
+    background: #111;
+    border-radius: 0 0 18px 18px;
+    z-index: 200;
+  }
+
+  /* ── Screens ── */
+  .screen {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .screen.active { display: flex; }
+
+  /* ── Navigation ── */
+  .nav-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-btn {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: white;
+    padding: 10px 22px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .nav-btn:hover:not(:disabled) { background: rgba(255,255,255,0.22); }
+  .nav-btn:disabled { opacity: 0.28; cursor: default; }
+
+  .dots { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; max-width: 260px; }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.28);
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .dot.active { background: white; width: 22px; border-radius: 4px; }
+
+  /* ── Shared UI atoms ── */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 38px 22px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .app-header {
+    background: var(--blue);
+    padding: 14px 20px 16px;
+    color: white;
+  }
+  .app-header .eyebrow { font-size: 11px; opacity: .7; margin-bottom: 2px; }
+  .app-header h1 { font-size: 19px; font-weight: 800; }
+  .app-header.green { background: #166534; }
+  .app-header.dark  { background: #1e293b; }
+  .app-header.purple { background: #5b21b6; }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--sub);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    padding: 14px 16px 6px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 14px;
+    padding: 16px;
+    margin: 0 16px 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+  }
+
+  .progress-bar { display: flex; gap: 4px; padding: 14px 16px 2px; }
+  .progress-step { flex:1; height:4px; border-radius:2px; background: var(--border); }
+  .progress-step.done   { background: var(--blue); }
+  .progress-step.active { background: var(--orange); }
+  .step-label { font-size:11px; color:var(--sub); padding: 4px 16px 10px; }
+
+  .form-group { margin: 0 16px 12px; }
+  .form-label {
+    font-size: 11px; font-weight: 700; color: var(--sub);
+    text-transform: uppercase; letter-spacing: .06em; margin-bottom: 5px;
+  }
+  .form-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 15px;
+    color: var(--text);
+    background: white;
+  }
+  .form-input.autofilled {
+    background: #F0FDF4;
+    border-color: #86EFAC;
+    color: #166534;
+  }
+
+  .primary-btn {
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 13px;
+    padding: 15px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin: 6px 16px 16px;
+    width: calc(100% - 32px);
+    display: block;
+  }
+  .primary-btn.orange { background: var(--orange); }
+  .primary-btn.dark   { background: #1e293b; }
+  .primary-btn.green  { background: #166534; }
+  .primary-btn.red    { background: #dc2626; }
+
+  .big-action {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: white;
+    border: none;
+    border-radius: 16px;
+    padding: 18px;
+    margin: 0 16px 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.09);
+    cursor: pointer;
+    width: calc(100% - 32px);
+    text-align: left;
+  }
+  .big-action .icon {
+    width: 50px; height: 50px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .big-action .t { font-size: 15px; font-weight: 700; color: var(--text); }
+  .big-action .s { font-size: 12px; color: var(--sub); margin-top: 2px; }
+  .chevron { margin-left: auto; color: var(--sub); font-size: 18px; }
+
+  .service-opt {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 13px;
+    padding: 12px 14px;
+    margin: 0 16px 8px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .service-opt.sel { border-color: var(--blue); background: #EFF6FF; }
+  .service-opt .icon { font-size: 22px; }
+  .service-opt .t { font-size: 13px; font-weight: 700; color: var(--text); }
+  .service-opt .s { font-size: 11px; color: var(--sub); }
+
+  .tab-bar {
+    display: flex;
+    background: white;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab {
+    flex: 1;
+    padding: 11px 0;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--sub);
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+  }
+  .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+  .job-item {
+    background: white;
+    border-radius: 13px;
+    padding: 14px;
+    margin: 0 16px 9px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .job-badge {
+    width: 40px; height: 40px;
+    border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .job-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .job-meta { font-size: 11px; color: var(--sub); margin-top: 2px; line-height: 1.5; }
+  .badge {
+    margin-left: auto;
+    font-size: 10px; font-weight: 700;
+    padding: 4px 9px; border-radius: 20px;
+    flex-shrink: 0;
+  }
+  .badge-wait   { background: #FEF3C7; color: #92400E; }
+  .badge-active { background: #DCFCE7; color: #166534; }
+  .badge-booked { background: #EFF6FF; color: #1e40af; }
+  .badge-done   { background: #F1F5F9; color: #475569; }
+
+  .spacer { flex: 1; }
+
+  /* Login */
+  #s1 { background: white; }
+
+  /* Confirm screen */
+  .confirm-body {
+    display: flex; flex-direction: column;
+    align-items: center; padding: 24px 20px 16px;
+    text-align: center; flex: 1;
+  }
+  .confirm-icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: #DCFCE7;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; margin-bottom: 12px;
+  }
+
+  .sms-box {
+    background: #F0FDF4;
+    border-radius: 13px;
+    padding: 12px;
+    width: 100%; text-align: left; margin-bottom: 12px;
+  }
+  .sms-box .label { font-size: 11px; font-weight: 700; color: #166534; margin-bottom: 5px; }
+  .sms-box .msg   { font-size: 12px; color: #15803D; line-height: 1.55; }
+
+  .summary-box {
+    background: white;
+    border-radius: 13px;
+    padding: 14px;
+    width: 100%;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+  }
+  .sum-row {
+    display: flex; justify-content: space-between;
+    font-size: 13px; margin-bottom: 7px;
+  }
+  .sum-row:last-child { margin-bottom: 0; }
+  .sum-row .k { color: var(--sub); }
+  .sum-row .v { font-weight: 700; color: var(--text); }
+
+  /* Dækhotel banner */
+  .hotel-banner {
+    background: linear-gradient(135deg, #F97316, #ea580c);
+    border-radius: 14px;
+    padding: 16px;
+    margin: 12px 16px 0;
+    color: white;
+  }
+  .hotel-banner .hl  { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
+  .hotel-banner .sub { font-size: 12px; opacity: .85; }
+  .sms-all-btn {
+    background: white; color: #ea580c;
+    border: none; border-radius: 8px;
+    padding: 8px 16px; font-size: 12px; font-weight: 700;
+    margin-top: 12px; cursor: pointer;
+  }
+
+  /* Reg.nr lookup */
+  .lookup-box {
+    background: white;
+    border-radius: 14px;
+    margin: 0 16px 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .lookup-input-row {
+    display: flex;
+    align-items: center;
+    padding: 0 0 0 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .lookup-input-row .flag { font-size: 18px; margin-right: 8px; }
+  .lookup-input-row .regnr {
+    font-size: 22px; font-weight: 800; color: var(--text);
+    letter-spacing: 0.1em; flex: 1; padding: 14px 0;
+  }
+  .lookup-btn {
+    background: var(--blue);
+    color: white;
+    border: none;
+    padding: 14px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .car-result {
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .car-icon {
+    width: 44px; height: 44px;
+    background: #EFF6FF;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .car-name { font-size: 15px; font-weight: 700; color: var(--text); }
+  .car-meta { font-size: 12px; color: var(--sub); margin-top: 2px; }
+  .auto-tag {
+    margin-left: auto;
+    background: #DCFCE7;
+    color: #166534;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+
+  /* Booking kalender */
+  .cal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: white;
+    border-bottom: 1px solid var(--border);
+  }
+  .cal-header .date { font-size: 14px; font-weight: 700; }
+  .cal-header .nav { font-size: 18px; color: var(--sub); cursor: pointer; }
+  .time-slot {
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    border-bottom: 1px solid #f1f5f9;
+    min-height: 52px;
+    gap: 12px;
+  }
+  .time-slot .time { font-size: 12px; font-weight: 700; color: var(--sub); width: 42px; flex-shrink: 0; }
+  .slot-block {
+    flex: 1;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .slot-booked { background: #EFF6FF; color: #1e40af; border-left: 3px solid var(--blue2); }
+  .slot-battery { background: #FEF3C7; color: #92400E; border-left: 3px solid var(--orange); }
+  .slot-free { background: #F1F5F9; color: var(--sub); font-weight: 400; }
+  .slot-name { font-weight: 700; }
+  .slot-type { font-size: 10px; opacity: 0.75; margin-top: 1px; }
+
+  /* Stats */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 0 16px;
+    margin-bottom: 12px;
+  }
+  .stat-card {
+    background: white;
+    border-radius: 13px;
+    padding: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+  }
+  .stat-card .num { font-size: 26px; font-weight: 800; color: var(--blue); }
+  .stat-card .lbl { font-size: 11px; color: var(--sub); margin-top: 2px; }
+  .stat-card .trend { font-size: 11px; color: #16a34a; margin-top: 4px; }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 16px;
+  }
+  .bar-lbl { font-size: 12px; color: var(--sub); width: 80px; flex-shrink: 0; }
+  .bar-wrap { flex: 1; height: 10px; background: var(--border); border-radius: 5px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 5px; background: var(--blue); }
+  .bar-val { font-size: 12px; font-weight: 700; color: var(--text); width: 36px; text-align: right; flex-shrink: 0; }
+
+  /* Admin */
+  .admin-row {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 13px;
+    padding: 14px 16px;
+    margin: 0 16px 9px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    gap: 12px;
+  }
+  .admin-row .icon { font-size: 20px; flex-shrink: 0; }
+  .admin-row .info { flex: 1; }
+  .admin-row .name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .admin-row .meta { font-size: 11px; color: var(--sub); margin-top: 2px; }
+  .edit-btn {
+    background: var(--bg);
+    border: none;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--blue);
+    cursor: pointer;
+  }
+
+  .sms-template {
+    background: white;
+    border-radius: 13px;
+    padding: 14px 16px;
+    margin: 0 16px 9px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  .sms-template .tpl-label { font-size: 11px; font-weight: 700; color: var(--sub); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+  .sms-template .tpl-text { font-size: 12px; color: var(--text); line-height: 1.55; background: #F8FAFC; border-radius: 8px; padding: 10px; }
+  .tpl-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .tpl-btn { border: none; border-radius: 8px; padding: 6px 12px; font-size: 11px; font-weight: 700; cursor: pointer; }
+  .tpl-btn.edit { background: #EFF6FF; color: var(--blue); }
+  .tpl-btn.toggle { background: #DCFCE7; color: #166534; }
+
+  .add-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: white;
+    border: 2px dashed var(--border);
+    border-radius: 13px;
+    padding: 14px;
+    margin: 0 16px 10px;
+    color: var(--blue);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="top-label">SOS Dæk System — Pitch Demo</div>
+<div class="screen-label" id="screenLabel">Redder · Login</div>
+
+<!-- ═══ PHONE ═══ -->
+<div class="phone">
+  <div class="phone-inner">
+    <div class="notch"></div>
+
+    <!-- S1: Login -->
+    <div class="screen active" id="s1">
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;">
+        <div style="width:68px;height:68px;background:var(--blue);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:14px;">🛞</div>
+        <h1 style="font-size:26px;font-weight:800;color:var(--text);">SOS Dæk</h1>
+        <p style="font-size:13px;color:var(--sub);margin-bottom:38px;">Vejhælp &amp; Dækservice</p>
+        <div class="form-group" style="width:100%;margin-bottom:12px;">
+          <div class="form-label">Email</div>
+          <div class="form-input" style="color:#94a3b8;">mads.hansen@sos.dk</div>
+        </div>
+        <div class="form-group" style="width:100%;margin-bottom:28px;">
+          <div class="form-label">Adgangskode</div>
+          <div class="form-input" style="color:#94a3b8;">••••••••</div>
+        </div>
+        <button class="primary-btn" style="margin:0;width:100%;" onclick="go(1)">Log ind</button>
+        <p style="font-size:12px;color:var(--sub);margin-top:18px;">Glemt adgangskode?</p>
+      </div>
+    </div>
+
+    <!-- S2: Redder hjem -->
+    <div class="screen" id="s2">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="app-header">
+        <div class="eyebrow">Logget ind som</div>
+        <h1>Mads Hansen · Redder</h1>
+      </div>
+      <div class="section-title">Hvad skal der ske?</div>
+      <button class="big-action" onclick="go(2)">
+        <div class="icon" style="background:#FFF7ED;">🛞</div>
+        <div>
+          <div class="t">Opret dæksag</div>
+          <div class="s">Kunden har brug for hjælp nu</div>
+        </div>
+        <span class="chevron">›</span>
+      </button>
+      <button class="big-action" onclick="go(2)">
+        <div class="icon" style="background:#FEF3C7;">🔋</div>
+        <div>
+          <div class="t">Opret batterisag</div>
+          <div class="s">Batteri skal skiftes eller testes</div>
+        </div>
+        <span class="chevron">›</span>
+      </button>
+      <button class="big-action">
+        <div class="icon" style="background:#EFF6FF;">🎫</div>
+        <div>
+          <div class="t">Send rabatkode</div>
+          <div class="s">Dækket holder – tilbud til senere</div>
+        </div>
+        <span class="chevron">›</span>
+      </button>
+      <div class="section-title">Mine sager i dag</div>
+      <div class="card" style="display:flex;gap:12px;align-items:center;">
+        <span style="font-size:22px;">✅</span>
+        <div>
+          <div style="font-size:14px;font-weight:700;">3 sager oprettet</div>
+          <div style="font-size:12px;color:var(--sub);">2 dæk · 1 batteri</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S3: Reg.nr opslag -->
+    <div class="screen" id="s3">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="app-header">
+        <div class="eyebrow">Opret sag · Trin 1 af 3</div>
+        <h1>Registreringsnummer</h1>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-step active"></div>
+        <div class="progress-step"></div>
+        <div class="progress-step"></div>
+      </div>
+      <div class="step-label">Slå bilen op – resten udfyldes automatisk</div>
+
+      <div class="lookup-box">
+        <div class="lookup-input-row">
+          <span class="flag">🇩🇰</span>
+          <span class="regnr">AB 24 891</span>
+          <button class="lookup-btn">Slå op</button>
+        </div>
+        <div class="car-result">
+          <div class="car-icon">🚗</div>
+          <div>
+            <div class="car-name">VW Golf 1.5 TSI</div>
+            <div class="car-meta">2021 · Benzin · Lone Petersen</div>
+          </div>
+          <span class="auto-tag">✓ Fundet</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="form-label">Dækstørrelse <span style="color:#16a34a;font-size:10px;">● Auto-udfyldt</span></div>
+        <div class="form-input autofilled">205/55 R16</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Bilmærke <span style="color:#16a34a;font-size:10px;">● Auto-udfyldt</span></div>
+        <div class="form-input autofilled">VW Golf · 2021</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Ejer <span style="color:#16a34a;font-size:10px;">● Auto-udfyldt</span></div>
+        <div class="form-input autofilled">Lone Petersen</div>
+      </div>
+
+      <div class="spacer"></div>
+      <button class="primary-btn" onclick="go(3)">Næste →</button>
+    </div>
+
+    <!-- S4: Kundedata (auto-udfyldt) -->
+    <div class="screen" id="s4">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="app-header">
+        <div class="eyebrow">Opret sag · Trin 2 af 3</div>
+        <h1>Kundedata</h1>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-step done"></div>
+        <div class="progress-step active"></div>
+        <div class="progress-step"></div>
+      </div>
+      <div class="step-label">Kontroller og udfyld manglende felter</div>
+
+      <div class="form-group">
+        <div class="form-label">Fulde navn <span style="color:#16a34a;font-size:10px;">● Auto-udfyldt</span></div>
+        <div class="form-input autofilled">Lone Petersen</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Telefon</div>
+        <div class="form-input">+45 29 34 56 78</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Email</div>
+        <div class="form-input">lone@email.dk</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Adresse (hændelsessted)</div>
+        <div class="form-input">Kongevejen 44, 5000 Odense</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label" style="margin-bottom:8px;">Foto af skaden</div>
+        <div style="background:white;border:2px dashed var(--border);border-radius:13px;padding:22px;text-align:center;color:var(--sub);">
+          <div style="font-size:28px;margin-bottom:6px;">📷</div>
+          <div style="font-size:13px;font-weight:500;">Tryk for at tage billede</div>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <button class="primary-btn" onclick="go(4)">Næste →</button>
+    </div>
+
+    <!-- S5: Servicetype (inkl. batteri) -->
+    <div class="screen" id="s5">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="app-header">
+        <div class="eyebrow">Opret sag · Trin 3 af 3</div>
+        <h1>Vælg service</h1>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-step done"></div>
+        <div class="progress-step done"></div>
+        <div class="progress-step active"></div>
+      </div>
+      <div class="step-label">Vælg hvad kunden har brug for</div>
+
+      <div class="section-title" style="padding-top:6px;">Dæk</div>
+      <div class="service-opt sel" onclick="pickService(this)">
+        <span class="icon">🔧</span>
+        <div>
+          <div class="t">Permanent lapning – dækbus kører ud</div>
+          <div class="s">Vi kører til kunden</div>
+        </div>
+      </div>
+      <div class="service-opt" onclick="pickService(this)">
+        <span class="icon">🏪</span>
+        <div>
+          <div class="t">Permanent lapning – kunden kører ind</div>
+          <div class="s">SMS med booking-link sendes til kunden</div>
+        </div>
+      </div>
+      <div class="service-opt" onclick="pickService(this)">
+        <span class="icon">🚐</span>
+        <div>
+          <div class="t">Nyt dæk – dækbus kører ud</div>
+          <div class="s">Vi kører til kunden med nyt dæk</div>
+        </div>
+      </div>
+      <div class="service-opt" onclick="pickService(this)">
+        <span class="icon">🏁</span>
+        <div>
+          <div class="t">Nyt dæk – kunden kører ind</div>
+          <div class="s">SMS med booking-link sendes til kunden</div>
+        </div>
+      </div>
+
+      <div class="section-title">Batteri</div>
+      <div class="service-opt" onclick="pickService(this)">
+        <span class="icon">🔋</span>
+        <div>
+          <div class="t">Batteriskift – servicebil kører ud</div>
+          <div class="s">Vi kører til kunden med nyt batteri</div>
+        </div>
+      </div>
+      <div class="service-opt" onclick="pickService(this)">
+        <span class="icon">⚡</span>
+        <div>
+          <div class="t">Batteriskift – kunden kører ind</div>
+          <div class="s">SMS med booking-link sendes til kunden</div>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+      <button class="primary-btn orange" onclick="go(5)">Opret sag &amp; send SMS 📱</button>
+    </div>
+
+    <!-- S6: Bekræftelse med booking-link -->
+    <div class="screen" id="s6">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="confirm-body">
+        <div class="confirm-icon">✅</div>
+        <h2 style="font-size:21px;font-weight:800;color:var(--text);margin-bottom:4px;">Sag oprettet!</h2>
+        <p style="font-size:13px;color:var(--sub);margin-bottom:20px;">SMS sendt til Lone Petersen</p>
+
+        <div class="sms-box">
+          <div class="label">📱 SMS SENDT – MED BOOKING-LINK</div>
+          <div class="msg">"Hej Lone. Vi har oprettet en dæksag til dig. Book din tid til permanent lapning her:<br><br><span style="color:#0369a1;text-decoration:underline;">sos-daek.dk/book/x7k2p</span><br><br>Vælg den station og tid der passer dig. Hilsen SOS Dæk"</div>
+        </div>
+
+        <div class="summary-box">
+          <div class="sum-row"><span class="k">Kunde</span><span class="v">Lone Petersen</span></div>
+          <div class="sum-row"><span class="k">Bil</span><span class="v">VW Golf · AB 24 891</span></div>
+          <div class="sum-row"><span class="k">Dæk</span><span class="v">205/55 R16 × 1</span></div>
+          <div class="sum-row"><span class="k">Service</span><span class="v">Lapning · Kører selv ind</span></div>
+          <div class="sum-row"><span class="k">Status</span><span class="v" style="color:#d97706;">Afventer booking</span></div>
+        </div>
+      </div>
+      <button class="primary-btn dark" onclick="go(6)">Se superbruger visning →</button>
+    </div>
+
+    <!-- S7: Superbruger – Dagens opgaver -->
+    <div class="screen" id="s7">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="app-header">
+        <div class="eyebrow">Superbruger · Odense</div>
+        <h1>Dagens opgaver</h1>
+      </div>
+      <div class="tab-bar">
+        <div class="tab active">Dækbus (3)</div>
+        <div class="tab">Værksted (5)</div>
+        <div class="tab" onclick="go(8)">Kalender</div>
+      </div>
+      <div style="padding-top:12px;">
+        <div class="job-item">
+          <div class="job-badge" style="background:#FFF7ED;">🔧</div>
+          <div>
+            <div class="job-name">Lone Petersen</div>
+            <div class="job-meta">Kongevejen 44, Odense<br>Lapning · 205/55 R16 × 1</div>
+          </div>
+          <span class="badge badge-wait">Afventer</span>
+        </div>
+        <div class="job-item">
+          <div class="job-badge" style="background:#EFF6FF;">🚐</div>
+          <div>
+            <div class="job-name">Thomas Holm</div>
+            <div class="job-meta">Roskildevej 12, Odense<br>Nyt dæk · 225/45 R17 × 2</div>
+          </div>
+          <span class="badge badge-active">Igangsat</span>
+        </div>
+        <div class="job-item">
+          <div class="job-badge" style="background:#FEF3C7;">🔋</div>
+          <div>
+            <div class="job-name">Sara Kjær</div>
+            <div class="job-meta">Batteriskift · VW Passat 2019<br>CCA 680A · Bosch S5</div>
+          </div>
+          <span class="badge badge-wait">Afventer</span>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <button class="primary-btn dark" onclick="go(7)">🗺️ Optimer min rute</button>
+    </div>
+
+    <!-- S8: Bookingkalender -->
+    <div class="screen" id="s8">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="app-header">
+        <div class="eyebrow">Superbruger · Odense</div>
+        <h1>Bookingkalender</h1>
+      </div>
+      <div class="tab-bar">
+        <div class="tab">Dækbus (3)</div>
+        <div class="tab">Værksted (5)</div>
+        <div class="tab active">Kalender</div>
+      </div>
+
+      <div class="cal-header">
+        <span class="nav">‹</span>
+        <span class="date">Lørdag 12. april 2026</span>
+        <span class="nav">›</span>
+      </div>
+
+      <div style="overflow-y:auto;flex:1;">
+        <div class="time-slot">
+          <span class="time">08:00</span>
+          <div class="slot-block slot-booked">
+            <div class="slot-name">Mette Larsen</div>
+            <div class="slot-type">Dækskifte · 205/55 R16</div>
+          </div>
+        </div>
+        <div class="time-slot">
+          <span class="time">08:30</span>
+          <div class="slot-block slot-booked">
+            <div class="slot-name">Klaus Møller</div>
+            <div class="slot-type">Permanent lapning</div>
+          </div>
+        </div>
+        <div class="time-slot">
+          <span class="time">09:00</span>
+          <div class="slot-block slot-free">Ledig</div>
+        </div>
+        <div class="time-slot">
+          <span class="time">09:30</span>
+          <div class="slot-block slot-battery">
+            <div class="slot-name">Peter Nørgaard</div>
+            <div class="slot-type">Batteriskift · Bosch S5</div>
+          </div>
+        </div>
+        <div class="time-slot">
+          <span class="time">10:00</span>
+          <div class="slot-block slot-booked">
+            <div class="slot-name">Birgit Hansen</div>
+            <div class="slot-type">Dækskifte · 225/45 R17</div>
+          </div>
+        </div>
+        <div class="time-slot">
+          <span class="time">10:30</span>
+          <div class="slot-block slot-free">Ledig</div>
+        </div>
+        <div class="time-slot">
+          <span class="time">11:00</span>
+          <div class="slot-block slot-booked">
+            <div class="slot-name">Anders Kjeld</div>
+            <div class="slot-type">Permanent lapning</div>
+          </div>
+        </div>
+        <div class="time-slot">
+          <span class="time">11:30</span>
+          <div class="slot-block slot-battery">
+            <div class="slot-name">Lone Petersen</div>
+            <div class="slot-type">Afventer booking via SMS</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S9: Dækhotel -->
+    <div class="screen" id="s9">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="app-header">
+        <div class="eyebrow">Superbruger · Odense</div>
+        <h1>Dækhotel</h1>
+      </div>
+      <div class="tab-bar">
+        <div class="tab">Dækbus (3)</div>
+        <div class="tab">Værksted (5)</div>
+        <div class="tab active">Dækhotel</div>
+      </div>
+      <div class="hotel-banner">
+        <div class="hl">🌸 Sæsonpåminding – April</div>
+        <div class="sub">23 kunder klar til sommerdæk-skift</div>
+        <button class="sms-all-btn">Send SMS til alle →</button>
+      </div>
+      <div class="section-title">Indlagte hjul (3 af 47)</div>
+      <div class="job-item">
+        <div class="job-badge" style="background:#EFF6FF;">❄️</div>
+        <div>
+          <div class="job-name">Mette Larsen</div>
+          <div class="job-meta">Vinterdæk · 205/55 R16 × 4<br>Indlagt 15. nov 2024</div>
+        </div>
+        <span class="badge badge-booked">SMS sendt</span>
+      </div>
+      <div class="job-item">
+        <div class="job-badge" style="background:#F0FDF4;">☀️</div>
+        <div>
+          <div class="job-name">Klaus Møller</div>
+          <div class="job-meta">Sommerdæk · 225/45 R17 × 4<br>Indlagt 3. apr 2024</div>
+        </div>
+        <span class="badge badge-done">Afhentet</span>
+      </div>
+      <div class="job-item">
+        <div class="job-badge" style="background:#EFF6FF;">❄️</div>
+        <div>
+          <div class="job-name">Birgit Andersen</div>
+          <div class="job-meta">Vinterdæk · 195/65 R15 × 4<br>Indlagt 8. nov 2024</div>
+        </div>
+        <span class="badge badge-wait">Afventer</span>
+      </div>
+    </div>
+
+    <!-- S10: Regionschef – Statistik -->
+    <div class="screen" id="s10">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="app-header dark">
+        <div class="eyebrow">Regionschef · Syddanmark</div>
+        <h1>Statistik – April 2026</h1>
+      </div>
+
+      <div class="section-title" style="padding-top:14px;">Denne måned</div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="num">312</div>
+          <div class="lbl">Sager oprettet</div>
+          <div class="trend">↑ 18% vs. marts</div>
+        </div>
+        <div class="stat-card">
+          <div class="num">241</div>
+          <div class="lbl">Bookinger via SMS</div>
+          <div class="trend">↑ 77% konvertering</div>
+        </div>
+        <div class="stat-card">
+          <div class="num" style="color:#e67e22;">38</div>
+          <div class="lbl">Batterisager</div>
+          <div class="trend" style="color:#64748b;">Ny servicetype</div>
+        </div>
+        <div class="stat-card">
+          <div class="num" style="color:#166534;">4,8 ★</div>
+          <div class="lbl">Kundebedømmelse</div>
+          <div class="trend">↑ fra 4,5</div>
+        </div>
+      </div>
+
+      <div class="section-title">Sager per station</div>
+      <div class="bar-row">
+        <span class="bar-lbl">Odense</span>
+        <div class="bar-wrap"><div class="bar-fill" style="width:85%"></div></div>
+        <span class="bar-val">89</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-lbl">Esbjerg</span>
+        <div class="bar-wrap"><div class="bar-fill" style="width:62%"></div></div>
+        <span class="bar-val">65</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-lbl">Kolding</span>
+        <div class="bar-wrap"><div class="bar-fill" style="width:55%"></div></div>
+        <span class="bar-val">58</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-lbl">Vejle</span>
+        <div class="bar-wrap"><div class="bar-fill" style="width:48%"></div></div>
+        <span class="bar-val">51</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-lbl">Fredericia</span>
+        <div class="bar-wrap"><div class="bar-fill" style="width:38%"></div></div>
+        <span class="bar-val">40</span>
+      </div>
+
+      <div class="spacer"></div>
+      <button class="primary-btn dark" style="margin-top:12px;">📊 Eksportér til Excel</button>
+    </div>
+
+    <!-- S11: Admin – Stationer -->
+    <div class="screen" id="s11">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="app-header purple">
+        <div class="eyebrow">Admin · Syddanmark</div>
+        <h1>Stationer</h1>
+      </div>
+
+      <div class="section-title" style="padding-top:12px;">6 stationer – Syddanmark</div>
+
+      <div class="admin-row">
+        <span class="icon">🏢</span>
+        <div class="info">
+          <div class="name">Odense – Albanigade</div>
+          <div class="meta">Åben 08-17 · 3 biler/slot · 30 min slots</div>
+        </div>
+        <button class="edit-btn">Rediger</button>
+      </div>
+      <div class="admin-row">
+        <span class="icon">🏢</span>
+        <div class="info">
+          <div class="name">Esbjerg – Industrivej</div>
+          <div class="meta">Åben 07-16 · 2 biler/slot · 30 min slots</div>
+        </div>
+        <button class="edit-btn">Rediger</button>
+      </div>
+      <div class="admin-row">
+        <span class="icon">🏢</span>
+        <div class="info">
+          <div class="name">Kolding – Egtved Allé</div>
+          <div class="meta">Åben 08-17 · 2 biler/slot · 30 min slots</div>
+        </div>
+        <button class="edit-btn">Rediger</button>
+      </div>
+      <div class="admin-row">
+        <span class="icon">🏢</span>
+        <div class="info">
+          <div class="name">Vejle – Boulevarden</div>
+          <div class="meta">Åben 08-16 · 2 biler/slot · 30 min slots</div>
+        </div>
+        <button class="edit-btn">Rediger</button>
+      </div>
+
+      <div class="add-btn">
+        <span>＋</span> Tilføj ny station
+      </div>
+    </div>
+
+    <!-- S12: Admin – SMS tekster -->
+    <div class="screen" id="s12">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="app-header purple">
+        <div class="eyebrow">Admin · Syddanmark</div>
+        <h1>SMS-tekster</h1>
+      </div>
+
+      <div class="section-title" style="padding-top:12px;">Automatiske beskeder</div>
+
+      <div class="sms-template">
+        <div class="tpl-label">Booking-link (kører selv ind)</div>
+        <div class="tpl-text">"Hej [navn]. Book din tid til [service] her: [link]. Vælg den station og tid der passer dig. Hilsen SOS Dæk"</div>
+        <div class="tpl-actions">
+          <button class="tpl-btn edit">✏️ Rediger</button>
+          <button class="tpl-btn toggle">● Aktiv</button>
+        </div>
+      </div>
+
+      <div class="sms-template">
+        <div class="tpl-label">Booking bekræftelse</div>
+        <div class="tpl-text">"Hej [navn]. Din tid er bekræftet: [dato] kl. [tid] på [station]. Vi ses! Hilsen SOS Dæk"</div>
+        <div class="tpl-actions">
+          <button class="tpl-btn edit">✏️ Rediger</button>
+          <button class="tpl-btn toggle">● Aktiv</button>
+        </div>
+      </div>
+
+      <div class="sms-template">
+        <div class="tpl-label">Sæsonpåminding – dækhotel</div>
+        <div class="tpl-text">"Hej [navn]. Det er snart tid til [sommer/vinter]dæk. Book tid her: [link]. Hilsen SOS Dæk"</div>
+        <div class="tpl-actions">
+          <button class="tpl-btn edit">✏️ Rediger</button>
+          <button class="tpl-btn toggle">● Aktiv</button>
+        </div>
+      </div>
+
+      <div class="sms-template">
+        <div class="tpl-label">Batteri-alderspåminding</div>
+        <div class="tpl-text">"Hej [navn]. Dit batteri er nu [alder] år gammelt. Book et gratis tjek her: [link]. Hilsen SOS Dæk"</div>
+        <div class="tpl-actions">
+          <button class="tpl-btn edit">✏️ Rediger</button>
+          <button class="tpl-btn toggle">● Aktiv</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /phone-inner -->
+</div><!-- /phone -->
+
+<div class="nav-row">
+  <button class="nav-btn" id="prevBtn" onclick="prev()" disabled>← Forrige</button>
+  <div class="dots" id="dots"></div>
+  <button class="nav-btn" id="nextBtn" onclick="next()">Næste →</button>
+</div>
+
+<script>
+  const labels = [
+    'Login',
+    'Redder · Forside',
+    'Opret sag · Trin 1 – Reg.nr opslag',
+    'Opret sag · Trin 2 – Kundedata',
+    'Opret sag · Trin 3 – Servicetype',
+    'Sag oprettet · SMS med booking-link',
+    'Superbruger · Dagens opgaver',
+    'Superbruger · Bookingkalender',
+    'Superbruger · Dækhotel',
+    'Regionschef · Statistik',
+    'Admin · Stationsopsætning',
+    'Admin · SMS-tekster',
+  ];
+
+  const screens = document.querySelectorAll('.screen');
+  let cur = 0;
+
+  function render() {
+    screens.forEach((s, i) => s.classList.toggle('active', i === cur));
+    document.getElementById('screenLabel').textContent = labels[cur];
+    document.getElementById('prevBtn').disabled = cur === 0;
+    document.getElementById('nextBtn').disabled = cur === screens.length - 1;
+    const dc = document.getElementById('dots');
+    dc.innerHTML = '';
+    screens.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i === cur ? ' active' : '');
+      d.onclick = () => go(i);
+      dc.appendChild(d);
+    });
+  }
+
+  function go(i)   { cur = i; render(); }
+  function next()  { if (cur < screens.length - 1) go(cur + 1); }
+  function prev()  { if (cur > 0) go(cur - 1); }
+
+  function pickService(el) {
+    document.querySelectorAll('.service-opt').forEach(o => o.classList.remove('sel'));
+    el.classList.add('sel');
+  }
+
+  render();
+</script>
+</body>
+</html>
