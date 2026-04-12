@@ -1040,8 +1040,109 @@
       </div>
     </div>
 
-    <!-- S11: Admin – Stationer -->
+    <!-- S11: Admin – Brugere og rettigheder -->
     <div class="screen" id="s11">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="app-header purple">
+        <div class="eyebrow">Admin · Syddanmark</div>
+        <h1>Brugere</h1>
+      </div>
+
+      <div style="overflow-y:auto;flex:1;">
+        <div style="padding:12px 16px 8px;display:flex;gap:8px;flex-wrap:wrap;">
+          <div style="background:#EFF6FF;color:#1e40af;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;">🛞 Redder: 6</div>
+          <div style="background:#FEF3C7;color:#92400E;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;">🚐 Dækbus: 3</div>
+          <div style="background:#F0FDF4;color:#166534;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;">🔧 Værksted: 4</div>
+          <div style="background:#F5F3FF;color:#5b21b6;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;">⚙️ Super admin: 2</div>
+        </div>
+
+        <div class="section-title">Roller og adgange</div>
+        <div style="background:white;border-radius:13px;margin:0 16px 12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.07);">
+          <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead>
+              <tr style="background:#f8fafc;">
+                <th style="padding:10px 14px;text-align:left;color:var(--sub);font-weight:700;border-bottom:1px solid var(--border);">Funktion</th>
+                <th style="padding:10px 8px;text-align:center;color:#2563EB;font-weight:700;border-bottom:1px solid var(--border);">Redder</th>
+                <th style="padding:10px 8px;text-align:center;color:#92400E;font-weight:700;border-bottom:1px solid var(--border);">Dækbus</th>
+                <th style="padding:10px 8px;text-align:center;color:#166534;font-weight:700;border-bottom:1px solid var(--border);">Værksted</th>
+                <th style="padding:10px 8px;text-align:center;color:#5b21b6;font-weight:700;border-bottom:1px solid var(--border);">Admin</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:9px 14px;color:var(--text);">Opret sag</td>
+                <td style="text-align:center;">✅</td><td style="text-align:center;">—</td><td style="text-align:center;">—</td><td style="text-align:center;">✅</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;background:#fafafa;">
+                <td style="padding:9px 14px;color:var(--text);">Se kalender</td>
+                <td style="text-align:center;">—</td><td style="text-align:center;">✅</td><td style="text-align:center;">✅</td><td style="text-align:center;">✅</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:9px 14px;color:var(--text);">Værkstedsliste</td>
+                <td style="text-align:center;">—</td><td style="text-align:center;">✅</td><td style="text-align:center;">✅</td><td style="text-align:center;">✅</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;background:#fafafa;">
+                <td style="padding:9px 14px;color:var(--text);">Dækhotel</td>
+                <td style="text-align:center;">—</td><td style="text-align:center;">—</td><td style="text-align:center;">✅</td><td style="text-align:center;">✅</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:9px 14px;color:var(--text);">Statistik</td>
+                <td style="text-align:center;">—</td><td style="text-align:center;">—</td><td style="text-align:center;">—</td><td style="text-align:center;">✅</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;background:#fafafa;">
+                <td style="padding:9px 14px;color:var(--text);">Flådestyring</td>
+                <td style="text-align:center;">✅</td><td style="text-align:center;">—</td><td style="text-align:center;">✅</td><td style="text-align:center;">✅</td>
+              </tr>
+              <tr>
+                <td style="padding:9px 14px;color:var(--text);">Admin panel</td>
+                <td style="text-align:center;">—</td><td style="text-align:center;">—</td><td style="text-align:center;">—</td><td style="text-align:center;">✅</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="section-title">Brugerliste</div>
+        <div class="admin-row">
+          <div style="width:36px;height:36px;background:#EFF6FF;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">👤</div>
+          <div class="info">
+            <div class="name">Mads Hansen</div>
+            <div class="meta">mads.hansen@sos.dk · Kolding</div>
+          </div>
+          <span class="badge badge-booked">Redder</span>
+        </div>
+        <div class="admin-row">
+          <div style="width:36px;height:36px;background:#FEF3C7;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">👤</div>
+          <div class="info">
+            <div class="name">Thomas Kjær</div>
+            <div class="meta">thomas.kjaer@sos.dk · Esbjerg</div>
+          </div>
+          <span class="badge badge-wait">Dækbus</span>
+        </div>
+        <div class="admin-row">
+          <div style="width:36px;height:36px;background:#F0FDF4;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">👤</div>
+          <div class="info">
+            <div class="name">Sara Møller</div>
+            <div class="meta">sara.moller@sos.dk · Kolding</div>
+          </div>
+          <span class="badge badge-active">Værksted</span>
+        </div>
+        <div class="admin-row">
+          <div style="width:36px;height:36px;background:#F5F3FF;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">👤</div>
+          <div class="info">
+            <div class="name">Lars Poulsen</div>
+            <div class="meta">lars.poulsen@sos.dk · Regionschef</div>
+          </div>
+          <span class="badge" style="background:#F5F3FF;color:#5b21b6;">Super admin</span>
+        </div>
+
+        <div class="add-btn">
+          <span>＋</span> Opret ny bruger
+        </div>
+      </div>
+    </div>
+
+    <!-- S13: Admin – Stationer -->
+    <div class="screen" id="s13">
       <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
       <div class="app-header purple">
         <div class="eyebrow">Admin · Syddanmark</div>
@@ -1080,8 +1181,8 @@
       </div>
     </div>
 
-    <!-- S12: Admin – SMS tekster -->
-    <div class="screen" id="s12">
+    <!-- S14: Admin – SMS tekster -->
+    <div class="screen" id="s14">
       <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
       <div class="app-header purple">
         <div class="eyebrow">Admin · Syddanmark</div>
@@ -1127,8 +1228,8 @@
       </div>
     </div>
 
-    <!-- S13: Flådestyring -->
-    <div class="screen" id="s13">
+    <!-- S15: Flådestyring -->
+    <div class="screen" id="s15">
       <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
       <div class="app-header dark">
         <div class="eyebrow">Regionschef · Syddanmark</div>
@@ -1235,6 +1336,8 @@
     'Superbruger · Dækhotel',
     'Regionschef · Statistik',
     'Admin · Stationsopsætning',
+    'Admin · Brugere og rettigheder',
+    'Admin · Stationer',
     'Admin · SMS-tekster',
     'Flådestyring · Alle køretøjer',
   ];
