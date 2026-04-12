@@ -1127,6 +1127,92 @@
       </div>
     </div>
 
+    <!-- S13: Flådestyring -->
+    <div class="screen" id="s13">
+      <div class="status-bar"><span>9:41</span><span>●●● 100%</span></div>
+      <div class="app-header dark">
+        <div class="eyebrow">Regionschef · Syddanmark</div>
+        <h1>Flådestyring</h1>
+      </div>
+
+      <div style="overflow-y:auto;flex:1;">
+        <div style="display:flex;gap:8px;padding:12px 16px 4px;">
+          <div style="background:#DCFCE7;color:#166534;font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;">✓ OK: 4</div>
+          <div style="background:#FEF3C7;color:#92400E;font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;">⚠ Fejl: 2</div>
+          <div style="background:#FDECEA;color:#c0392b;font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;">✕ Ude af drift: 1</div>
+        </div>
+
+        <div class="section-title">Alle køretøjer (7)</div>
+
+        <div class="admin-row">
+          <div style="width:36px;height:36px;background:#DCFCE7;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🚐</div>
+          <div class="info">
+            <div class="name">Dækbus · KL 24 881</div>
+            <div class="meta">Kolding · Syn: aug 2026 · Olie: mar 2026 ✓</div>
+          </div>
+          <span class="badge badge-active">OK</span>
+        </div>
+
+        <div class="admin-row" style="border-left:3px solid #f59e0b;">
+          <div style="width:36px;height:36px;background:#FEF3C7;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🚐</div>
+          <div class="info">
+            <div class="name">Dækbus · ES 44 203</div>
+            <div class="meta">Esbjerg · 2 åbne fejl: blinklys + dæk slidt</div>
+          </div>
+          <span class="badge badge-wait">2 fejl</span>
+        </div>
+
+        <div class="admin-row" style="border-left:3px solid #e74c3c;">
+          <div style="width:36px;height:36px;background:#FDECEA;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🔧</div>
+          <div class="info">
+            <div class="name">Servicebil · ES 18 442</div>
+            <div class="meta">Esbjerg · Syn udløber om 23 dage</div>
+          </div>
+          <span class="badge" style="background:#FDECEA;color:#c0392b;">Syn snart</span>
+        </div>
+
+        <div class="admin-row">
+          <div style="width:36px;height:36px;background:#DCFCE7;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🚗</div>
+          <div class="info">
+            <div class="name">Redningsbil · KL 09 334</div>
+            <div class="meta">Kolding · Syn: dec 2026 · Ingen fejl</div>
+          </div>
+          <span class="badge badge-active">OK</span>
+        </div>
+
+        <div class="admin-row">
+          <div style="width:36px;height:36px;background:#DCFCE7;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🚗</div>
+          <div class="info">
+            <div class="name">Redningsbil · KP 77 109</div>
+            <div class="meta">Kliplev · Syn: sep 2026 · Ingen fejl</div>
+          </div>
+          <span class="badge badge-active">OK</span>
+        </div>
+
+        <div class="admin-row">
+          <div style="width:36px;height:36px;background:#DCFCE7;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🚗</div>
+          <div class="info">
+            <div class="name">Redningsbil · KL 31 557</div>
+            <div class="meta">Kolding · Syn: nov 2026 · Olie forfalden</div>
+          </div>
+          <span class="badge badge-wait">Olie</span>
+        </div>
+
+        <div class="admin-row" style="opacity:0.55;">
+          <div style="width:36px;height:36px;background:#F1F5F9;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🚐</div>
+          <div class="info">
+            <div class="name">Dækbus · ES 02 671</div>
+            <div class="meta">Esbjerg · Motorskade – indleveret værksted</div>
+          </div>
+          <span class="badge badge-done">Ude af drift</span>
+        </div>
+
+        <div class="add-btn" style="margin-top:4px;">
+          <span>＋</span> Tilføj køretøj
+        </div>
+      </div>
+    </div>
+
   </div><!-- /phone-inner -->
 </div><!-- /phone -->
 
@@ -1150,6 +1236,7 @@
     'Regionschef · Statistik',
     'Admin · Stationsopsætning',
     'Admin · SMS-tekster',
+    'Flådestyring · Alle køretøjer',
   ];
 
   const screens = document.querySelectorAll('.screen');
