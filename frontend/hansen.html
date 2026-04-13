@@ -12,17 +12,19 @@
       font-family: 'Inter', sans-serif;
       background: #f4f6f4;
       color: #111;
-      min-height: 100vh;
     }
 
     /* NAV */
     nav {
       background: #fff;
       border-bottom: 1px solid #e8ebe8;
-      padding: 18px 32px;
+      padding: 18px 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
 
     .logo {
@@ -47,43 +49,186 @@
 
     .logo-icon svg { width: 18px; height: 18px; }
 
-    nav a.phone {
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .nav-links a {
+      font-size: 14px;
+      color: #555;
+      text-decoration: none;
+      transition: color .15s;
+    }
+
+    .nav-links a:hover { color: #1a6b35; }
+
+    .nav-cta {
+      background: #1a6b35;
+      color: #fff;
       font-size: 14px;
       font-weight: 600;
-      color: #1a6b35;
+      padding: 9px 18px;
+      border-radius: 8px;
       text-decoration: none;
+      transition: background .15s;
+    }
+
+    .nav-cta:hover { background: #155a2c; }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      nav { padding: 16px 20px; }
     }
 
     /* HERO */
     .hero {
+      background: linear-gradient(135deg, #14532d 0%, #1a6b35 100%);
+      color: #fff;
+      padding: 80px 24px;
       text-align: center;
-      padding: 64px 24px 48px;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.9);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .5px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-bottom: 20px;
     }
 
     .hero h1 {
-      font-size: clamp(28px, 5vw, 42px);
+      font-size: clamp(30px, 5vw, 46px);
       font-weight: 800;
-      color: #111;
       line-height: 1.15;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
 
     .hero p {
       font-size: 16px;
-      color: #555;
-      max-width: 420px;
-      margin: 0 auto;
+      color: rgba(255,255,255,0.8);
+      max-width: 440px;
+      margin: 0 auto 32px;
+      line-height: 1.6;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-hero-primary {
+      background: #fff;
+      color: #1a6b35;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 13px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: opacity .15s;
+    }
+
+    .btn-hero-primary:hover { opacity: .9; }
+
+    .btn-hero-secondary {
+      border: 1.5px solid rgba(255,255,255,0.4);
+      color: #fff;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 13px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: background .15s;
+    }
+
+    .btn-hero-secondary:hover { background: rgba(255,255,255,0.1); }
+
+    /* BENEFITS */
+    .benefits {
+      max-width: 860px;
+      margin: 64px auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 640px) {
+      .benefits { grid-template-columns: 1fr; }
+    }
+
+    .benefit-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+
+    .benefit-icon {
+      width: 44px;
+      height: 44px;
+      background: #edf7f0;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .benefit-icon svg { width: 22px; height: 22px; color: #1a6b35; }
+
+    .benefit-card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .benefit-card p {
+      font-size: 13px;
+      color: #666;
       line-height: 1.6;
     }
 
     /* PRICING */
+    .pricing-wrap {
+      background: #edf0ed;
+      padding: 64px 24px;
+    }
+
+    .pricing-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .pricing-header h2 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .pricing-header p {
+      font-size: 14px;
+      color: #666;
+    }
+
     .pricing {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
       max-width: 780px;
       margin: 0 auto;
-      padding: 0 24px 16px;
     }
 
     @media (max-width: 600px) {
@@ -115,37 +260,14 @@
       border-radius: 20px;
     }
 
-    .card-title {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .card-sub {
-      font-size: 13px;
-      color: #777;
-      margin-bottom: 24px;
-    }
-
+    .card-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .card-sub { font-size: 13px; color: #777; margin-bottom: 24px; }
     .card.featured .card-sub { color: #a8d5b5; }
 
-    .price {
-      margin-bottom: 28px;
-    }
-
-    .price span.amount {
-      font-size: 48px;
-      font-weight: 800;
-      line-height: 1;
-    }
-
-    .price span.unit {
-      font-size: 14px;
-      color: #888;
-      margin-left: 4px;
-    }
-
-    .card.featured .price span.unit { color: #a8d5b5; }
+    .price { margin-bottom: 28px; }
+    .price .amount { font-size: 48px; font-weight: 800; line-height: 1; }
+    .price .unit { font-size: 14px; color: #888; margin-left: 4px; }
+    .card.featured .price .unit { color: #a8d5b5; }
 
     .features {
       list-style: none;
@@ -166,13 +288,7 @@
 
     .card.featured .features li { color: #dceee2; }
 
-    .check {
-      width: 18px;
-      height: 18px;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-
+    .check { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
     .check-green { color: #1a6b35; }
     .check-white { color: #fff; }
 
@@ -184,74 +300,76 @@
       font-size: 15px;
       font-weight: 700;
       text-decoration: none;
-      cursor: pointer;
       transition: opacity .15s;
-      border: none;
       width: 100%;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
     }
 
     .btn:hover { opacity: .85; }
+    .btn-outline { border: 2px solid #1a6b35; color: #1a6b35; background: transparent; }
+    .btn-white { background: #fff; color: #1a6b35; }
 
-    .btn-outline {
-      border: 2px solid #1a6b35;
-      color: #1a6b35;
-      background: transparent;
-    }
-
-    .btn-white {
-      background: #fff;
-      color: #1a6b35;
-    }
-
-    .note {
+    .pricing-note {
       text-align: center;
       font-size: 12px;
-      color: #aaa;
-      padding: 16px 0 56px;
+      color: #999;
+      margin-top: 20px;
     }
 
-    /* STATS */
-    .divider {
+    /* HOW IT WORKS */
+    .steps {
       max-width: 780px;
-      margin: 0 auto 48px;
+      margin: 64px auto;
       padding: 0 24px;
+    }
+
+    .steps h2 {
+      font-size: 24px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .steps-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
+      gap: 32px;
       text-align: center;
     }
 
-    .stat strong {
-      display: block;
-      font-size: 26px;
-      font-weight: 800;
-      color: #1a6b35;
+    @media (max-width: 600px) {
+      .steps-grid { grid-template-columns: 1fr; gap: 24px; }
     }
 
-    .stat span {
-      font-size: 13px;
-      color: #777;
+    .step-num {
+      width: 44px;
+      height: 44px;
+      background: #1a6b35;
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+      margin: 0 auto 16px;
     }
+
+    .steps-grid h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+    .steps-grid p { font-size: 13px; color: #666; line-height: 1.6; }
 
     /* CONTACT */
     .contact {
       background: #fff;
       border-top: 1px solid #e8ebe8;
-      padding: 56px 24px;
+      padding: 64px 24px;
       text-align: center;
     }
 
-    .contact h2 {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .contact p {
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 32px;
-    }
+    .contact h2 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+    .contact > p { color: #666; font-size: 14px; margin-bottom: 36px; }
 
     .contact-form {
       max-width: 420px;
@@ -282,7 +400,7 @@
       background: #fff;
     }
 
-    .contact-form .btn-submit {
+    .btn-submit {
       background: #1a6b35;
       color: #fff;
       padding: 15px;
@@ -291,11 +409,11 @@
       font-weight: 700;
       border: none;
       cursor: pointer;
-      transition: background .15s;
       font-family: inherit;
+      transition: background .15s;
     }
 
-    .contact-form .btn-submit:hover { background: #155a2c; }
+    .btn-submit:hover { background: #155a2c; }
 
     .or-line {
       display: flex;
@@ -303,7 +421,6 @@
       gap: 12px;
       color: #bbb;
       font-size: 12px;
-      margin: 4px 0;
     }
 
     .or-line::before, .or-line::after {
@@ -316,23 +433,22 @@
     .phone-link {
       display: block;
       text-align: center;
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 700;
       color: #1a6b35;
       text-decoration: none;
-      letter-spacing: .5px;
     }
 
     /* FOOTER */
     footer {
       background: #111;
-      color: #666;
+      color: #555;
       text-align: center;
-      padding: 24px;
+      padding: 28px 24px;
       font-size: 12px;
     }
 
-    footer span { color: #999; }
+    footer span { color: #888; }
   </style>
 </head>
 <body>
@@ -347,94 +463,157 @@
       </div>
       Hansens Maskiner
     </a>
-    <a href="tel:+4512345678" class="phone">12 34 56 78</a>
+    <div class="nav-right">
+      <nav class="nav-links">
+        <a href="#priser">Priser</a>
+        <a href="#kontakt">Kontakt</a>
+      </nav>
+      <a href="#kontakt" class="nav-cta">Tilmeld din maskine</a>
+    </div>
   </nav>
 
   <!-- HERO -->
   <div class="hero">
+    <div class="hero-tag">Lokal service — vi kender din maskine</div>
     <h1>Din plæneklipper<br/>i trygge hænder</h1>
-    <p>Lokal serviceaftale der holder styr på din maskine — og er der når noget går galt.</p>
+    <p>Serviceaftale der sikrer din maskine kører hele sæsonen. Vi holder styr på historikken og rykker ud når noget går galt.</p>
+    <div class="hero-btns">
+      <a href="#priser" class="btn-hero-primary">Se serviceaftaler</a>
+      <a href="#kontakt" class="btn-hero-secondary">Ring til os</a>
+    </div>
+  </div>
+
+  <!-- BENEFITS -->
+  <div class="benefits">
+    <div class="benefit-card">
+      <div class="benefit-icon">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+      </div>
+      <h3>Digitalt servicekort</h3>
+      <p>Fuld historik på din maskine — hvad der er udført og hvad der skal tjekkes næste gang.</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+        </svg>
+      </div>
+      <h3>Påmindelse hver forår</h3>
+      <p>Vi minder dig om service inden sæsonen starter — ingen unødvendige pauser i haven.</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.948V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+        </svg>
+      </div>
+      <h3>Fast kontakt ved nedbrud</h3>
+      <p>Klistermærket på maskinen fortæller hvem du ringer til. Vi er klar til at hjælpe hurtigt.</p>
+    </div>
   </div>
 
   <!-- PRICING -->
-  <div class="pricing">
-
-    <!-- BASIS -->
-    <div class="card">
-      <div class="card-title">Basis</div>
-      <div class="card-sub">Til dig der vil have styr på maskinen</div>
-      <div class="price">
-        <span class="amount">95</span>
-        <span class="unit">kr / år</span>
-      </div>
-      <ul class="features">
-        <li>
-          <svg class="check check-green" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-          Digitalt servicekort med fuld historik
-        </li>
-        <li>
-          <svg class="check check-green" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-          Automatisk påmindelse hver forår
-        </li>
-        <li>
-          <svg class="check check-green" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-          Klistermærke på maskinen
-        </li>
-        <li>
-          <svg class="check check-green" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-          Direkte kontaktnummer til Hansen
-        </li>
-        <li>
-          <svg class="check check-green" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-          10% rabat på dele og reparationer
-        </li>
-      </ul>
-      <a href="#kontakt" class="btn btn-outline">Vælg Basis</a>
+  <div class="pricing-wrap" id="priser">
+    <div class="pricing-header">
+      <h2>Vælg din serviceaftale</h2>
+      <p>To enkle niveauer — begge sikrer dig en partner der kender din maskine.</p>
     </div>
 
-    <!-- SERVICE+ -->
-    <div class="card featured">
-      <div class="badge">Mest valgt</div>
-      <div class="card-title">Service+</div>
-      <div class="card-sub">Til dig der vil have den fulde tryghed</div>
-      <div class="price">
-        <span class="amount">295</span>
-        <span class="unit">kr / år</span>
-      </div>
-      <ul class="features">
-        <li>
-          <svg class="check check-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-          Alt fra Basis
-        </li>
-        <li>
-          <svg class="check check-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-          Udekørende servicetjek — vi kommer til dig
-        </li>
-        <li>
-          <svg class="check check-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-          20% rabat på reparationer
-        </li>
-        <li>
-          <svg class="check check-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-          24-timers garanti — kørende maskine
-        </li>
-        <li>
-          <svg class="check check-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-          Lånemaskine hvis reparation tager længere tid
-        </li>
-      </ul>
-      <a href="#kontakt" class="btn btn-white">Vælg Service+</a>
-    </div>
+    <div class="pricing">
 
+      <!-- BASIS -->
+      <div class="card">
+        <div class="card-title">Basis</div>
+        <div class="card-sub">Til dig der vil have styr på maskinen</div>
+        <div class="price">
+          <span class="amount">95</span>
+          <span class="unit">kr / år</span>
+        </div>
+        <ul class="features">
+          <li>
+            <svg class="check check-green" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            Digitalt servicekort med fuld historik
+          </li>
+          <li>
+            <svg class="check check-green" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            Automatisk påmindelse hver forår
+          </li>
+          <li>
+            <svg class="check check-green" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            Klistermærke på maskinen
+          </li>
+          <li>
+            <svg class="check check-green" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            Direkte kontaktnummer til Hansen
+          </li>
+          <li>
+            <svg class="check check-green" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            10% rabat på dele og reparationer
+          </li>
+        </ul>
+        <a href="#kontakt" class="btn btn-outline">Vælg Basis</a>
+      </div>
+
+      <!-- SERVICE+ -->
+      <div class="card featured">
+        <div class="badge">Mest valgt</div>
+        <div class="card-title">Service+</div>
+        <div class="card-sub">Til dig der vil have den fulde tryghed</div>
+        <div class="price">
+          <span class="amount">295</span>
+          <span class="unit">kr / år</span>
+        </div>
+        <ul class="features">
+          <li>
+            <svg class="check check-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            Alt fra Basis
+          </li>
+          <li>
+            <svg class="check check-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            Udekørende servicetjek — vi kommer til dig
+          </li>
+          <li>
+            <svg class="check check-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            20% rabat på reparationer
+          </li>
+          <li>
+            <svg class="check check-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            24-timers garanti — kørende maskine
+          </li>
+          <li>
+            <svg class="check check-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            Lånemaskine hvis reparation tager længere tid
+          </li>
+        </ul>
+        <a href="#kontakt" class="btn btn-white">Vælg Service+</a>
+      </div>
+
+    </div>
+    <p class="pricing-note">Ingen binding — opsig når som helst &nbsp;·&nbsp; Priser er inkl. moms</p>
   </div>
 
-  <p class="note">Ingen binding — opsig når som helst &nbsp;·&nbsp; Priser er inkl. moms</p>
-
-  <!-- STATS -->
-  <div class="divider">
-    <div class="stat"><strong>24t</strong><span>Garanti på kørende maskine</span></div>
-    <div class="stat"><strong>20%</strong><span>Rabat på reparationer</span></div>
-    <div class="stat"><strong>Lokal</strong><span>Udekørende service</span></div>
+  <!-- HOW IT WORKS -->
+  <div class="steps">
+    <h2>Sådan fungerer det</h2>
+    <div class="steps-grid">
+      <div>
+        <div class="step-num">1</div>
+        <h3>Tilmeld din maskine</h3>
+        <p>Vi opretter et digitalt servicekort og sætter klistermærke på maskinen med vores kontaktinfo.</p>
+      </div>
+      <div>
+        <div class="step-num">2</div>
+        <h3>Vi minder dig om service</h3>
+        <p>Hvert forår sender vi en besked — maskinen gennemgås og vi sørger for den er klar til sæsonen.</p>
+      </div>
+      <div>
+        <div class="step-num">3</div>
+        <h3>Vi er der ved nedbrud</h3>
+        <p>Går noget galt ringer du bare. Vi rykker ud og løser det — inden for 24 timer.</p>
+      </div>
+    </div>
   </div>
 
   <!-- CONTACT -->
