@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard – Michael</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+      font-size: 14px;
+      background: #f0f2f5;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: #1a3a5c;
+      color: #fff;
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .header-logo {
+      width: 38px; height: 38px;
+      background: #c8a84b;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 18px; color: #1a3a5c;
+    }
+    .header h1 { font-size: 18px; font-weight: 700; }
+    .header-date { font-size: 13px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+    .header-right { font-size: 13px; color: rgba(255,255,255,0.5); }
+
+    /* ── Grid ── */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 20px;
+      padding: 24px 32px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+    .card-header {
+      background: #1a3a5c;
+      color: #fff;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-header h2 {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #c8a84b;
+    }
+    .card-header .count {
+      background: rgba(200,168,75,0.25);
+      color: #c8a84b;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+    .card-body { padding: 16px 20px; min-height: 200px; }
+
+    /* ── Add row ── */
+    .add-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .add-row input, .add-row select {
+      flex: 1;
+      padding: 7px 10px;
+      border: 1.5px solid #e0e4ea;
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .add-row input:focus, .add-row select:focus { border-color: #1a3a5c; }
+    .add-row select { flex: 0 0 auto; min-width: 110px; }
+    .btn-add {
+      background: #1a3a5c;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .btn-add:hover { background: #c8a84b; color: #1a3a5c; }
+
+    /* ── Tasks ── */
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px solid #f0f2f5;
+    }
+    .task-item:last-child { border-bottom: none; }
+    .task-item input[type="checkbox"] {
+      margin-top: 2px;
+      width: 16px; height: 16px;
+      accent-color: #1a3a5c;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .task-text {
+      flex: 1;
+      font-size: 13.5px;
+      line-height: 1.5;
+      cursor: pointer;
+    }
+    .task-text.done {
+      text-decoration: line-through;
+      color: #aaa;
+    }
+    .btn-del {
+      background: none;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 0 2px;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+    .btn-del:hover { color: #e05555; }
+    .tasks-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #f0f2f5;
+    }
+    .tasks-footer span { font-size: 12px; color: #aaa; }
+    .btn-clear {
+      background: none;
+      border: 1px solid #e0e4ea;
+      border-radius: 5px;
+      padding: 4px 10px;
+      font-size: 12px;
+      color: #999;
+      cursor: pointer;
+    }
+    .btn-clear:hover { border-color: #e05555; color: #e05555; }
+
+    /* ── Follow-up ── */
+    .followup-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f2f5;
+    }
+    .followup-item:last-child { border-bottom: none; }
+    .followup-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .followup-text { flex: 1; font-size: 13.5px; }
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+    .badge-venter   { background: #fff3cd; color: #856404; }
+    .badge-svaret   { background: #d1e7dd; color: #0a3622; }
+    .badge-lukket   { background: #e2e3e5; color: #6c757d; }
+    .badge-igangsat { background: #cfe2ff; color: #084298; }
+    .followup-note {
+      font-size: 12px;
+      color: #888;
+      margin-top: 4px;
+      padding-left: 2px;
+    }
+    .followup-actions { display: flex; gap: 5px; align-items: center; }
+    .btn-status {
+      background: none;
+      border: 1px solid #e0e4ea;
+      border-radius: 4px;
+      padding: 2px 7px;
+      font-size: 11px;
+      cursor: pointer;
+      color: #666;
+    }
+    .btn-status:hover { border-color: #1a3a5c; color: #1a3a5c; }
+
+    /* ── Projekter ── */
+    .project-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f2f5;
+    }
+    .project-item:last-child { border-bottom: none; }
+    .project-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .project-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot-green  { background: #28a745; }
+    .dot-yellow { background: #ffc107; }
+    .dot-red    { background: #dc3545; }
+    .dot-grey   { background: #adb5bd; }
+    .dot-blue   { background: #0d6efd; }
+    .project-name { font-weight: 600; font-size: 13.5px; flex: 1; }
+    .project-status-lbl {
+      font-size: 11px;
+      color: #888;
+      font-weight: 400;
+    }
+    .project-note {
+      font-size: 12px;
+      color: #888;
+      margin-top: 4px;
+      padding-left: 18px;
+    }
+    .project-edit-note {
+      font-size: 12px;
+      color: #1a3a5c;
+      cursor: pointer;
+      text-decoration: underline;
+      padding-left: 18px;
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* ── Jobs ── */
+    .job-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f2f5;
+    }
+    .job-item:last-child { border-bottom: none; }
+    .job-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .job-info { flex: 1; }
+    .job-title { font-weight: 600; font-size: 13.5px; }
+    .job-company { font-size: 12px; color: #888; margin-top: 1px; }
+    .job-note { font-size: 12px; color: #888; margin-top: 4px; font-style: italic; }
+    .badge-fundet   { background: #e2e3e5; color: #495057; }
+    .badge-soegt    { background: #cfe2ff; color: #084298; }
+    .badge-samtale  { background: #fff3cd; color: #856404; }
+    .badge-tilbudt  { background: #d1e7dd; color: #0a3622; }
+    .badge-afvist   { background: #f8d7da; color: #842029; }
+
+    /* Inline note editing */
+    .inline-edit {
+      width: 100%;
+      padding: 4px 6px;
+      border: 1.5px solid #1a3a5c;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-top: 4px;
+      outline: none;
+    }
+
+    /* Empty state */
+    .empty { color: #bbb; font-size: 13px; padding: 10px 0; text-align: center; }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="header-logo">M</div>
+    <div>
+      <div class="header-date" id="headerDate"></div>
+      <h1>Michael Skaarup Pedersen</h1>
+    </div>
+  </div>
+  <div class="header-right">Dashboard</div>
+</div>
+
+<div class="grid">
+
+  <!-- ── 1. DAGLIGE OPGAVER ── -->
+  <div class="card">
+    <div class="card-header">
+      <h2>Daglige opgaver</h2>
+      <span class="count" id="taskCount">0</span>
+    </div>
+    <div class="card-body">
+      <div class="add-row">
+        <input type="text" id="taskInput" placeholder="Tilføj opgave… (Enter)" />
+        <button class="btn-add" onclick="addTask()">+ Tilføj</button>
+      </div>
+      <div id="taskList"></div>
+      <div class="tasks-footer">
+        <span id="taskDone"></span>
+        <button class="btn-clear" onclick="clearDoneTasks()">Ryd afsluttede</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 2. FØLG OP PÅ ── -->
+  <div class="card">
+    <div class="card-header">
+      <h2>Følg op på</h2>
+      <span class="count" id="followupCount">0</span>
+    </div>
+    <div class="card-body">
+      <div class="add-row">
+        <input type="text" id="followupInput" placeholder="Hvad skal følges op på… (Enter)" />
+        <select id="followupStatus">
+          <option value="venter">Venter</option>
+          <option value="igangsat">Igangsat</option>
+          <option value="svaret">Svaret</option>
+          <option value="lukket">Lukket</option>
+        </select>
+        <button class="btn-add" onclick="addFollowup()">+ Tilføj</button>
+      </div>
+      <div id="followupList"></div>
+    </div>
+  </div>
+
+  <!-- ── 3. PROJEKTSTATUS ── -->
+  <div class="card">
+    <div class="card-header">
+      <h2>Projektstatus</h2>
+      <span class="count" id="projectCount">0</span>
+    </div>
+    <div class="card-body">
+      <div class="add-row">
+        <input type="text" id="projectInput" placeholder="Projektnavn…" />
+        <select id="projectDot">
+          <option value="green">Grøn – kører</option>
+          <option value="yellow">Gul – afventer</option>
+          <option value="blue">Blå – i gang</option>
+          <option value="red">Rød – problem</option>
+          <option value="grey">Grå – pause</option>
+        </select>
+        <button class="btn-add" onclick="addProject()">+ Tilføj</button>
+      </div>
+      <div id="projectList"></div>
+    </div>
+  </div>
+
+  <!-- ── 4. JOBFØLGER ── -->
+  <div class="card">
+    <div class="card-header">
+      <h2>Jobfølger</h2>
+      <span class="count" id="jobCount">0</span>
+    </div>
+    <div class="card-body">
+      <div class="add-row">
+        <input type="text" id="jobTitleInput" placeholder="Stilling / virksomhed…" />
+        <select id="jobStatus">
+          <option value="fundet">Fundet</option>
+          <option value="soegt">Søgt</option>
+          <option value="samtale">Samtale</option>
+          <option value="tilbudt">Tilbudt</option>
+          <option value="afvist">Afvist</option>
+        </select>
+        <button class="btn-add" onclick="addJob()">+ Tilføj</button>
+      </div>
+      <div id="jobList"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── Helpers ──────────────────────────────────────────────────
+function save(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+function load(key, def)  { try { return JSON.parse(localStorage.getItem(key)) || def; } catch { return def; } }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+const STATUSES = {
+  venter:   { label: 'Venter',   cls: 'badge-venter' },
+  igangsat: { label: 'Igangsat', cls: 'badge-igangsat' },
+  svaret:   { label: 'Svaret',   cls: 'badge-svaret' },
+  lukket:   { label: 'Lukket',   cls: 'badge-lukket' },
+};
+const JOB_STATUSES = {
+  fundet:  { label: 'Fundet',   cls: 'badge-fundet' },
+  soegt:   { label: 'Søgt',     cls: 'badge-soegt' },
+  samtale: { label: 'Samtale',  cls: 'badge-samtale' },
+  tilbudt: { label: 'Tilbudt',  cls: 'badge-tilbudt' },
+  afvist:  { label: 'Afvist',   cls: 'badge-afvist' },
+};
+const DOT_LABELS = {
+  green: 'Kører', yellow: 'Afventer', blue: 'I gang', red: 'Problem', grey: 'Pause'
+};
+
+// ── Date ─────────────────────────────────────────────────────
+(function() {
+  const d = new Date();
+  const days = ['søndag','mandag','tirsdag','onsdag','torsdag','fredag','lørdag'];
+  const months = ['januar','februar','marts','april','maj','juni','juli','august','september','oktober','november','december'];
+  document.getElementById('headerDate').textContent =
+    days[d.getDay()] + ' ' + d.getDate() + '. ' + months[d.getMonth()] + ' ' + d.getFullYear();
+})();
+
+// ── TASKS ─────────────────────────────────────────────────────
+let tasks = load('dashboard_tasks', []);
+
+function saveTasks() { save('dashboard_tasks', tasks); }
+
+function renderTasks() {
+  const list = document.getElementById('taskList');
+  const done = tasks.filter(t => t.done).length;
+  document.getElementById('taskCount').textContent = tasks.filter(t => !t.done).length;
+  document.getElementById('taskDone').textContent = done > 0 ? done + ' afsluttet' : '';
+  if (!tasks.length) { list.innerHTML = '<div class="empty">Ingen opgaver endnu</div>'; return; }
+  list.innerHTML = tasks.map(t => `
+    <div class="task-item">
+      <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask('${t.id}')">
+      <span class="task-text ${t.done ? 'done' : ''}" onclick="toggleTask('${t.id}')">${t.text}</span>
+      <button class="btn-del" onclick="deleteTask('${t.id}')">×</button>
+    </div>
+  `).join('');
+}
+
+function addTask() {
+  const inp = document.getElementById('taskInput');
+  const text = inp.value.trim();
+  if (!text) return;
+  tasks.unshift({ id: uid(), text, done: false });
+  saveTasks(); renderTasks();
+  inp.value = '';
+}
+function toggleTask(id) {
+  const t = tasks.find(t => t.id === id);
+  if (t) { t.done = !t.done; saveTasks(); renderTasks(); }
+}
+function deleteTask(id) {
+  tasks = tasks.filter(t => t.id !== id);
+  saveTasks(); renderTasks();
+}
+function clearDoneTasks() {
+  tasks = tasks.filter(t => !t.done);
+  saveTasks(); renderTasks();
+}
+document.getElementById('taskInput').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+
+// ── FOLLOW-UP ─────────────────────────────────────────────────
+let followups = load('dashboard_followups', [
+  { id: uid(), text: 'DAO tracking API – ring hvis ingen svar i dag', status: 'venter', note: 'Carrier API til Gard' },
+  { id: uid(), text: 'Apple App Store – v1.0 build 6 review', status: 'venter', note: 'Afventer godkendelse' },
+  { id: uid(), text: 'fintech@ftnet.dk – hvidvask & betalingstilladelse', status: 'venter', note: 'Mail sendt, afventer svar' },
+]);
+
+function saveFollowups() { save('dashboard_followups', followups); }
+
+function renderFollowups() {
+  const list = document.getElementById('followupList');
+  document.getElementById('followupCount').textContent = followups.filter(f => f.status !== 'lukket').length;
+  if (!followups.length) { list.innerHTML = '<div class="empty">Ingen opfølgninger</div>'; return; }
+  list.innerHTML = followups.map(f => {
+    const s = STATUSES[f.status] || STATUSES.venter;
+    const nextStatus = f.status === 'venter' ? 'igangsat' : f.status === 'igangsat' ? 'svaret' : f.status === 'svaret' ? 'lukket' : 'venter';
+    return `
+    <div class="followup-item">
+      <div class="followup-top">
+        <span class="followup-text">${f.text}</span>
+        <div class="followup-actions">
+          <span class="badge ${s.cls}">${s.label}</span>
+          <button class="btn-status" onclick="advanceFollowup('${f.id}')">→</button>
+          <button class="btn-del" onclick="deleteFollowup('${f.id}')">×</button>
+        </div>
+      </div>
+      ${f.note ? `<div class="followup-note">${f.note}</div>` : ''}
+      <span class="project-edit-note" onclick="editFollowupNote('${f.id}')">+ tilføj note</span>
+    </div>`;
+  }).join('');
+}
+
+function addFollowup() {
+  const inp = document.getElementById('followupInput');
+  const text = inp.value.trim();
+  if (!text) return;
+  const status = document.getElementById('followupStatus').value;
+  followups.unshift({ id: uid(), text, status, note: '' });
+  saveFollowups(); renderFollowups();
+  inp.value = '';
+}
+function advanceFollowup(id) {
+  const f = followups.find(f => f.id === id);
+  if (!f) return;
+  const order = ['venter', 'igangsat', 'svaret', 'lukket'];
+  const i = order.indexOf(f.status);
+  f.status = order[(i + 1) % order.length];
+  saveFollowups(); renderFollowups();
+}
+function deleteFollowup(id) {
+  followups = followups.filter(f => f.id !== id);
+  saveFollowups(); renderFollowups();
+}
+function editFollowupNote(id) {
+  const f = followups.find(f => f.id === id);
+  if (!f) return;
+  const note = prompt('Note til "' + f.text + '":', f.note || '');
+  if (note !== null) { f.note = note; saveFollowups(); renderFollowups(); }
+}
+document.getElementById('followupInput').addEventListener('keydown', e => { if (e.key === 'Enter') addFollowup(); });
+
+// ── PROJECTS ─────────────────────────────────────────────────
+let projects = load('dashboard_projects', [
+  { id: uid(), name: 'Gard.dk', dot: 'yellow', note: 'Afventer Apple godkendelse – v1.0 build 6 "Waiting for Review"' },
+  { id: uid(), name: 'Mait', dot: 'blue', note: 'AI-stemmeassistent klar – søger 5 reference-kunder' },
+  { id: uid(), name: 'Webshop Copilot', dot: 'yellow', note: 'Live på Render – mangler Stripe + email integration' },
+  { id: uid(), name: 'Bramdrupdam.net', dot: 'grey', note: 'Redesign på pause' },
+  { id: uid(), name: 'team1 – Vidensassistent', dot: 'grey', note: 'RAG-assistent til virksomheder – ikke aktiv' },
+  { id: uid(), name: 'SOS DAH – Dæk-app', dot: 'yellow', note: 'Mail sendt til Jesper Repsdorf – afventer svar' },
+]);
+
+function saveProjects() { save('dashboard_projects', projects); }
+
+function renderProjects() {
+  const list = document.getElementById('projectList');
+  document.getElementById('projectCount').textContent = projects.length;
+  if (!projects.length) { list.innerHTML = '<div class="empty">Ingen projekter</div>'; return; }
+  list.innerHTML = projects.map(p => `
+    <div class="project-item">
+      <div class="project-top">
+        <div class="project-dot dot-${p.dot}" title="${DOT_LABELS[p.dot]}"></div>
+        <span class="project-name">${p.name}</span>
+        <span class="project-status-lbl">${DOT_LABELS[p.dot]}</span>
+        <select class="btn-status" style="border:1px solid #e0e4ea;border-radius:4px;padding:2px 4px;font-size:11px;cursor:pointer;color:#666;"
+          onchange="changeProjectDot('${p.id}', this.value)">
+          ${['green','yellow','blue','red','grey'].map(d =>
+            `<option value="${d}" ${p.dot===d?'selected':''}>${DOT_LABELS[d]}</option>`
+          ).join('')}
+        </select>
+        <button class="btn-del" onclick="deleteProject('${p.id}')">×</button>
+      </div>
+      ${p.note ? `<div class="project-note">${p.note}</div>` : ''}
+      <span class="project-edit-note" onclick="editProjectNote('${p.id}')">✎ rediger note</span>
+    </div>
+  `).join('');
+}
+
+function addProject() {
+  const inp = document.getElementById('projectInput');
+  const name = inp.value.trim();
+  if (!name) return;
+  const dot = document.getElementById('projectDot').value;
+  projects.unshift({ id: uid(), name, dot, note: '' });
+  saveProjects(); renderProjects();
+  inp.value = '';
+}
+function changeProjectDot(id, dot) {
+  const p = projects.find(p => p.id === id);
+  if (p) { p.dot = dot; saveProjects(); renderProjects(); }
+}
+function deleteProject(id) {
+  projects = projects.filter(p => p.id !== id);
+  saveProjects(); renderProjects();
+}
+function editProjectNote(id) {
+  const p = projects.find(p => p.id === id);
+  if (!p) return;
+  const note = prompt('Note til "' + p.name + '":', p.note || '');
+  if (note !== null) { p.note = note; saveProjects(); renderProjects(); }
+}
+document.getElementById('projectInput').addEventListener('keydown', e => { if (e.key === 'Enter') addProject(); });
+
+// ── JOBS ─────────────────────────────────────────────────────
+let jobs = load('dashboard_jobs', [
+  { id: uid(), title: 'Digital Project Manager – Kirk Larsen & Ascanius', status: 'soegt', note: 'Uopfordret ansøgning sendt til lh@kirklarsen.dk' },
+]);
+
+function saveJobs() { save('dashboard_jobs', jobs); }
+
+function renderJobs() {
+  const list = document.getElementById('jobList');
+  document.getElementById('jobCount').textContent = jobs.length;
+  if (!jobs.length) { list.innerHTML = '<div class="empty">Ingen jobs tilføjet endnu</div>'; return; }
+  list.innerHTML = jobs.map(j => {
+    const s = JOB_STATUSES[j.status] || JOB_STATUSES.fundet;
+    return `
+    <div class="job-item">
+      <div class="job-top">
+        <div class="job-info">
+          <div class="job-title">${j.title}</div>
+          ${j.note ? `<div class="job-note">${j.note}</div>` : ''}
+        </div>
+        <div style="display:flex;gap:5px;align-items:center;flex-shrink:0">
+          <select class="btn-status" style="border:1px solid #e0e4ea;border-radius:4px;padding:2px 4px;font-size:11px;cursor:pointer;"
+            onchange="changeJobStatus('${j.id}', this.value)">
+            ${Object.entries(JOB_STATUSES).map(([k,v]) =>
+              `<option value="${k}" ${j.status===k?'selected':''}>${v.label}</option>`
+            ).join('')}
+          </select>
+          <span class="badge ${s.cls}">${s.label}</span>
+          <button class="btn-del" onclick="deleteJob('${j.id}')">×</button>
+        </div>
+      </div>
+      <span class="project-edit-note" onclick="editJobNote('${j.id}')">✎ tilføj note</span>
+    </div>`;
+  }).join('');
+}
+
+function addJob() {
+  const inp = document.getElementById('jobTitleInput');
+  const title = inp.value.trim();
+  if (!title) return;
+  const status = document.getElementById('jobStatus').value;
+  jobs.unshift({ id: uid(), title, status, note: '' });
+  saveJobs(); renderJobs();
+  inp.value = '';
+}
+function changeJobStatus(id, status) {
+  const j = jobs.find(j => j.id === id);
+  if (j) { j.status = status; saveJobs(); renderJobs(); }
+}
+function deleteJob(id) {
+  jobs = jobs.filter(j => j.id !== id);
+  saveJobs(); renderJobs();
+}
+function editJobNote(id) {
+  const j = jobs.find(j => j.id === id);
+  if (!j) return;
+  const note = prompt('Note til "' + j.title + '":', j.note || '');
+  if (note !== null) { j.note = note; saveJobs(); renderJobs(); }
+}
+document.getElementById('jobTitleInput').addEventListener('keydown', e => { if (e.key === 'Enter') addJob(); });
+
+// ── Init ──────────────────────────────────────────────────────
+renderTasks();
+renderFollowups();
+renderProjects();
+renderJobs();
+</script>
+</body>
+</html>
