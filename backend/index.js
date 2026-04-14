@@ -595,6 +595,45 @@ app.post('/api/rapport/send', requireAuth, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ── HQ Jobs API ──────────────────────────────────────────────
+function requireHqKey(req, res, next) {
+  if (!process.env.HQ_API_KEY || req.headers['x-api-key'] !== process.env.HQ_API_KEY)
+    return res.status(401).json({ error: 'Unauthorized' });
+  next();
+}
+
+app.get('/api/hq/jobs', requireHqKey, async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM hq_jobs ORDER BY fundet_dato DESC LIMIT 100');
+    res.json(result.rows);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/hq/jobs', requireHqKey, async (req, res) => {
+  try {
+    const jobs = Array.isArray(req.body) ? req.body : [req.body];
+    let inserted = 0;
+    for (const { titel, virksomhed, url, beskrivelse, kilde } of jobs) {
+      if (!titel) continue;
+      const r = await pool.query(
+        `INSERT INTO hq_jobs (titel, virksomhed, url, beskrivelse, kilde)
+         VALUES ($1,$2,$3,$4,$5)
+         ON CONFLICT (url) DO NOTHING`,
+        [titel, virksomhed || '', url || '', beskrivelse || '', kilde || '']
+      );
+      inserted += r.rowCount;
+    }
+    res.json({ ok: true, inserted });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/hq/jobs/:id', requireHqKey, async (req, res) => {
+  try {
+    await pool.query('DELETE FROM hq_jobs WHERE id = $1', [req.params.id]);
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 // Hent alle shops fra databasen
 async function alleShops() {
   const result = await pool.query(
@@ -653,6 +692,15 @@ async function koerMigrationer() {
     PRIMARY KEY (shop_email, kunde_email)
   )`);
   await pool.query(`ALTER TABLE shops ADD COLUMN IF NOT EXISTS stripe_customer_id TEXT`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS hq_jobs (
+    id           SERIAL PRIMARY KEY,
+    titel        TEXT NOT NULL,
+    virksomhed   TEXT,
+    url          TEXT UNIQUE,
+    beskrivelse  TEXT,
+    kilde        TEXT,
+    fundet_dato  TIMESTAMPTZ NOT NULL DEFAULT now()
+  )`);
 }
 
 const PORT = process.env.PORT || 3001;

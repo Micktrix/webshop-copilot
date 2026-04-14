@@ -286,8 +286,60 @@
     /* Empty state */
     .empty { color: #bbb; font-size: 13px; padding: 10px 0; text-align: center; }
 
+    /* ── Agent Job Feed ── */
+    .feed-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 4px;
+    }
+    .feed-job {
+      background: #f8f9fb;
+      border: 1.5px solid #e0e4ea;
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .feed-job-title { font-weight: 600; font-size: 13px; color: #1a3a5c; }
+    .feed-job-company { font-size: 12px; color: #888; margin-top: 2px; }
+    .feed-job-desc { font-size: 12px; color: #555; margin-top: 6px; line-height: 1.5; }
+    .feed-job-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+      gap: 6px;
+    }
+    .feed-job-kilde { font-size: 11px; color: #bbb; }
+    .feed-job-dato  { font-size: 11px; color: #bbb; }
+    .btn-feed-add {
+      background: #1a3a5c;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-feed-add:hover { background: #c8a84b; color: #1a3a5c; }
+    .btn-feed-del {
+      background: none;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .btn-feed-del:hover { color: #e05555; }
+    .feed-link { font-size: 11px; color: #1a3a5c; text-decoration: none; }
+    .feed-link:hover { text-decoration: underline; }
+    .feed-empty { color: #bbb; font-size: 13px; text-align: center; padding: 20px 0; }
+    .feed-loading { color: #888; font-size: 13px; text-align: center; padding: 20px 0; }
+
+    @media (max-width: 1100px) { .feed-grid { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 900px) {
       .grid { grid-template-columns: 1fr; padding: 16px; }
+      .feed-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -390,6 +442,26 @@
     </div>
   </div>
 
+</div>
+
+<!-- ── AGENT JOB FEED ── -->
+<div style="max-width:1400px;margin:0 auto;padding:0 32px 32px">
+  <div class="card">
+    <div class="card-header" style="display:flex;align-items:center;justify-content:space-between">
+      <h2>Agent Job Feed</h2>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="count" id="feedCount">0</span>
+        <span style="font-size:11px;color:rgba(255,255,255,0.5)" id="feedUpdated"></span>
+        <button onclick="loadFeed()" style="background:rgba(255,255,255,0.1);border:none;color:#c8a84b;font-size:12px;padding:4px 10px;border-radius:5px;cursor:pointer">↻ Opdater</button>
+      </div>
+    </div>
+    <div class="card-body" style="padding:20px">
+      <div id="feedApiKeyNotice" style="display:none;background:#fff3cd;border-radius:6px;padding:10px 14px;font-size:13px;color:#856404;margin-bottom:14px">
+        Sæt <strong>HQ_API_KEY</strong> i Render env vars og opdater <code>HQ_API_KEY</code> herunder for at aktivere job-feed.
+      </div>
+      <div id="feedList"><div class="feed-loading">Henter jobs…</div></div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -648,6 +720,67 @@ function editJobNote(id) {
   if (note !== null) { j.note = note; saveJobs(); renderJobs(); }
 }
 document.getElementById('jobTitleInput').addEventListener('keydown', e => { if (e.key === 'Enter') addJob(); });
+
+// ── AGENT JOB FEED ───────────────────────────────────────────
+const HQ_API_KEY = localStorage.getItem('hq_api_key') || '';
+
+async function loadFeed() {
+  const list = document.getElementById('feedList');
+  const key = localStorage.getItem('hq_api_key') || '';
+  if (!key) {
+    document.getElementById('feedApiKeyNotice').style.display = 'block';
+    list.innerHTML = '<div class="feed-empty">Ingen API-nøgle sat — se vejledning ovenfor</div>';
+    return;
+  }
+  list.innerHTML = '<div class="feed-loading">Henter jobs…</div>';
+  try {
+    const res = await fetch('/api/hq/jobs', { headers: { 'x-api-key': key } });
+    if (!res.ok) { list.innerHTML = '<div class="feed-empty">Fejl ved hentning (' + res.status + ')</div>'; return; }
+    const jobs = await res.json();
+    document.getElementById('feedCount').textContent = jobs.length;
+    if (jobs.length === 0) { list.innerHTML = '<div class="feed-empty">Ingen jobs endnu — agenten søger i morgen tidlig</div>'; return; }
+    const newest = new Date(jobs[0].fundet_dato);
+    document.getElementById('feedUpdated').textContent = 'Sidst opdateret: ' + newest.toLocaleDateString('da-DK');
+    list.innerHTML = '<div class="feed-grid">' + jobs.map(j => `
+      <div class="feed-job">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div class="feed-job-title">${j.titel}</div>
+          <button class="btn-feed-del" onclick="deleteFeedJob(${j.id})" title="Fjern">×</button>
+        </div>
+        <div class="feed-job-company">${j.virksomhed || ''}</div>
+        ${j.beskrivelse ? `<div class="feed-job-desc">${j.beskrivelse.slice(0,160)}${j.beskrivelse.length>160?'…':''}</div>` : ''}
+        <div class="feed-job-footer">
+          <div>
+            ${j.url ? `<a href="${j.url}" target="_blank" class="feed-link">Se opslag ↗</a>` : ''}
+            <span class="feed-job-dato" style="margin-left:6px">${new Date(j.fundet_dato).toLocaleDateString('da-DK')}</span>
+          </div>
+          <button class="btn-feed-add" onclick="addFeedJobToTracker(${j.id}, '${j.titel.replace(/'/g,"\\'")} – ${(j.virksomhed||'').replace(/'/g,"\\'")}')">+ Tilføj</button>
+        </div>
+      </div>
+    `).join('') + '</div>';
+  } catch (err) { list.innerHTML = '<div class="feed-empty">Netværksfejl: ' + err.message + '</div>'; }
+}
+
+async function deleteFeedJob(id) {
+  const key = localStorage.getItem('hq_api_key') || '';
+  await fetch('/api/hq/jobs/' + id, { method: 'DELETE', headers: { 'x-api-key': key } });
+  loadFeed();
+}
+
+function addFeedJobToTracker(feedId, title) {
+  jobs.unshift({ id: uid(), title, status: 'fundet', note: '' });
+  saveJobs(); renderJobs();
+  deleteFeedJob(feedId);
+}
+
+// Første gang: spørg efter API-nøgle hvis ikke gemt
+(function checkApiKey() {
+  if (!localStorage.getItem('hq_api_key')) {
+    const k = prompt('Indtast HQ API-nøgle for at aktivere job-feed (sæt den i Render env: HQ_API_KEY):');
+    if (k) localStorage.setItem('hq_api_key', k.trim());
+  }
+  loadFeed();
+})();
 
 // ── Init ──────────────────────────────────────────────────────
 renderTasks();
