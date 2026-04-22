@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Varde Køleservice ApS – Køl, Varmepumper & Aircondition</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue:   #0369a1;
+    --blue-l: #0ea5e9;
+    --dark:   #0a1628;
+    --gray:   #64748b;
+    --light:  #f0f9ff;
+    --border: #bae6fd;
+    --radius: 12px;
+  }
+
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--dark); background: #fff; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.96); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 5vw;
+    display: flex; align-items: center; justify-content: space-between; height: 68px;
+  }
+  .logo { font-size: 19px; font-weight: 800; color: var(--blue); }
+  .logo span { color: var(--dark); font-weight: 400; font-size: 13px; display: block; }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--gray); font-size: 14px; font-weight: 500; transition: color .15s; }
+  .nav-links a:hover { color: var(--blue); }
+  .nav-cta { background: var(--blue); color: #fff; padding: 10px 22px; border-radius: 8px; text-decoration: none; font-size: 15px; font-weight: 600; transition: background .15s; }
+  .nav-cta:hover { background: var(--blue-l); }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    background: linear-gradient(135deg, #0a1628 0%, #0369a1 65%, #0ea5e9 100%);
+    color: #fff; padding: 100px 5vw 80px;
+    display: flex; align-items: center; justify-content: space-between; gap: 40px;
+    min-height: 580px; overflow: hidden;
+  }
+  .hero::before {
+    content: '❄';
+    position: absolute; right: 5%; top: 10%;
+    font-size: 300px; opacity: 0.04; pointer-events: none; line-height: 1;
+  }
+  .hero-text { max-width: 580px; position: relative; z-index: 1; }
+  .hero-badge { display: inline-block; background: rgba(14,165,233,0.25); border: 1px solid rgba(14,165,233,0.4); color: #7dd3fc; font-size: 13px; font-weight: 600; letter-spacing: .5px; padding: 6px 14px; border-radius: 20px; margin-bottom: 24px; }
+  .hero h1 { font-size: clamp(32px, 5vw, 54px); font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
+  .hero h1 span { color: #7dd3fc; }
+  .hero p { font-size: 18px; color: rgba(255,255,255,0.75); line-height: 1.6; margin-bottom: 36px; }
+  .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-primary { background: #fff; color: var(--blue); padding: 14px 28px; border-radius: 9px; text-decoration: none; font-weight: 700; font-size: 16px; transition: transform .15s; display: flex; align-items: center; gap: 8px; }
+  .btn-primary:hover { transform: translateY(-2px); }
+  .btn-outline { border: 2px solid rgba(255,255,255,0.35); color: #fff; padding: 14px 28px; border-radius: 9px; text-decoration: none; font-weight: 600; font-size: 16px; transition: border-color .15s; }
+  .btn-outline:hover { border-color: #fff; }
+
+  .hero-cards { display: flex; flex-direction: column; gap: 14px; flex-shrink: 0; position: relative; z-index: 1; }
+  .hero-card { background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius); padding: 18px 24px; display: flex; align-items: center; gap: 16px; min-width: 250px; }
+  .hero-card-icon { font-size: 26px; }
+  .hero-card-title { font-weight: 700; font-size: 15px; }
+  .hero-card-sub { font-size: 13px; color: rgba(255,255,255,0.6); }
+
+  /* DØGN BANNER */
+  .dogn { background: #0ea5e9; color: #fff; text-align: center; padding: 18px 5vw; font-size: 17px; font-weight: 600; letter-spacing: .3px; }
+  .dogn span { background: rgba(255,255,255,0.2); padding: 4px 14px; border-radius: 20px; margin-left: 12px; font-size: 14px; }
+
+  /* STATS */
+  .stats { display: flex; justify-content: center; border-bottom: 1px solid var(--border); }
+  .stat { flex: 1; max-width: 260px; text-align: center; padding: 36px 20px; border-right: 1px solid var(--border); }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 40px; font-weight: 800; color: var(--blue); }
+  .stat-label { font-size: 14px; color: var(--gray); margin-top: 4px; }
+
+  /* SECTION */
+  .section { padding: 80px 5vw; }
+  .section-label { font-size: 13px; font-weight: 700; letter-spacing: 1px; color: var(--blue); text-transform: uppercase; margin-bottom: 10px; }
+  .section h2 { font-size: clamp(26px, 4vw, 40px); font-weight: 800; margin-bottom: 14px; }
+  .section-sub { font-size: 17px; color: var(--gray); max-width: 560px; line-height: 1.6; margin-bottom: 48px; }
+
+  /* SERVICES */
+  .services { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+  .service-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; transition: box-shadow .2s, transform .2s; }
+  .service-card:hover { box-shadow: 0 8px 32px rgba(3,105,161,0.12); transform: translateY(-3px); }
+  .service-icon { font-size: 40px; margin-bottom: 18px; }
+  .service-card h3 { font-size: 21px; font-weight: 700; margin-bottom: 10px; }
+  .service-card p { color: var(--gray); line-height: 1.6; font-size: 15px; margin-bottom: 20px; }
+  .service-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .service-list li { font-size: 14px; color: var(--dark); display: flex; align-items: center; gap: 8px; }
+  .service-list li::before { content: '✓'; color: var(--blue); font-weight: 700; }
+
+  /* CERTIFICERINGER */
+  .certs { background: var(--light); }
+  .cert-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+  .cert-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; text-align: center; }
+  .cert-card-icon { font-size: 42px; margin-bottom: 14px; }
+  .cert-card h4 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+  .cert-card p { font-size: 14px; color: var(--gray); line-height: 1.5; }
+
+  /* KONTAKT */
+  .contact { background: linear-gradient(135deg, #0a1628, #0369a1); color: #fff; }
+  .contact h2 { color: #fff; }
+  .contact .section-sub { color: rgba(255,255,255,0.7); }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+  .contact-info { display: flex; flex-direction: column; gap: 20px; }
+  .contact-item { display: flex; align-items: center; gap: 16px; }
+  .contact-item-icon { width: 48px; height: 48px; border-radius: 10px; background: rgba(14,165,233,0.2); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .contact-item-title { font-size: 13px; color: rgba(255,255,255,0.55); }
+  .contact-item-val { font-size: 18px; font-weight: 700; }
+  .contact-item-val a { color: #fff; text-decoration: none; }
+
+  form { display: flex; flex-direction: column; gap: 14px; }
+  form input, form textarea, form select { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 13px 16px; border-radius: 9px; font-size: 15px; width: 100%; outline: none; transition: border-color .15s; }
+  form input::placeholder, form textarea::placeholder { color: rgba(255,255,255,0.4); }
+  form input:focus, form textarea:focus { border-color: var(--blue-l); }
+  form textarea { resize: vertical; min-height: 120px; }
+  form select option { background: #0a1628; }
+  form button { background: #fff; color: var(--blue); padding: 14px; border-radius: 9px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: opacity .15s; }
+  form button:hover { opacity: .9; }
+
+  footer { background: #0a1628; color: rgba(255,255,255,0.5); padding: 32px 5vw; display: flex; justify-content: space-between; align-items: center; font-size: 14px; flex-wrap: wrap; gap: 12px; }
+  footer strong { color: #fff; }
+
+  @media (max-width: 768px) {
+    .hero { flex-direction: column; padding: 60px 5vw; }
+    .hero-cards { flex-direction: row; flex-wrap: wrap; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .stats { flex-wrap: wrap; }
+    .stat { border-right: none; border-bottom: 1px solid var(--border); }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Varde Køleservice<span>Køl · Varmepumper · Aircondition</span></div>
+  <ul class="nav-links">
+    <li><a href="#services">Ydelser</a></li>
+    <li><a href="#certs">Om os</a></li>
+    <li><a href="#kontakt">Kontakt</a></li>
+  </ul>
+  <a href="tel:75221117" class="nav-cta">☎ 75 22 11 17</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-badge">❄ Køl · Varmepumper · Aircondition · Døgnservice</div>
+    <h1>40+ år med<br><span>professionel</span><br>køleservice</h1>
+    <p>Vi servicerer industri, landbrug, detail og private i Varde og omegn — døgnet rundt, hele året.</p>
+    <div class="hero-btns">
+      <a href="tel:75221117" class="btn-primary">📞 Ring: 75 22 11 17</a>
+      <a href="#services" class="btn-outline">Se vores ydelser</a>
+    </div>
+  </div>
+  <div class="hero-cards">
+    <div class="hero-card">
+      <div class="hero-card-icon">🏭</div>
+      <div><div class="hero-card-title">Industri</div><div class="hero-card-sub">Køleanlæg & service</div></div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-icon">🐄</div>
+      <div><div class="hero-card-title">Landbrug</div><div class="hero-card-sub">Mælkekøling & tanke</div></div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-icon">🛒</div>
+      <div><div class="hero-card-title">Detail</div><div class="hero-card-sub">Butikskøl & frys</div></div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-icon">🏠</div>
+      <div><div class="hero-card-title">Private</div><div class="hero-card-sub">Varmepumpe & AC</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="dogn">❄ Døgnservice — vi er klar alle døgnets 24 timer <span>Ring: 75 22 11 17</span></div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-num">40+</div><div class="stat-label">Års erfaring</div></div>
+  <div class="stat"><div class="stat-num">24/7</div><div class="stat-label">Døgnservice</div></div>
+  <div class="stat"><div class="stat-num">4</div><div class="stat-label">Specialer under ét tag</div></div>
+  <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Autoriseret & certificeret</div></div>
+</div>
+
+<section class="section" id="services">
+  <div class="section-label">Vores ydelser</div>
+  <h2>Køl, varme & klima til alle brancher</h2>
+  <p class="section-sub">Vi leverer salg, installation og servicering af alle former for køleanlæg og varmepumper — til erhverv som privat.</p>
+  <div class="services">
+    <div class="service-card">
+      <div class="service-icon">🏭</div>
+      <h3>Industri</h3>
+      <p>Professionelle køleløsninger til industrivirksomheder med krav til driftsikkerhed og effektivitet.</p>
+      <ul class="service-list">
+        <li>Industrielle køleanlæg</li>
+        <li>Serverrum køling</li>
+        <li>Proceskøling</li>
+        <li>Præventiv service & vedligehold</li>
+      </ul>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🐄</div>
+      <h3>Landbrug</h3>
+      <p>Specialiseret køleservice til landbrugssektoren med fokus på mælkekøling og driftsikkerhed.</p>
+      <ul class="service-list">
+        <li>Mælkekøletanke</li>
+        <li>Installation & service</li>
+        <li>Akut udkald ved nedbrud</li>
+        <li>Energioptimering</li>
+      </ul>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🛒</div>
+      <h3>Detail</h3>
+      <p>Køleløsninger til butikker, supermarkeder og restauranter — vi sikrer at dit køl aldrig svigter.</p>
+      <ul class="service-list">
+        <li>Butikskøl & frys</li>
+        <li>Kølediske & vitriner</li>
+        <li>Installation & vedligehold</li>
+        <li>Hurtig service ved nedbrud</li>
+      </ul>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🌡️</div>
+      <h3>Varmepumpe & AC</h3>
+      <p>Energieffektive varmepumper og aircondition-anlæg til private boliger og erhvervslokaler.</p>
+      <ul class="service-list">
+        <li>Luft-til-luft varmepumpe</li>
+        <li>Luft-til-vand varmepumpe</li>
+        <li>Aircondition</li>
+        <li>Service & eftersyn</li>
+      </ul>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🔧</div>
+      <h3>Service & vedligehold</h3>
+      <p>Regelmæssig service forlænger levetiden og reducerer energiforbruget på dine anlæg.</p>
+      <ul class="service-list">
+        <li>Serviceaftaler</li>
+        <li>Præventivt vedligehold</li>
+        <li>Fejlfinding & reparation</li>
+        <li>Uforpligtende tilbud</li>
+      </ul>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🚨</div>
+      <h3>Døgnservice 24/7</h3>
+      <p>Nedbrud kender ingen åbningstider. Vi er klar alle døgnets 24 timer — hele året rundt.</p>
+      <ul class="service-list">
+        <li>Akut udkald døgnet rundt</li>
+        <li>Hurtig responstid</li>
+        <li>Erfarne teknikere</li>
+        <li>Ring: 75 22 11 17</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section certs" id="certs">
+  <div class="section-label">Om os</div>
+  <h2>Autoriseret & certificeret siden 1980'erne</h2>
+  <p class="section-sub">Varde Køleservice ApS er grundlagt for over 40 år siden. Vi er stolte medlemmer af branchens anerkendte organisationer.</p>
+  <div class="cert-grid">
+    <div class="cert-card">
+      <div class="cert-card-icon">🏆</div>
+      <h4>40+ års erfaring</h4>
+      <p>Grundlagt for over 40 år siden med dyb erfaring i alle former for køle- og varmeanlæg.</p>
+    </div>
+    <div class="cert-card">
+      <div class="cert-card-icon">🌿</div>
+      <h4>KMO-certificeret</h4>
+      <p>Medlem af Kølebranchens Miljøordning — vi arbejder ansvarligt med miljø og energi.</p>
+    </div>
+    <div class="cert-card">
+      <div class="cert-card-icon">✅</div>
+      <h4>AKB-autoriseret</h4>
+      <p>Autoriseret medlem af Kølfirmaers Brancheforening — kvalitet og faglighed er garanteret.</p>
+    </div>
+    <div class="cert-card">
+      <div class="cert-card-icon">💡</div>
+      <h4>Energifokus</h4>
+      <p>Vi rådgiver altid om den mest energieffektive løsning — godt for miljøet og din økonomi.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section contact" id="kontakt">
+  <div class="section-label" style="color:#7dd3fc;">Kontakt os</div>
+  <h2>Ring eller skriv til os</h2>
+  <p class="section-sub">Vi kommer gerne forbi og giver et uforpligtende tilbud. Ved akut nedbrud — ring straks.</p>
+  <div class="contact-grid">
+    <div class="contact-info">
+      <div class="contact-item">
+        <div class="contact-item-icon">📞</div>
+        <div><div class="contact-item-title">Telefon (også døgnservice)</div><div class="contact-item-val"><a href="tel:75221117">75 22 11 17</a></div></div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">✉️</div>
+        <div><div class="contact-item-title">Email</div><div class="contact-item-val"><a href="mailto:vk@vkservice.dk">vk@vkservice.dk</a></div></div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">📍</div>
+        <div><div class="contact-item-title">Adresse</div><div class="contact-item-val">Nordre Boulevard 96B, 6800 Varde</div></div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">🕐</div>
+        <div><div class="contact-item-title">Døgnservice</div><div class="contact-item-val">24 timer, 7 dage om ugen</div></div>
+      </div>
+    </div>
+    <form onsubmit="handleSubmit(event)">
+      <input type="text" placeholder="Dit navn" required>
+      <input type="tel" placeholder="Telefonnummer" required>
+      <input type="email" placeholder="E-mail">
+      <select>
+        <option value="" disabled selected>Vælg ydelse</option>
+        <option>Industri køleanlæg</option>
+        <option>Landbrug / mælkekøling</option>
+        <option>Butikskøl & frys</option>
+        <option>Varmepumpe</option>
+        <option>Aircondition</option>
+        <option>Service & vedligehold</option>
+        <option>Akut nedbrud</option>
+      </select>
+      <textarea placeholder="Beskriv kort hvad opgaven drejer sig om..."></textarea>
+      <button type="submit">Send besked →</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div><strong>Varde Køleservice ApS</strong> · CVR: 26297176</div>
+  <div>Nordre Boulevard 96B, 6800 Varde</div>
+  <div>Tlf: 75 22 11 17 · vk@vkservice.dk</div>
+</footer>
+
+<script>
+function handleSubmit(e) {
+  e.preventDefault();
+  alert('Tak for din besked! Vi ringer tilbage hurtigst muligt.');
+  e.target.reset();
+}
+</script>
+</body>
+</html>
