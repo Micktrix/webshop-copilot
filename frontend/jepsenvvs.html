@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jepsen VVS & Montage ApS</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue:   #0369a1;
+    --blue-l: #0ea5e9;
+    --dark:   #0c1a2e;
+    --gray:   #64748b;
+    --light:  #f0f9ff;
+    --border: #e0f2fe;
+    --radius: 12px;
+  }
+
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--dark); background: #fff; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.96); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 5vw;
+    display: flex; align-items: center; justify-content: space-between; height: 68px;
+  }
+  .logo { font-size: 19px; font-weight: 800; color: var(--blue); letter-spacing: -0.5px; }
+  .logo span { color: var(--dark); }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--gray); font-size: 15px; font-weight: 500; transition: color .15s; }
+  .nav-links a:hover { color: var(--blue); }
+  .nav-cta { background: var(--blue); color: #fff; padding: 10px 22px; border-radius: 8px; text-decoration: none; font-size: 15px; font-weight: 600; transition: background .15s; }
+  .nav-cta:hover { background: var(--blue-l); }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    background: linear-gradient(135deg, #0c1a2e 0%, #0369a1 70%, #0ea5e9 100%);
+    color: #fff; padding: 100px 5vw 80px;
+    display: flex; align-items: center; justify-content: space-between; gap: 40px;
+    min-height: 560px; overflow: hidden;
+  }
+  .hero-decor {
+    position: absolute; right: -80px; top: -80px;
+    width: 500px; height: 500px; border-radius: 50%;
+    background: rgba(255,255,255,0.04); pointer-events: none;
+  }
+  .hero-decor2 {
+    position: absolute; right: 120px; bottom: -120px;
+    width: 300px; height: 300px; border-radius: 50%;
+    background: rgba(255,255,255,0.04); pointer-events: none;
+  }
+  .hero-text { max-width: 580px; position: relative; z-index: 1; }
+  .hero-badge {
+    display: inline-block; background: rgba(14,165,233,0.25);
+    border: 1px solid rgba(14,165,233,0.4);
+    color: #7dd3fc; font-size: 13px; font-weight: 600; letter-spacing: .5px;
+    padding: 6px 14px; border-radius: 20px; margin-bottom: 24px;
+  }
+  .hero h1 { font-size: clamp(32px, 5vw, 54px); font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
+  .hero h1 span { color: #7dd3fc; }
+  .hero p { font-size: 18px; color: rgba(255,255,255,0.75); line-height: 1.6; margin-bottom: 36px; }
+  .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-primary { background: #fff; color: var(--blue); padding: 14px 28px; border-radius: 9px; text-decoration: none; font-weight: 700; font-size: 16px; transition: transform .15s; }
+  .btn-primary:hover { transform: translateY(-2px); }
+  .btn-outline { border: 2px solid rgba(255,255,255,0.35); color: #fff; padding: 14px 28px; border-radius: 9px; text-decoration: none; font-weight: 600; font-size: 16px; transition: border-color .15s; }
+  .btn-outline:hover { border-color: #fff; }
+
+  .hero-cards { display: flex; flex-direction: column; gap: 14px; flex-shrink: 0; position: relative; z-index: 1; }
+  .hero-card { background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius); padding: 18px 24px; display: flex; align-items: center; gap: 16px; min-width: 250px; }
+  .hero-card-icon { font-size: 28px; }
+  .hero-card-title { font-weight: 700; font-size: 15px; }
+  .hero-card-sub { font-size: 13px; color: rgba(255,255,255,0.6); }
+
+  /* STATS */
+  .stats { display: flex; justify-content: center; border-bottom: 1px solid var(--border); }
+  .stat { flex: 1; max-width: 260px; text-align: center; padding: 36px 20px; border-right: 1px solid var(--border); }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 40px; font-weight: 800; color: var(--blue); }
+  .stat-label { font-size: 14px; color: var(--gray); margin-top: 4px; }
+
+  /* SECTION */
+  .section { padding: 80px 5vw; }
+  .section-label { font-size: 13px; font-weight: 700; letter-spacing: 1px; color: var(--blue); text-transform: uppercase; margin-bottom: 10px; }
+  .section h2 { font-size: clamp(26px, 4vw, 40px); font-weight: 800; margin-bottom: 14px; }
+  .section-sub { font-size: 17px; color: var(--gray); max-width: 560px; line-height: 1.6; margin-bottom: 48px; }
+
+  /* SERVICES */
+  .services { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+  .service-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; transition: box-shadow .2s, transform .2s; }
+  .service-card:hover { box-shadow: 0 8px 32px rgba(3,105,161,0.10); transform: translateY(-3px); }
+  .service-icon { font-size: 40px; margin-bottom: 18px; }
+  .service-card h3 { font-size: 21px; font-weight: 700; margin-bottom: 10px; }
+  .service-card p { color: var(--gray); line-height: 1.6; font-size: 15px; margin-bottom: 20px; }
+  .service-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .service-list li { font-size: 14px; color: var(--dark); display: flex; align-items: center; gap: 8px; }
+  .service-list li::before { content: '✓'; color: var(--blue); font-weight: 700; }
+
+  /* GARANTI */
+  .garanti { background: var(--light); }
+  .garanti-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+  .garanti-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; }
+  .garanti-card-icon { font-size: 32px; margin-bottom: 14px; }
+  .garanti-card h4 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+  .garanti-card p { font-size: 14px; color: var(--gray); line-height: 1.5; }
+
+  /* KONTAKT */
+  .contact { background: linear-gradient(135deg, #0c1a2e, #0369a1); color: #fff; }
+  .contact h2 { color: #fff; }
+  .contact .section-sub { color: rgba(255,255,255,0.7); }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+  .contact-info { display: flex; flex-direction: column; gap: 20px; }
+  .contact-item { display: flex; align-items: center; gap: 16px; }
+  .contact-item-icon { width: 48px; height: 48px; border-radius: 10px; background: rgba(14,165,233,0.2); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .contact-item-title { font-size: 13px; color: rgba(255,255,255,0.55); }
+  .contact-item-val { font-size: 18px; font-weight: 700; }
+  .contact-item-val a { color: #fff; text-decoration: none; }
+
+  form { display: flex; flex-direction: column; gap: 14px; }
+  form input, form textarea, form select { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 13px 16px; border-radius: 9px; font-size: 15px; width: 100%; outline: none; transition: border-color .15s; }
+  form input::placeholder, form textarea::placeholder { color: rgba(255,255,255,0.4); }
+  form input:focus, form textarea:focus { border-color: var(--blue-l); }
+  form textarea { resize: vertical; min-height: 120px; }
+  form select option { background: #0c1a2e; }
+  form button { background: #fff; color: var(--blue); padding: 14px; border-radius: 9px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: opacity .15s; }
+  form button:hover { opacity: .9; }
+
+  footer { background: #0c1a2e; color: rgba(255,255,255,0.5); padding: 32px 5vw; display: flex; justify-content: space-between; align-items: center; font-size: 14px; flex-wrap: wrap; gap: 12px; }
+  footer strong { color: #fff; }
+
+  @media (max-width: 768px) {
+    .hero { flex-direction: column; padding: 60px 5vw; }
+    .hero-cards { flex-direction: row; flex-wrap: wrap; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .stats { flex-wrap: wrap; }
+    .stat { border-right: none; border-bottom: 1px solid var(--border); }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Jepsen <span>VVS & Montage</span></div>
+  <ul class="nav-links">
+    <li><a href="#services">Ydelser</a></li>
+    <li><a href="#garanti">Garanti</a></li>
+    <li><a href="#kontakt">Kontakt</a></li>
+  </ul>
+  <a href="#kontakt" class="nav-cta">Book et besøg</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-decor"></div>
+  <div class="hero-decor2"></div>
+  <div class="hero-text">
+    <div class="hero-badge">🔧 VVS · Ventilation · Montage · Blik</div>
+    <h1>Professionelt<br><span>VVS-arbejde</span><br>med garanti</h1>
+    <p>Vi udfører alle opgaver med kvalitetssikring efter gældende lovgivning — fra det lille rør til det store projekt.</p>
+    <div class="hero-btns">
+      <a href="#kontakt" class="btn-primary">Book et besøg</a>
+      <a href="#services" class="btn-outline">Se vores ydelser</a>
+    </div>
+  </div>
+  <div class="hero-cards">
+    <div class="hero-card">
+      <div class="hero-card-icon">🚿</div>
+      <div>
+        <div class="hero-card-title">Badeværelse & Køkken</div>
+        <div class="hero-card-sub">Renovering & nybyg</div>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-icon">🌡️</div>
+      <div>
+        <div class="hero-card-title">Varmesystemer</div>
+        <div class="hero-card-sub">Installation & service</div>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-icon">💨</div>
+      <div>
+        <div class="hero-card-title">Ventilation & Klima</div>
+        <div class="hero-card-sub">Privat & erhverv</div>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-icon">🔨</div>
+      <div>
+        <div class="hero-card-title">Blik & Montage</div>
+        <div class="hero-card-sub">Alle opgaver</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><div class="stat-num">20+</div><div class="stat-label">Års erfaring</div></div>
+  <div class="stat"><div class="stat-num">1000+</div><div class="stat-label">Tilfredse kunder</div></div>
+  <div class="stat"><div class="stat-num">5</div><div class="stat-label">Specialer under ét tag</div></div>
+  <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Kvalitetsgaranti</div></div>
+</div>
+
+<!-- SERVICES -->
+<section class="section" id="services">
+  <div class="section-label">Vores ydelser</div>
+  <h2>Alt inden for VVS & montage</h2>
+  <p class="section-sub">Vi løser opgaver for både private og erhvervskunder — altid med kvalitetssikring og dokumentation.</p>
+  <div class="services">
+    <div class="service-card">
+      <div class="service-icon">🚿</div>
+      <h3>Badeværelse</h3>
+      <p>Komplet renovering eller enkelt udskiftning — vi klarer det hele fra start til slut.</p>
+      <ul class="service-list">
+        <li>Totalrenovering</li>
+        <li>Nyt brusekabinet eller badekar</li>
+        <li>Gulvvarme</li>
+        <li>Flisearbejde koordinering</li>
+      </ul>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🍳</div>
+      <h3>Køkken</h3>
+      <p>VVS-arbejde i forbindelse med køkkeninstallation og renovering.</p>
+      <ul class="service-list">
+        <li>Vask & afløb</li>
+        <li>Opvaskemaskine tilslutning</li>
+        <li>Gasinstallation</li>
+        <li>Nye vandrør</li>
+      </ul>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🌡️</div>
+      <h3>Varmesystemer</h3>
+      <p>Installation, service og udskiftning af alle typer varmesystemer.</p>
+      <ul class="service-list">
+        <li>Fjernvarme tilslutning</li>
+        <li>Varmepumpe</li>
+        <li>Radiator & gulvvarme</li>
+        <li>Varmtvandsbeholder</li>
+      </ul>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">💨</div>
+      <h3>Ventilation & Klima</h3>
+      <p>Frisk luft og optimalt indeklima i private boliger og erhvervslokaler.</p>
+      <ul class="service-list">
+        <li>Mekanisk ventilation</li>
+        <li>Varmegenvinding</li>
+        <li>Klimaanlæg</li>
+        <li>Emhætte & udsugning</li>
+      </ul>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🔨</div>
+      <h3>Blik & Montage</h3>
+      <p>Professionelt blikarbejde og montage til alle typer byggerier.</p>
+      <ul class="service-list">
+        <li>Tagrender & nedløb</li>
+        <li>Inddækninger</li>
+        <li>Generel montage</li>
+        <li>Privat & erhverv</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- GARANTI -->
+<section class="section garanti" id="garanti">
+  <div class="section-label">Hvorfor vælge os</div>
+  <h2>Kvalitet du kan stole på</h2>
+  <p class="section-sub">Vi arbejder altid efter gældende lovgivning og leverer dokumentation på alt vi laver.</p>
+  <div class="garanti-grid">
+    <div class="garanti-card">
+      <div class="garanti-card-icon">📋</div>
+      <h4>Kvalitetssikring</h4>
+      <p>Alle opgaver udføres og dokumenteres efter gældende lovgivning og branchestandarder.</p>
+    </div>
+    <div class="garanti-card">
+      <div class="garanti-card-icon">🏆</div>
+      <h4>Autoriseret håndværker</h4>
+      <p>Vi er autoriserede og forsikrede — du er altid dækket hvis noget ikke er som det skal være.</p>
+    </div>
+    <div class="garanti-card">
+      <div class="garanti-card-icon">⏱️</div>
+      <h4>Til tiden</h4>
+      <p>Vi møder op når vi siger vi gør — og holder dig orienteret undervejs i opgaven.</p>
+    </div>
+    <div class="garanti-card">
+      <div class="garanti-card-icon">💬</div>
+      <h4>Ærlig rådgivning</h4>
+      <p>Vi anbefaler den løsning der passer til din situation og dit budget — ikke den dyreste.</p>
+    </div>
+  </div>
+</section>
+
+<!-- KONTAKT -->
+<section class="section contact" id="kontakt">
+  <div class="section-label" style="color:#7dd3fc;">Kontakt os</div>
+  <h2>Book et besøg</h2>
+  <p class="section-sub">Vi kommer gerne forbi for en uforpligtende vurdering af opgaven.</p>
+  <div class="contact-grid">
+    <div class="contact-info">
+      <div class="contact-item">
+        <div class="contact-item-icon">📞</div>
+        <div>
+          <div class="contact-item-title">Telefon</div>
+          <div class="contact-item-val"><a href="tel:">[telefon]</a></div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">✉️</div>
+        <div>
+          <div class="contact-item-title">Email</div>
+          <div class="contact-item-val"><a href="mailto:">[email]</a></div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">📍</div>
+        <div>
+          <div class="contact-item-title">Adresse</div>
+          <div class="contact-item-val">[adresse]</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">🕐</div>
+        <div>
+          <div class="contact-item-title">Åbningstider</div>
+          <div class="contact-item-val">Man–Fre: 7:00–16:00</div>
+        </div>
+      </div>
+    </div>
+    <form onsubmit="handleSubmit(event)">
+      <input type="text" placeholder="Dit navn" required>
+      <input type="tel" placeholder="Telefonnummer" required>
+      <input type="email" placeholder="E-mail (valgfri)">
+      <select>
+        <option value="" disabled selected>Vælg ydelse</option>
+        <option>Badeværelse</option>
+        <option>Køkken</option>
+        <option>Varmesystem</option>
+        <option>Ventilation & Klima</option>
+        <option>Blik & Montage</option>
+        <option>Andet</option>
+      </select>
+      <textarea placeholder="Beskriv kort hvad opgaven drejer sig om..."></textarea>
+      <button type="submit">Send besked →</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div><strong>Jepsen VVS & Montage ApS</strong></div>
+  <div>CVR: [indsæt CVR] · jepsenvvs.com</div>
+  <div>Lavet med ❤️ i Danmark</div>
+</footer>
+
+<script>
+function handleSubmit(e) {
+  e.preventDefault();
+  alert('Tak for din besked! Vi vender tilbage hurtigst muligt.');
+  e.target.reset();
+}
+</script>
+
+</body>
+</html>
