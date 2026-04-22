@@ -708,3 +708,4 @@ app.listen(PORT, async () => {
   console.log(`Backend kører på http://localhost:${PORT}`);
   try { await koerMigrationer(); console.log('Migrationer OK'); } catch (e) { console.warn('Migration fejl:', e.message); }
 });
+
