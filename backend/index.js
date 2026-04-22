@@ -709,3 +709,4 @@ app.listen(PORT, async () => {
   try { await koerMigrationer(); console.log('Migrationer OK'); } catch (e) { console.warn('Migration fejl:', e.message); }
 });
 
+
