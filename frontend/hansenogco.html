@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hansen & Co ApS – El, VVS & Kloak</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue:    #1e40af;
+    --blue-l:  #3b82f6;
+    --dark:    #0f172a;
+    --gray:    #64748b;
+    --light:   #f8fafc;
+    --border:  #e2e8f0;
+    --radius:  12px;
+  }
+
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--dark); background: #fff; }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 5vw;
+    display: flex; align-items: center; justify-content: space-between; height: 68px;
+  }
+  .logo { font-size: 20px; font-weight: 800; color: var(--blue); letter-spacing: -0.5px; }
+  .logo span { color: var(--dark); }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--gray); font-size: 15px; font-weight: 500; transition: color .15s; }
+  .nav-links a:hover { color: var(--blue); }
+  .nav-cta {
+    background: var(--blue); color: #fff;
+    padding: 10px 22px; border-radius: 8px;
+    text-decoration: none; font-size: 15px; font-weight: 600;
+    transition: background .15s;
+  }
+  .nav-cta:hover { background: var(--blue-l); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1e40af 100%);
+    color: #fff; padding: 100px 5vw 80px;
+    display: flex; align-items: center; justify-content: space-between; gap: 40px;
+    min-height: 540px;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background-image: url('https://hansenogco.dk/images/u1717-17-r.png');
+    background-size: cover; background-position: center;
+    filter: brightness(0.22) saturate(0.6);
+  }
+  .hero > * { position: relative; z-index: 1; }
+  .hero-text { max-width: 560px; }
+  .hero-badge {
+    display: inline-block; background: rgba(59,130,246,0.25);
+    border: 1px solid rgba(59,130,246,0.4);
+    color: #93c5fd; font-size: 13px; font-weight: 600; letter-spacing: .5px;
+    padding: 6px 14px; border-radius: 20px; margin-bottom: 24px;
+  }
+  .hero h1 { font-size: clamp(32px, 5vw, 56px); font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
+  .hero h1 span { color: #60a5fa; }
+  .hero p { font-size: 18px; color: rgba(255,255,255,0.75); line-height: 1.6; margin-bottom: 36px; }
+  .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-primary {
+    background: #fff; color: var(--blue);
+    padding: 14px 28px; border-radius: 9px; text-decoration: none;
+    font-weight: 700; font-size: 16px; transition: transform .15s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); }
+  .btn-outline {
+    border: 2px solid rgba(255,255,255,0.35); color: #fff;
+    padding: 14px 28px; border-radius: 9px; text-decoration: none;
+    font-weight: 600; font-size: 16px; transition: border-color .15s;
+  }
+  .btn-outline:hover { border-color: #fff; }
+
+  .hero-cards { display: flex; flex-direction: column; gap: 14px; flex-shrink: 0; }
+  .hero-card {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius); padding: 18px 24px; display: flex; align-items: center; gap: 16px;
+    min-width: 240px;
+  }
+  .hero-card-icon { font-size: 28px; }
+  .hero-card-title { font-weight: 700; font-size: 15px; }
+  .hero-card-sub { font-size: 13px; color: rgba(255,255,255,0.6); }
+
+  /* ── STATS ── */
+  .stats {
+    display: flex; justify-content: center; gap: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .stat {
+    flex: 1; max-width: 260px; text-align: center; padding: 36px 20px;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 40px; font-weight: 800; color: var(--blue); }
+  .stat-label { font-size: 14px; color: var(--gray); margin-top: 4px; }
+
+  /* ── SERVICES ── */
+  .section { padding: 80px 5vw; }
+  .section-label { font-size: 13px; font-weight: 700; letter-spacing: 1px; color: var(--blue); text-transform: uppercase; margin-bottom: 10px; }
+  .section h2 { font-size: clamp(26px, 4vw, 40px); font-weight: 800; margin-bottom: 14px; }
+  .section-sub { font-size: 17px; color: var(--gray); max-width: 560px; line-height: 1.6; margin-bottom: 48px; }
+
+  .services { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+  .service-card {
+    border: 1px solid var(--border); border-radius: var(--radius); padding: 32px;
+    transition: box-shadow .2s, transform .2s;
+  }
+  .service-card:hover { box-shadow: 0 8px 32px rgba(30,64,175,0.10); transform: translateY(-3px); }
+  .service-icon { font-size: 40px; margin-bottom: 18px; }
+  .service-card h3 { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+  .service-card p { color: var(--gray); line-height: 1.6; font-size: 15px; margin-bottom: 20px; }
+  .service-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .service-list li { font-size: 14px; color: var(--dark); display: flex; align-items: center; gap: 8px; }
+  .service-list li::before { content: '✓'; color: var(--blue); font-weight: 700; }
+
+  /* ── HVORFOR ── */
+  .why { background: var(--light); }
+  .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+  .why-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; }
+  .why-card-icon { font-size: 32px; margin-bottom: 14px; }
+  .why-card h4 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+  .why-card p { font-size: 14px; color: var(--gray); line-height: 1.5; }
+
+  /* ── KONTAKT ── */
+  .contact { background: linear-gradient(135deg, #0f172a, #1e3a8a); color: #fff; }
+  .contact h2 { color: #fff; }
+  .contact .section-sub { color: rgba(255,255,255,0.7); }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+  .contact-info { display: flex; flex-direction: column; gap: 20px; }
+  .contact-item { display: flex; align-items: center; gap: 16px; }
+  .contact-item-icon {
+    width: 48px; height: 48px; border-radius: 10px;
+    background: rgba(59,130,246,0.2); display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .contact-item-title { font-size: 13px; color: rgba(255,255,255,0.55); }
+  .contact-item-val { font-size: 18px; font-weight: 700; }
+  .contact-item-val a { color: #fff; text-decoration: none; }
+
+  form { display: flex; flex-direction: column; gap: 14px; }
+  form input, form textarea, form select {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; padding: 13px 16px; border-radius: 9px; font-size: 15px; width: 100%;
+    outline: none; transition: border-color .15s;
+  }
+  form input::placeholder, form textarea::placeholder { color: rgba(255,255,255,0.4); }
+  form input:focus, form textarea:focus, form select:focus { border-color: var(--blue-l); }
+  form textarea { resize: vertical; min-height: 120px; }
+  form select option { background: #1e293b; }
+  form button {
+    background: #fff; color: var(--blue);
+    padding: 14px; border-radius: 9px; border: none;
+    font-size: 16px; font-weight: 700; cursor: pointer; transition: opacity .15s;
+  }
+  form button:hover { opacity: .9; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #0f172a; color: rgba(255,255,255,0.5);
+    padding: 32px 5vw; display: flex; justify-content: space-between; align-items: center;
+    font-size: 14px; flex-wrap: wrap; gap: 12px;
+  }
+  footer strong { color: #fff; }
+
+  @media (max-width: 768px) {
+    .hero { flex-direction: column; padding: 60px 5vw; }
+    .hero-cards { flex-direction: row; flex-wrap: wrap; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .stats { flex-wrap: wrap; }
+    .stat { border-right: none; border-bottom: 1px solid var(--border); }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Hansen<span> & Co</span></div>
+  <ul class="nav-links">
+    <li><a href="#services">Ydelser</a></li>
+    <li><a href="#hvorfor">Om os</a></li>
+    <li><a href="#kontakt">Kontakt</a></li>
+  </ul>
+  <a href="#kontakt" class="nav-cta">Book et besøg</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-text">
+    <div class="hero-badge">⚡ El · VVS · Kloak</div>
+    <h1>Din lokale<br><span>håndværker</span><br>i Esbjerg</h1>
+    <p>Vi løser alt fra den lille reparation til det store projekt — med kvalitet i top og god service hver gang.</p>
+    <div class="hero-btns">
+      <a href="#kontakt" class="btn-primary">Book et besøg</a>
+      <a href="tel:26210245" class="btn-outline">Ring til os</a>
+    </div>
+  </div>
+  <div class="hero-cards">
+    <div class="hero-card">
+      <div class="hero-card-icon">⚡</div>
+      <div>
+        <div class="hero-card-title">El-installation</div>
+        <div class="hero-card-sub">Privat & erhverv</div>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-icon">🔧</div>
+      <div>
+        <div class="hero-card-title">VVS</div>
+        <div class="hero-card-sub">Renovering & nybyg</div>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-icon">🏗️</div>
+      <div>
+        <div class="hero-card-title">Kloak</div>
+        <div class="hero-card-sub">Privat & erhverv</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">15+</div>
+    <div class="stat-label">Års erfaring</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">500+</div>
+    <div class="stat-label">Tilfredse kunder</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">3</div>
+    <div class="stat-label">Specialer under ét tag</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">100%</div>
+    <div class="stat-label">Kvalitetsgaranti</div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="section" id="services">
+  <div class="section-label">Vores ydelser</div>
+  <h2>Alt inden for el, VVS og kloak</h2>
+  <p class="section-sub">Vi klarer hele opgaven — uanset om det er en lille reparation eller et stort byggeprojekt.</p>
+
+  <div class="services">
+    <div class="service-card">
+      <div class="service-icon">⚡</div>
+      <h3>El-installation</h3>
+      <p>Autoriseret el-installatør med erfaring inden for alt fra stikkontakter til komplette el-anlæg.</p>
+      <ul class="service-list">
+        <li>Privat & erhverv</li>
+        <li>Renovering & nybyg</li>
+        <li>Fejlfinding & reparation</li>
+        <li>El-tavle & sikringer</li>
+        <li>Udendørs belysning</li>
+      </ul>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🔧</div>
+      <h3>VVS</h3>
+      <p>Professionelt VVS-arbejde til private og erhvervskunder — hurtigt, rent og til tiden.</p>
+      <ul class="service-list">
+        <li>Badeværelsesrenovering</li>
+        <li>Varmeanlæg & radiator</li>
+        <li>Vandrør & afløb</li>
+        <li>Varmtvandsbeholder</li>
+        <li>Nybyg installation</li>
+      </ul>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🏗️</div>
+      <h3>Kloak</h3>
+      <p>Autoriseret kloakmester med erfaring i alt fra tilstopninger til komplette kloakrenoveringer.</p>
+      <ul class="service-list">
+        <li>Tilstopning & rensning</li>
+        <li>Kloakrenovering</li>
+        <li>TV-inspektion</li>
+        <li>Ny kloakledning</li>
+        <li>Privat & erhverv</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- HVORFOR -->
+<section class="section why" id="hvorfor">
+  <div class="section-label">Hvorfor vælge os</div>
+  <h2>God service er ikke bare et løfte</h2>
+  <p class="section-sub">Vi har bygget vores forretning på ordentligt håndværk og ærlighed overfor kunden.</p>
+
+  <div class="why-grid">
+    <div class="why-card">
+      <div class="why-card-icon">🏆</div>
+      <h4>Kvalitet i top</h4>
+      <p>Vi garanterer kvaliteten på alt arbejde — og retter det op, hvis ikke du er tilfreds.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-card-icon">⏱️</div>
+      <h4>Vi møder op til tiden</h4>
+      <p>Din tid er vigtig. Vi holder aftaler og giver besked hvis noget ændrer sig.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-card-icon">🔑</div>
+      <h4>Én kontakt — tre fag</h4>
+      <p>El, VVS og kloak under ét tag. Spar tid og koordinering med én samlet håndværker.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-card-icon">💬</div>
+      <h4>Ærlig rådgivning</h4>
+      <p>Vi anbefaler den løsning der passer til din situation — ikke den dyreste.</p>
+    </div>
+  </div>
+</section>
+
+<!-- KONTAKT -->
+<section class="section contact" id="kontakt">
+  <div class="section-label" style="color:#60a5fa;">Kontakt os</div>
+  <h2>Book et besøg</h2>
+  <p class="section-sub">Vi svarer hurtigt og kommer gerne på besøg for en uforpligtende vurdering.</p>
+
+  <div class="contact-grid">
+    <div class="contact-info">
+      <div class="contact-item">
+        <div class="contact-item-icon">📞</div>
+        <div>
+          <div class="contact-item-title">VVS & Kloak</div>
+          <div class="contact-item-val"><a href="tel:26210245">262 10 245</a></div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">⚡</div>
+        <div>
+          <div class="contact-item-title">El-installatør</div>
+          <div class="contact-item-val"><a href="tel:23607170">236 07 170</a></div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">📍</div>
+        <div>
+          <div class="contact-item-title">Område</div>
+          <div class="contact-item-val">Esbjerg & omegn</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">🕐</div>
+        <div>
+          <div class="contact-item-title">Åbningstider</div>
+          <div class="contact-item-val">Man–Fre: 7:00–16:00</div>
+        </div>
+      </div>
+    </div>
+
+    <form onsubmit="handleSubmit(event)">
+      <input type="text" placeholder="Dit navn" required>
+      <input type="tel" placeholder="Telefonnummer" required>
+      <input type="email" placeholder="E-mail (valgfri)">
+      <select>
+        <option value="" disabled selected>Vælg ydelse</option>
+        <option>El-installation</option>
+        <option>VVS</option>
+        <option>Kloak</option>
+        <option>Andet / ved ikke</option>
+      </select>
+      <textarea placeholder="Beskriv kort hvad opgaven drejer sig om..."></textarea>
+      <button type="submit">Send besked →</button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div><strong>Hansen & Co ApS</strong> — El, VVS & Kloak</div>
+  <div>CVR: [indsæt CVR] · Esbjerg</div>
+  <div>Lavet med ❤️ i Danmark</div>
+</footer>
+
+<script>
+function handleSubmit(e) {
+  e.preventDefault();
+  alert('Tak for din besked! Vi ringer tilbage hurtigst muligt.');
+  e.target.reset();
+}
+</script>
+
+</body>
+</html>
