@@ -1,545 +1,401 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hansens Maskiner — Servicebesøg 995 kr</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hansen & Co ApS – El, VVS & Kloak</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f4f6f4;
-      color: #111;
-    }
+  :root {
+    --blue:    #1e40af;
+    --blue-l:  #3b82f6;
+    --dark:    #0f172a;
+    --gray:    #64748b;
+    --light:   #f8fafc;
+    --border:  #e2e8f0;
+    --radius:  12px;
+  }
 
-    /* NAV */
-    nav {
-      background: #fff;
-      border-bottom: 1px solid #e8ebe8;
-      padding: 18px 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--dark); background: #fff; }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 17px;
-      font-weight: 700;
-      color: #111;
-      text-decoration: none;
-    }
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 5vw;
+    display: flex; align-items: center; justify-content: space-between; height: 68px;
+  }
+  .logo { font-size: 20px; font-weight: 800; color: var(--blue); letter-spacing: -0.5px; }
+  .logo span { color: var(--dark); }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--gray); font-size: 15px; font-weight: 500; transition: color .15s; }
+  .nav-links a:hover { color: var(--blue); }
+  .nav-cta {
+    background: var(--blue); color: #fff;
+    padding: 10px 22px; border-radius: 8px;
+    text-decoration: none; font-size: 15px; font-weight: 600;
+    transition: background .15s;
+  }
+  .nav-cta:hover { background: var(--blue-l); }
 
-    .logo-icon {
-      width: 34px;
-      height: 34px;
-      background: #1a6b35;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1e40af 100%);
+    color: #fff; padding: 100px 5vw 80px;
+    display: flex; align-items: center; justify-content: space-between; gap: 40px;
+    min-height: 540px;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background-image: url('https://hansenogco.dk/images/u1717-17-r.png');
+    background-size: cover; background-position: center;
+    filter: brightness(0.22) saturate(0.6);
+  }
+  .hero > * { position: relative; z-index: 1; }
+  .hero-text { max-width: 560px; }
+  .hero-badge {
+    display: inline-block; background: rgba(59,130,246,0.25);
+    border: 1px solid rgba(59,130,246,0.4);
+    color: #93c5fd; font-size: 13px; font-weight: 600; letter-spacing: .5px;
+    padding: 6px 14px; border-radius: 20px; margin-bottom: 24px;
+  }
+  .hero h1 { font-size: clamp(32px, 5vw, 56px); font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
+  .hero h1 span { color: #60a5fa; }
+  .hero p { font-size: 18px; color: rgba(255,255,255,0.75); line-height: 1.6; margin-bottom: 36px; }
+  .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-primary {
+    background: #fff; color: var(--blue);
+    padding: 14px 28px; border-radius: 9px; text-decoration: none;
+    font-weight: 700; font-size: 16px; transition: transform .15s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); }
+  .btn-outline {
+    border: 2px solid rgba(255,255,255,0.35); color: #fff;
+    padding: 14px 28px; border-radius: 9px; text-decoration: none;
+    font-weight: 600; font-size: 16px; transition: border-color .15s;
+  }
+  .btn-outline:hover { border-color: #fff; }
 
-    .logo-icon svg { width: 18px; height: 18px; }
+  .hero-cards { display: flex; flex-direction: column; gap: 14px; flex-shrink: 0; }
+  .hero-card {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius); padding: 18px 24px; display: flex; align-items: center; gap: 16px;
+    min-width: 240px;
+  }
+  .hero-card-icon { font-size: 28px; }
+  .hero-card-title { font-weight: 700; font-size: 15px; }
+  .hero-card-sub { font-size: 13px; color: rgba(255,255,255,0.6); }
 
-    .nav-cta {
-      background: #1a6b35;
-      color: #fff;
-      font-size: 14px;
-      font-weight: 600;
-      padding: 9px 18px;
-      border-radius: 8px;
-      text-decoration: none;
-      transition: background .15s;
-    }
+  /* ── STATS ── */
+  .stats {
+    display: flex; justify-content: center; gap: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .stat {
+    flex: 1; max-width: 260px; text-align: center; padding: 36px 20px;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 40px; font-weight: 800; color: var(--blue); }
+  .stat-label { font-size: 14px; color: var(--gray); margin-top: 4px; }
 
-    .nav-cta:hover { background: #155a2c; }
+  /* ── SERVICES ── */
+  .section { padding: 80px 5vw; }
+  .section-label { font-size: 13px; font-weight: 700; letter-spacing: 1px; color: var(--blue); text-transform: uppercase; margin-bottom: 10px; }
+  .section h2 { font-size: clamp(26px, 4vw, 40px); font-weight: 800; margin-bottom: 14px; }
+  .section-sub { font-size: 17px; color: var(--gray); max-width: 560px; line-height: 1.6; margin-bottom: 48px; }
 
-    @media (max-width: 600px) {
-      nav { padding: 16px 20px; }
-    }
+  .services { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+  .service-card {
+    border: 1px solid var(--border); border-radius: var(--radius); padding: 32px;
+    transition: box-shadow .2s, transform .2s;
+  }
+  .service-card:hover { box-shadow: 0 8px 32px rgba(30,64,175,0.10); transform: translateY(-3px); }
+  .service-icon { font-size: 40px; margin-bottom: 18px; }
+  .service-card h3 { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+  .service-card p { color: var(--gray); line-height: 1.6; font-size: 15px; margin-bottom: 20px; }
+  .service-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .service-list li { font-size: 14px; color: var(--dark); display: flex; align-items: center; gap: 8px; }
+  .service-list li::before { content: '✓'; color: var(--blue); font-weight: 700; }
 
-    /* HERO */
-    .hero {
-      background: linear-gradient(135deg, #14532d 0%, #1a6b35 100%);
-      color: #fff;
-      padding: 80px 24px;
-      text-align: center;
-    }
+  /* ── HVORFOR ── */
+  .why { background: var(--light); }
+  .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+  .why-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; }
+  .why-card-icon { font-size: 32px; margin-bottom: 14px; }
+  .why-card h4 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+  .why-card p { font-size: 14px; color: var(--gray); line-height: 1.5; }
 
-    .hero-tag {
-      display: inline-block;
-      background: rgba(255,255,255,0.15);
-      color: rgba(255,255,255,0.9);
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: .5px;
-      padding: 6px 14px;
-      border-radius: 20px;
-      margin-bottom: 20px;
-    }
+  /* ── KONTAKT ── */
+  .contact { background: linear-gradient(135deg, #0f172a, #1e3a8a); color: #fff; }
+  .contact h2 { color: #fff; }
+  .contact .section-sub { color: rgba(255,255,255,0.7); }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+  .contact-info { display: flex; flex-direction: column; gap: 20px; }
+  .contact-item { display: flex; align-items: center; gap: 16px; }
+  .contact-item-icon {
+    width: 48px; height: 48px; border-radius: 10px;
+    background: rgba(59,130,246,0.2); display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .contact-item-title { font-size: 13px; color: rgba(255,255,255,0.55); }
+  .contact-item-val { font-size: 18px; font-weight: 700; }
+  .contact-item-val a { color: #fff; text-decoration: none; }
 
-    .hero h1 {
-      font-size: clamp(30px, 5vw, 48px);
-      font-weight: 800;
-      line-height: 1.15;
-      margin-bottom: 16px;
-    }
+  form { display: flex; flex-direction: column; gap: 14px; }
+  form input, form textarea, form select {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; padding: 13px 16px; border-radius: 9px; font-size: 15px; width: 100%;
+    outline: none; transition: border-color .15s;
+  }
+  form input::placeholder, form textarea::placeholder { color: rgba(255,255,255,0.4); }
+  form input:focus, form textarea:focus, form select:focus { border-color: var(--blue-l); }
+  form textarea { resize: vertical; min-height: 120px; }
+  form select option { background: #1e293b; }
+  form button {
+    background: #fff; color: var(--blue);
+    padding: 14px; border-radius: 9px; border: none;
+    font-size: 16px; font-weight: 700; cursor: pointer; transition: opacity .15s;
+  }
+  form button:hover { opacity: .9; }
 
-    .hero h1 span {
-      color: #7dd898;
-    }
+  /* ── FOOTER ── */
+  footer {
+    background: #0f172a; color: rgba(255,255,255,0.5);
+    padding: 32px 5vw; display: flex; justify-content: space-between; align-items: center;
+    font-size: 14px; flex-wrap: wrap; gap: 12px;
+  }
+  footer strong { color: #fff; }
 
-    .hero p {
-      font-size: 17px;
-      color: rgba(255,255,255,0.8);
-      max-width: 460px;
-      margin: 0 auto 36px;
-      line-height: 1.6;
-    }
-
-    .hero-btn {
-      display: inline-block;
-      background: #fff;
-      color: #1a6b35;
-      font-weight: 800;
-      font-size: 16px;
-      padding: 16px 36px;
-      border-radius: 12px;
-      text-decoration: none;
-      transition: opacity .15s;
-    }
-
-    .hero-btn:hover { opacity: .9; }
-
-    /* PRODUCT CARD */
-    .product-wrap {
-      max-width: 640px;
-      margin: 64px auto;
-      padding: 0 24px;
-    }
-
-    .product-card {
-      background: #fff;
-      border-radius: 24px;
-      box-shadow: 0 4px 32px rgba(0,0,0,0.08);
-      overflow: hidden;
-    }
-
-    .product-header {
-      background: #1a6b35;
-      padding: 32px 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-
-    .product-header h2 {
-      color: #fff;
-      font-size: 22px;
-      font-weight: 700;
-    }
-
-    .product-header p {
-      color: rgba(255,255,255,0.75);
-      font-size: 14px;
-      margin-top: 4px;
-    }
-
-    .price-tag {
-      text-align: right;
-    }
-
-    .price-tag .amount {
-      font-size: 52px;
-      font-weight: 800;
-      color: #fff;
-      line-height: 1;
-    }
-
-    .price-tag .unit {
-      font-size: 14px;
-      color: rgba(255,255,255,0.65);
-      display: block;
-      margin-top: 2px;
-    }
-
-    .product-body {
-      padding: 36px 40px;
-    }
-
-    .includes-title {
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      color: #999;
-      text-transform: uppercase;
-      margin-bottom: 20px;
-    }
-
-    .includes-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-bottom: 32px;
-    }
-
-    @media (max-width: 480px) {
-      .includes-grid { grid-template-columns: 1fr; }
-      .product-header { padding: 24px; }
-      .product-body { padding: 24px; }
-      .price-tag .amount { font-size: 40px; }
-    }
-
-    .include-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 14px;
-      color: #333;
-    }
-
-    .include-item svg {
-      width: 18px;
-      height: 18px;
-      color: #1a6b35;
-      flex-shrink: 0;
-    }
-
-    .divider {
-      border: none;
-      border-top: 1px solid #f0f0f0;
-      margin: 28px 0;
-    }
-
-    .guarantee-row {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .guarantee-item {
-      flex: 1;
-      min-width: 140px;
-      background: #f4f8f5;
-      border-radius: 12px;
-      padding: 16px;
-      text-align: center;
-    }
-
-    .guarantee-item strong {
-      display: block;
-      font-size: 20px;
-      font-weight: 800;
-      color: #1a6b35;
-      margin-bottom: 4px;
-    }
-
-    .guarantee-item span {
-      font-size: 12px;
-      color: #666;
-      line-height: 1.4;
-    }
-
-    /* HOW IT WORKS */
-    .steps {
-      max-width: 640px;
-      margin: 0 auto 64px;
-      padding: 0 24px;
-    }
-
-    .steps h2 {
-      font-size: 22px;
-      font-weight: 800;
-      margin-bottom: 28px;
-      text-align: center;
-    }
-
-    .steps-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .step {
-      background: #fff;
-      border-radius: 14px;
-      padding: 20px 24px;
-      display: flex;
-      align-items: flex-start;
-      gap: 18px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-    }
-
-    .step-num {
-      width: 36px;
-      height: 36px;
-      background: #1a6b35;
-      color: #fff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      font-weight: 800;
-      flex-shrink: 0;
-    }
-
-    .step h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-    .step p { font-size: 13px; color: #666; line-height: 1.5; }
-
-    /* CONTACT */
-    .contact {
-      background: #fff;
-      border-top: 1px solid #e8ebe8;
-      padding: 64px 24px;
-      text-align: center;
-    }
-
-    .contact h2 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
-    .contact > p { color: #666; font-size: 14px; margin-bottom: 36px; }
-
-    .contact-form {
-      max-width: 440px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      text-align: left;
-    }
-
-    .contact-form input,
-    .contact-form textarea {
-      width: 100%;
-      padding: 13px 16px;
-      border: 1.5px solid #e0e4e0;
-      border-radius: 10px;
-      font-size: 14px;
-      font-family: inherit;
-      background: #f9faf9;
-      color: #111;
-      outline: none;
-      transition: border-color .15s;
-      resize: none;
-    }
-
-    .contact-form input:focus,
-    .contact-form textarea:focus {
-      border-color: #1a6b35;
-      background: #fff;
-    }
-
-    .btn-submit {
-      background: #1a6b35;
-      color: #fff;
-      padding: 15px;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 700;
-      border: none;
-      cursor: pointer;
-      font-family: inherit;
-      transition: background .15s;
-    }
-
-    .btn-submit:hover { background: #155a2c; }
-
-    .or-line {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: #bbb;
-      font-size: 12px;
-    }
-
-    .or-line::before, .or-line::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: #e8ebe8;
-    }
-
-    .phone-link {
-      display: block;
-      text-align: center;
-      font-size: 24px;
-      font-weight: 800;
-      color: #1a6b35;
-      text-decoration: none;
-    }
-
-    /* FOOTER */
-    footer {
-      background: #111;
-      color: #555;
-      text-align: center;
-      padding: 28px 24px;
-      font-size: 12px;
-    }
-
-    footer span { color: #888; }
-  </style>
+  @media (max-width: 768px) {
+    .hero { flex-direction: column; padding: 60px 5vw; }
+    .hero-cards { flex-direction: row; flex-wrap: wrap; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .stats { flex-wrap: wrap; }
+    .stat { border-right: none; border-bottom: 1px solid var(--border); }
+    .nav-links { display: none; }
+  }
+</style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav>
-    <a href="#" class="logo">
-      <div class="logo-icon">
-        <svg fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-        </svg>
-      </div>
-      Hansens Maskiner
-    </a>
-    <a href="#kontakt" class="nav-cta">Book servicebesøg</a>
-  </nav>
+<!-- NAV -->
+<nav>
+  <div class="logo">Hansen<span> & Co</span></div>
+  <ul class="nav-links">
+    <li><a href="#services">Ydelser</a></li>
+    <li><a href="#hvorfor">Om os</a></li>
+    <li><a href="#kontakt">Kontakt</a></li>
+  </ul>
+  <a href="#kontakt" class="nav-cta">Book et besøg</a>
+</nav>
 
-  <!-- HERO -->
-  <div class="hero">
-    <div class="hero-tag">Lokal service — vi kommer til dig</div>
-    <h1>Fast pris.<br/>Ingen overraskelser.<br/><span>995 kr — alt inkl.</span></h1>
-    <p>Vi kører ud til dig, laver et komplet service og sætter klistermærket på — så ved du altid hvem du ringer til.</p>
-    <a href="#kontakt" class="hero-btn">Book et servicebesøg</a>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-text">
+    <div class="hero-badge">⚡ El · VVS · Kloak</div>
+    <h1>Din lokale<br><span>håndværker</span><br>i Esbjerg</h1>
+    <p>Vi løser alt fra den lille reparation til det store projekt — med kvalitet i top og god service hver gang.</p>
+    <div class="hero-btns">
+      <a href="#kontakt" class="btn-primary">Book et besøg</a>
+      <a href="tel:26210245" class="btn-outline">Ring til os</a>
+    </div>
   </div>
-
-  <!-- PRODUCT CARD -->
-  <div class="product-wrap" id="service">
-    <div class="product-card">
-
-      <div class="product-header">
-        <div>
-          <h2>Komplet servicebesøg</h2>
-          <p>Vi kører ud — du behøver ikke gøre noget</p>
-        </div>
-        <div class="price-tag">
-          <div class="amount">995</div>
-          <span class="unit">kr inkl. moms &amp; kørsel</span>
-        </div>
+  <div class="hero-cards">
+    <div class="hero-card">
+      <div class="hero-card-icon">⚡</div>
+      <div>
+        <div class="hero-card-title">El-installation</div>
+        <div class="hero-card-sub">Privat & erhverv</div>
       </div>
-
-      <div class="product-body">
-        <div class="includes-title">Hvad er inkluderet</div>
-        <div class="includes-grid">
-          <div class="include-item">
-            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            Oliesk ift
-          </div>
-          <div class="include-item">
-            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            Brændstoffilter
-          </div>
-          <div class="include-item">
-            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            Tændrør
-          </div>
-          <div class="include-item">
-            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            Gennemgang af maskinen
-          </div>
-          <div class="include-item">
-            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            Klistermærke på maskinen
-          </div>
-          <div class="include-item">
-            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            Digitalt servicekort
-          </div>
-          <div class="include-item">
-            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            Kørsel — alt inkluderet
-          </div>
-          <div class="include-item">
-            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            Reminder næste forår
-          </div>
-        </div>
-
-        <hr class="divider"/>
-
-        <div class="guarantee-row">
-          <div class="guarantee-item">
-            <strong>24t</strong>
-            <span>Garanti på kørende maskine</span>
-          </div>
-          <div class="guarantee-item">
-            <strong>Lån</strong>
-            <span>Lånemaskine hvis det trækker ud</span>
-          </div>
-          <div class="guarantee-item">
-            <strong>Fast</strong>
-            <span>Ingen skjulte gebyrer</span>
-          </div>
-        </div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-icon">🔧</div>
+      <div>
+        <div class="hero-card-title">VVS</div>
+        <div class="hero-card-sub">Renovering & nybyg</div>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-icon">🏗️</div>
+      <div>
+        <div class="hero-card-title">Kloak</div>
+        <div class="hero-card-sub">Privat & erhverv</div>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- HOW IT WORKS -->
-  <div class="steps">
-    <h2>Sådan fungerer det</h2>
-    <div class="steps-list">
-      <div class="step">
-        <div class="step-num">1</div>
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">15+</div>
+    <div class="stat-label">Års erfaring</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">500+</div>
+    <div class="stat-label">Tilfredse kunder</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">3</div>
+    <div class="stat-label">Specialer under ét tag</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">100%</div>
+    <div class="stat-label">Kvalitetsgaranti</div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="section" id="services">
+  <div class="section-label">Vores ydelser</div>
+  <h2>Alt inden for el, VVS og kloak</h2>
+  <p class="section-sub">Vi klarer hele opgaven — uanset om det er en lille reparation eller et stort byggeprojekt.</p>
+
+  <div class="services">
+    <div class="service-card">
+      <div class="service-icon">⚡</div>
+      <h3>El-installation</h3>
+      <p>Autoriseret el-installatør med erfaring inden for alt fra stikkontakter til komplette el-anlæg.</p>
+      <ul class="service-list">
+        <li>Privat & erhverv</li>
+        <li>Renovering & nybyg</li>
+        <li>Fejlfinding & reparation</li>
+        <li>El-tavle & sikringer</li>
+        <li>Udendørs belysning</li>
+      </ul>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🔧</div>
+      <h3>VVS</h3>
+      <p>Professionelt VVS-arbejde til private og erhvervskunder — hurtigt, rent og til tiden.</p>
+      <ul class="service-list">
+        <li>Badeværelsesrenovering</li>
+        <li>Varmeanlæg & radiator</li>
+        <li>Vandrør & afløb</li>
+        <li>Varmtvandsbeholder</li>
+        <li>Nybyg installation</li>
+      </ul>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🏗️</div>
+      <h3>Kloak</h3>
+      <p>Autoriseret kloakmester med erfaring i alt fra tilstopninger til komplette kloakrenoveringer.</p>
+      <ul class="service-list">
+        <li>Tilstopning & rensning</li>
+        <li>Kloakrenovering</li>
+        <li>TV-inspektion</li>
+        <li>Ny kloakledning</li>
+        <li>Privat & erhverv</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- HVORFOR -->
+<section class="section why" id="hvorfor">
+  <div class="section-label">Hvorfor vælge os</div>
+  <h2>God service er ikke bare et løfte</h2>
+  <p class="section-sub">Vi har bygget vores forretning på ordentligt håndværk og ærlighed overfor kunden.</p>
+
+  <div class="why-grid">
+    <div class="why-card">
+      <div class="why-card-icon">🏆</div>
+      <h4>Kvalitet i top</h4>
+      <p>Vi garanterer kvaliteten på alt arbejde — og retter det op, hvis ikke du er tilfreds.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-card-icon">⏱️</div>
+      <h4>Vi møder op til tiden</h4>
+      <p>Din tid er vigtig. Vi holder aftaler og giver besked hvis noget ændrer sig.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-card-icon">🔑</div>
+      <h4>Én kontakt — tre fag</h4>
+      <p>El, VVS og kloak under ét tag. Spar tid og koordinering med én samlet håndværker.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-card-icon">💬</div>
+      <h4>Ærlig rådgivning</h4>
+      <p>Vi anbefaler den løsning der passer til din situation — ikke den dyreste.</p>
+    </div>
+  </div>
+</section>
+
+<!-- KONTAKT -->
+<section class="section contact" id="kontakt">
+  <div class="section-label" style="color:#60a5fa;">Kontakt os</div>
+  <h2>Book et besøg</h2>
+  <p class="section-sub">Vi svarer hurtigt og kommer gerne på besøg for en uforpligtende vurdering.</p>
+
+  <div class="contact-grid">
+    <div class="contact-info">
+      <div class="contact-item">
+        <div class="contact-item-icon">📞</div>
         <div>
-          <h3>Book et besøg</h3>
-          <p>Ring til os eller udfyld formularen — vi finder et tidspunkt der passer dig.</p>
+          <div class="contact-item-title">VVS & Kloak</div>
+          <div class="contact-item-val"><a href="tel:26210245">262 10 245</a></div>
         </div>
       </div>
-      <div class="step">
-        <div class="step-num">2</div>
+      <div class="contact-item">
+        <div class="contact-item-icon">⚡</div>
         <div>
-          <h3>Vi kører ud til dig</h3>
-          <p>Hansen kommer med alt udstyr og laver et komplet service på stedet. Olie, filter, tændrør — det hele.</p>
+          <div class="contact-item-title">El-installatør</div>
+          <div class="contact-item-val"><a href="tel:23607170">236 07 170</a></div>
         </div>
       </div>
-      <div class="step">
-        <div class="step-num">3</div>
+      <div class="contact-item">
+        <div class="contact-item-icon">📍</div>
         <div>
-          <h3>Klistermærket sidder på maskinen</h3>
-          <p>Går noget galt i løbet af året ringer du bare det nummer. Vi rykker ud inden for 24 timer.</p>
+          <div class="contact-item-title">Område</div>
+          <div class="contact-item-val">Esbjerg & omegn</div>
         </div>
       </div>
-      <div class="step">
-        <div class="step-num">4</div>
+      <div class="contact-item">
+        <div class="contact-item-icon">🕐</div>
         <div>
-          <h3>Vi minder dig næste forår</h3>
-          <p>Du behøver ikke huske det selv — vi sender en besked når det er tid til service igen.</p>
+          <div class="contact-item-title">Åbningstider</div>
+          <div class="contact-item-val">Man–Fre: 7:00–16:00</div>
         </div>
       </div>
     </div>
+
+    <form onsubmit="handleSubmit(event)">
+      <input type="text" placeholder="Dit navn" required>
+      <input type="tel" placeholder="Telefonnummer" required>
+      <input type="email" placeholder="E-mail (valgfri)">
+      <select>
+        <option value="" disabled selected>Vælg ydelse</option>
+        <option>El-installation</option>
+        <option>VVS</option>
+        <option>Kloak</option>
+        <option>Andet / ved ikke</option>
+      </select>
+      <textarea placeholder="Beskriv kort hvad opgaven drejer sig om..."></textarea>
+      <button type="submit">Send besked →</button>
+    </form>
   </div>
+</section>
 
-  <!-- CONTACT -->
-  <div class="contact" id="kontakt">
-    <h2>Book et servicebesøg</h2>
-    <p>Vi kontakter dig inden for 1 hverdag og aftaler et tidspunkt.</p>
+<!-- FOOTER -->
+<footer>
+  <div><strong>Hansen & Co ApS</strong> — El, VVS & Kloak</div>
+  <div>CVR: [indsæt CVR] · Esbjerg</div>
+  <div>Lavet med ❤️ i Danmark</div>
+</footer>
 
-    <div class="contact-form">
-      <input type="text" placeholder="Dit navn" />
-      <input type="tel" placeholder="Telefonnummer" />
-      <input type="text" placeholder="Adresse" />
-      <input type="text" placeholder="Maskine — mærke og model (fx Honda HRX476)" />
-      <textarea rows="3" placeholder="Noget vi skal vide om maskinen? (valgfrit)"></textarea>
-      <button class="btn-submit">Send booking</button>
-      <div class="or-line">eller ring direkte</div>
-      <a href="tel:+4512345678" class="phone-link">12 34 56 78</a>
-    </div>
-  </div>
-
-  <!-- FOOTER -->
-  <footer>
-    <span>Hansens Maskiner</span> &nbsp;·&nbsp; CVR: 12 345 678 &nbsp;·&nbsp; hansen@maskiner.dk
-  </footer>
+<script>
+function handleSubmit(e) {
+  e.preventDefault();
+  alert('Tak for din besked! Vi ringer tilbage hurtigst muligt.');
+  e.target.reset();
+}
+</script>
 
 </body>
 </html>
